@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Корзина</title>
-    <link rel="stylesheet" href="styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Контакты</title>
+    <link rel="stylesheet" href="../css/styles.css" />
   </head>
   <body>
     <header>
@@ -21,14 +22,16 @@
         </button>
       </nav>
     </header>
-
-    <h1>Корзина</h1>
-    <div id="cart"></div>
-    <div id="cart-total"></div>
-    <div class="return-button-container">
-      <button onclick="window.location.href='index.html'">
-        Вернуться к покупкам
-      </button>
+    <div class="container">
+      <div class="contact-info">
+        <h1>Контакты</h1>
+        <p><strong>Телефон:</strong> +7 (XXX) XXX-XX-XX</p>
+        <p><strong>Email:</strong> info@example.com</p>
+        <p>
+          <strong>Адрес:</strong> ул. Примерная, д. 123, г. Примерово, Россия
+        </p>
+        <p><strong>График работы:</strong> Пн-Пт с 9:00 до 18:00</p>
+      </div>
     </div>
 
     <footer>
@@ -36,7 +39,7 @@
       <p>&copy; 2024 Интернет-магазин. Все права защищены.</p>
     </footer>
 
-    <script src="app.js"></script>
-    <script src="cart.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/cart.js"></script>
   </body>
 </html>

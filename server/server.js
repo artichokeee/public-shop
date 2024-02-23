@@ -34,11 +34,14 @@ app.use(cors()); // Включите CORS для всех маршрутов
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+const path = require("path");
+app.use(express.static(path.join(__dirname, "../public")));
+
 let products = [];
 let cart = [];
 const users = {}; // Простейшее хранилище для пользователей
 
-fs.readFile("products.json", "utf8", (err, data) => {
+fs.readFile("../data/products.json", "utf8", (err, data) => {
   if (err) {
     console.error("Ошибка при чтении файла: ", err);
     return;
