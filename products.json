@@ -1,0 +1,642 @@
+[
+  {
+    "id": 1,
+    "name": "Huawei iPhone 19",
+    "description": "Описание для Huawei iPhone 19",
+    "price": 50,
+    "category": "Смартфоны",
+    "manufacturer": "Huawei",
+    "freeShipping": true,
+    "imageUrl": "media/phone.webp"
+  },
+  {
+    "id": 2,
+    "name": "Samsung Active 5",
+    "description": "Описание для Samsung Active 5",
+    "price": 518,
+    "category": "Умные часы",
+    "manufacturer": "Samsung",
+    "freeShipping": false,
+    "imageUrl": "media/watches.webp"
+  },
+  {
+    "id": 3,
+    "name": "Samsung Air 12",
+    "description": "Описание для Samsung Air 12",
+    "price": 1289,
+    "category": "Компьютеры",
+    "manufacturer": "Samsung",
+    "freeShipping": false,
+    "imageUrl": "media/laptop.webp"
+  },
+  {
+    "id": 4,
+    "name": "Apple Fit 20",
+    "description": "Описание для Apple Fit 20",
+    "price": 149,
+    "category": "Умные часы",
+    "manufacturer": "Apple",
+    "freeShipping": false,
+    "imageUrl": "media/watches.webp"
+  },
+  {
+    "id": 5,
+    "name": "Samsung Book 2",
+    "description": "Описание для Samsung Book 2",
+    "price": 454,
+    "category": "Компьютеры",
+    "manufacturer": "Samsung",
+    "freeShipping": true,
+    "imageUrl": "media/laptop.webp"
+  },
+  {
+    "id": 6,
+    "name": "Apple Gaming 10",
+    "description": "Описание для Apple Gaming 10",
+    "price": 1010,
+    "category": "Компьютеры",
+    "manufacturer": "Apple",
+    "freeShipping": false,
+    "imageUrl": "media/laptop.webp"
+  },
+  {
+    "id": 7,
+    "name": "Samsung P30 19",
+    "description": "Описание для Samsung P30 19",
+    "price": 306,
+    "category": "Смартфоны",
+    "manufacturer": "Samsung",
+    "freeShipping": false,
+    "imageUrl": "media/phone.webp"
+  },
+  {
+    "id": 8,
+    "name": "Huawei Book 2",
+    "description": "Описание для Huawei Book 2",
+    "price": 659,
+    "category": "Компьютеры",
+    "manufacturer": "Huawei",
+    "freeShipping": false,
+    "imageUrl": "media/laptop.webp"
+  },
+  {
+    "id": 9,
+    "name": "Xiaomi Watch 8",
+    "description": "Описание для Xiaomi Watch 8",
+    "price": 1080,
+    "category": "Умные часы",
+    "manufacturer": "Xiaomi",
+    "freeShipping": false,
+    "imageUrl": "media/watches.webp"
+  },
+  {
+    "id": 10,
+    "name": "Huawei Note 10",
+    "description": "Описание для Huawei Note 10",
+    "price": 93,
+    "category": "Смартфоны",
+    "manufacturer": "Huawei",
+    "freeShipping": false,
+    "imageUrl": "media/phone.webp"
+  },
+  {
+    "id": 11,
+    "name": "Samsung Gear 18",
+    "description": "Описание для Samsung Gear 18",
+    "price": 920,
+    "category": "Умные часы",
+    "manufacturer": "Samsung",
+    "freeShipping": false,
+    "imageUrl": "media/watches.webp"
+  },
+  {
+    "id": 12,
+    "name": "Samsung Band 5",
+    "description": "Описание для Samsung Band 5",
+    "price": 878,
+    "category": "Умные часы",
+    "manufacturer": "Samsung",
+    "freeShipping": false,
+    "imageUrl": "media/watches.webp"
+  },
+  {
+    "id": 13,
+    "name": "Samsung Gear 3",
+    "description": "Описание для Samsung Gear 3",
+    "price": 869,
+    "category": "Умные часы",
+    "manufacturer": "Samsung",
+    "freeShipping": true,
+    "imageUrl": "media/watches.webp"
+  },
+  {
+    "id": 14,
+    "name": "Samsung Band 18",
+    "description": "Описание для Samsung Band 18",
+    "price": 212,
+    "category": "Умные часы",
+    "manufacturer": "Samsung",
+    "freeShipping": false,
+    "imageUrl": "media/watches.webp"
+  },
+  {
+    "id": 15,
+    "name": "Apple Ultra 20",
+    "description": "Описание для Apple Ultra 20",
+    "price": 689,
+    "category": "Компьютеры",
+    "manufacturer": "Apple",
+    "freeShipping": false,
+    "imageUrl": "media/laptop.webp"
+  },
+  {
+    "id": 16,
+    "name": "Xiaomi Note 17",
+    "description": "Описание для Xiaomi Note 17",
+    "price": 451,
+    "category": "Смартфоны",
+    "manufacturer": "Xiaomi",
+    "freeShipping": false,
+    "imageUrl": "media/phone.webp"
+  },
+  {
+    "id": 17,
+    "name": "Xiaomi Band 10",
+    "description": "Описание для Xiaomi Band 10",
+    "price": 849,
+    "category": "Умные часы",
+    "manufacturer": "Xiaomi",
+    "freeShipping": true,
+    "imageUrl": "media/watches.webp"
+  },
+  {
+    "id": 18,
+    "name": "Apple Gaming 15",
+    "description": "Описание для Apple Gaming 15",
+    "price": 150,
+    "category": "Компьютеры",
+    "manufacturer": "Apple",
+    "freeShipping": false,
+    "imageUrl": "media/laptop.webp"
+  },
+  {
+    "id": 19,
+    "name": "Huawei Fit 3",
+    "description": "Описание для Huawei Fit 3",
+    "price": 780,
+    "category": "Умные часы",
+    "manufacturer": "Huawei",
+    "freeShipping": false,
+    "imageUrl": "media/watches.webp"
+  },
+  {
+    "id": 20,
+    "name": "Huawei Active 10",
+    "description": "Описание для Huawei Active 10",
+    "price": 550,
+    "category": "Умные часы",
+    "manufacturer": "Huawei",
+    "freeShipping": true,
+    "imageUrl": "media/watches.webp"
+  },
+  {
+    "id": 21,
+    "name": "Huawei iPhone 8",
+    "description": "Описание для Huawei iPhone 8",
+    "price": 631,
+    "category": "Смартфоны",
+    "manufacturer": "Huawei",
+    "freeShipping": true,
+    "imageUrl": "media/phone.webp"
+  },
+  {
+    "id": 22,
+    "name": "Apple Studio 6",
+    "description": "Описание для Apple Studio 6",
+    "price": 579,
+    "category": "Компьютеры",
+    "manufacturer": "Apple",
+    "freeShipping": true,
+    "imageUrl": "media/laptop.webp"
+  },
+  {
+    "id": 23,
+    "name": "Huawei Note 12",
+    "description": "Описание для Huawei Note 12",
+    "price": 1038,
+    "category": "Смартфоны",
+    "manufacturer": "Huawei",
+    "freeShipping": false,
+    "imageUrl": "media/phone.webp"
+  },
+  {
+    "id": 24,
+    "name": "Samsung Mi 10",
+    "description": "Описание для Samsung Mi 10",
+    "price": 1014,
+    "category": "Смартфоны",
+    "manufacturer": "Samsung",
+    "freeShipping": false,
+    "imageUrl": "media/phone.webp"
+  },
+  {
+    "id": 25,
+    "name": "Xiaomi iPhone 7",
+    "description": "Описание для Xiaomi iPhone 7",
+    "price": 1167,
+    "category": "Смартфоны",
+    "manufacturer": "Xiaomi",
+    "freeShipping": false,
+    "imageUrl": "media/phone.webp"
+  },
+  {
+    "id": 26,
+    "name": "Samsung Ultra 3",
+    "description": "Описание для Samsung Ultra 3",
+    "price": 1116,
+    "category": "Компьютеры",
+    "manufacturer": "Samsung",
+    "freeShipping": true,
+    "imageUrl": "media/laptop.webp"
+  },
+  {
+    "id": 27,
+    "name": "Apple Galaxy 12",
+    "description": "Описание для Apple Galaxy 12",
+    "price": 403,
+    "category": "Смартфоны",
+    "manufacturer": "Apple",
+    "freeShipping": true,
+    "imageUrl": "media/phone.webp"
+  },
+  {
+    "id": 28,
+    "name": "Xiaomi Galaxy 3",
+    "description": "Описание для Xiaomi Galaxy 3",
+    "price": 1452,
+    "category": "Смартфоны",
+    "manufacturer": "Xiaomi",
+    "freeShipping": true,
+    "imageUrl": "media/phone.webp"
+  },
+  {
+    "id": 29,
+    "name": "Xiaomi Note 19",
+    "description": "Описание для Xiaomi Note 19",
+    "price": 339,
+    "category": "Смартфоны",
+    "manufacturer": "Xiaomi",
+    "freeShipping": false,
+    "imageUrl": "media/phone.webp"
+  },
+  {
+    "id": 30,
+    "name": "Huawei Mi 3",
+    "description": "Описание для Huawei Mi 3",
+    "price": 849,
+    "category": "Смартфоны",
+    "manufacturer": "Huawei",
+    "freeShipping": false,
+    "imageUrl": "media/phone.webp"
+  },
+  {
+    "id": 31,
+    "name": "Apple Fit 12",
+    "description": "Описание для Apple Fit 12",
+    "price": 1127,
+    "category": "Умные часы",
+    "manufacturer": "Apple",
+    "freeShipping": true,
+    "imageUrl": "media/watches.webp"
+  },
+  {
+    "id": 32,
+    "name": "Huawei Galaxy 5",
+    "description": "Описание для Huawei Galaxy 5",
+    "price": 1382,
+    "category": "Смартфоны",
+    "manufacturer": "Huawei",
+    "freeShipping": false,
+    "imageUrl": "media/phone.webp"
+  },
+  {
+    "id": 33,
+    "name": "Huawei Air 16",
+    "description": "Описание для Huawei Air 16",
+    "price": 1286,
+    "category": "Компьютеры",
+    "manufacturer": "Huawei",
+    "freeShipping": false,
+    "imageUrl": "media/laptop.webp"
+  },
+  {
+    "id": 34,
+    "name": "Huawei P30 9",
+    "description": "Описание для Huawei P30 9",
+    "price": 1010,
+    "category": "Смартфоны",
+    "manufacturer": "Huawei",
+    "freeShipping": true,
+    "imageUrl": "media/phone.webp"
+  },
+  {
+    "id": 35,
+    "name": "Xiaomi iPhone 6",
+    "description": "Описание для Xiaomi iPhone 6",
+    "price": 902,
+    "category": "Смартфоны",
+    "manufacturer": "Xiaomi",
+    "freeShipping": false,
+    "imageUrl": "media/phone.webp"
+  },
+  {
+    "id": 36,
+    "name": "Samsung P30 2",
+    "description": "Описание для Samsung P30 2",
+    "price": 65,
+    "category": "Смартфоны",
+    "manufacturer": "Samsung",
+    "freeShipping": false,
+    "imageUrl": "media/phone.webp"
+  },
+  {
+    "id": 37,
+    "name": "Huawei Mi 5",
+    "description": "Описание для Huawei Mi 5",
+    "price": 1434,
+    "category": "Смартфоны",
+    "manufacturer": "Huawei",
+    "freeShipping": true,
+    "imageUrl": "media/phone.webp"
+  },
+  {
+    "id": 38,
+    "name": "Huawei Active 8",
+    "description": "Описание для Huawei Active 8",
+    "price": 90,
+    "category": "Умные часы",
+    "manufacturer": "Huawei",
+    "freeShipping": true,
+    "imageUrl": "media/watches.webp"
+  },
+  {
+    "id": 39,
+    "name": "Apple Studio 20",
+    "description": "Описание для Apple Studio 20",
+    "price": 349,
+    "category": "Компьютеры",
+    "manufacturer": "Apple",
+    "freeShipping": false,
+    "imageUrl": "media/laptop.webp"
+  },
+  {
+    "id": 40,
+    "name": "Apple iPhone 11",
+    "description": "Описание для Apple iPhone 11",
+    "price": 822,
+    "category": "Смартфоны",
+    "manufacturer": "Apple",
+    "freeShipping": true,
+    "imageUrl": "media/phone.webp"
+  },
+  {
+    "id": 41,
+    "name": "Samsung Air 19",
+    "description": "Описание для Samsung Air 19",
+    "price": 487,
+    "category": "Компьютеры",
+    "manufacturer": "Samsung",
+    "freeShipping": false,
+    "imageUrl": "media/laptop.webp"
+  },
+  {
+    "id": 42,
+    "name": "Apple Ultra 4",
+    "description": "Описание для Apple Ultra 4",
+    "price": 675,
+    "category": "Компьютеры",
+    "manufacturer": "Apple",
+    "freeShipping": true,
+    "imageUrl": "media/laptop.webp"
+  },
+  {
+    "id": 43,
+    "name": "Xiaomi Pro 9",
+    "description": "Описание для Xiaomi Pro 9",
+    "price": 977,
+    "category": "Компьютеры",
+    "manufacturer": "Xiaomi",
+    "freeShipping": true,
+    "imageUrl": "media/laptop.webp"
+  },
+  {
+    "id": 44,
+    "name": "Xiaomi Pro 4",
+    "description": "Описание для Xiaomi Pro 4",
+    "price": 1284,
+    "category": "Компьютеры",
+    "manufacturer": "Xiaomi",
+    "freeShipping": false,
+    "imageUrl": "media/laptop.webp"
+  },
+  {
+    "id": 45,
+    "name": "Huawei Mi 1",
+    "description": "Описание для Huawei Mi 1",
+    "price": 1313,
+    "category": "Смартфоны",
+    "manufacturer": "Huawei",
+    "freeShipping": false,
+    "imageUrl": "media/phone.webp"
+  },
+  {
+    "id": 46,
+    "name": "Apple iPhone 11",
+    "description": "Описание для Apple iPhone 11",
+    "price": 312,
+    "category": "Смартфоны",
+    "manufacturer": "Apple",
+    "freeShipping": true,
+    "imageUrl": "media/phone.webp"
+  },
+  {
+    "id": 47,
+    "name": "Huawei Book 3",
+    "description": "Описание для Huawei Book 3",
+    "price": 393,
+    "category": "Компьютеры",
+    "manufacturer": "Huawei",
+    "freeShipping": false,
+    "imageUrl": "media/laptop.webp"
+  },
+  {
+    "id": 48,
+    "name": "Apple Watch 11",
+    "description": "Описание для Apple Watch 11",
+    "price": 1196,
+    "category": "Умные часы",
+    "manufacturer": "Apple",
+    "freeShipping": true,
+    "imageUrl": "media/watches.webp"
+  },
+  {
+    "id": 49,
+    "name": "Apple Fit 10",
+    "description": "Описание для Apple Fit 10",
+    "price": 1477,
+    "category": "Умные часы",
+    "manufacturer": "Apple",
+    "freeShipping": true,
+    "imageUrl": "media/watches.webp"
+  },
+  {
+    "id": 50,
+    "name": "Huawei Mi 3",
+    "description": "Описание для Huawei Mi 3",
+    "price": 293,
+    "category": "Смартфоны",
+    "manufacturer": "Huawei",
+    "freeShipping": false,
+    "imageUrl": "media/phone.webp"
+  },
+  {
+    "name": "Новый продукт",
+    "description": "Описание нового продукта",
+    "price": "100",
+    "category": "Компьютеры",
+    "manufacturer": "Apple",
+    "imageUrl": "http://example.com/product.jpg",
+    "freeShipping": true,
+    "id": 51
+  },
+  {
+    "name": "Новый продукт",
+    "description": "Описание нового продукта",
+    "price": "100",
+    "category": "Компьютеры",
+    "manufacturer": "Apple",
+    "imageUrl": "http://example.com/product.jpg",
+    "freeShipping": true,
+    "id": 1708695899568
+  },
+  {
+    "name": "Новый продукт",
+    "description": "Описание нового продукта",
+    "price": 100,
+    "category": "Компьютеры",
+    "manufacturer": "Apple",
+    "imageUrl": "http://example.com/product.jpg",
+    "freeShipping": true,
+    "id": 1708695942813
+  },
+  {
+    "name": "Новый продукт",
+    "description": "Описание нового продукта",
+    "price": 100,
+    "category": "Компьютеры",
+    "manufacturer": "Apple",
+    "imageUrl": "http://example.com/product.jpg",
+    "freeShipping": true,
+    "id": 1708695945598
+  },
+  {
+    "name": "Новый продукт",
+    "description": "Описание нового продукта",
+    "price": 100,
+    "category": "Компьютеры",
+    "manufacturer": "Apple",
+    "imageUrl": "http://example.com/product.jpg",
+    "freeShipping": true,
+    "id": 1708695946324
+  },
+  {
+    "name": "Новый продукт",
+    "description": "Описание нового продукта",
+    "price": 100,
+    "category": "Компьютеры",
+    "manufacturer": "Apple",
+    "imageUrl": "http://example.com/product.jpg",
+    "freeShipping": true,
+    "id": 1708695946911
+  },
+  {
+    "name": "Новый продукт",
+    "description": "Описание нового продукта",
+    "price": 100,
+    "category": "Компьютеры",
+    "manufacturer": "Apple",
+    "imageUrl": "http://example.com/product.jpg",
+    "freeShipping": true,
+    "id": 385058
+  },
+  {
+    "name": "Новый продукт",
+    "description": "Описание нового продукта",
+    "price": 100,
+    "category": "Компьютеры",
+    "manufacturer": "Apple",
+    "imageUrl": "http://example.com/product.jpg",
+    "freeShipping": true,
+    "id": 973883
+  },
+  {
+    "name": "Новый продукт",
+    "description": "Описание нового продукта",
+    "price": 100,
+    "category": "",
+    "manufacturer": "Apple",
+    "imageUrl": "http://example.com/product.jpg",
+    "freeShipping": true,
+    "id": 908950
+  },
+  {
+    "name": "Новый продукт",
+    "description": "Описание нового продукта",
+    "price": 100,
+    "category": "Компьютеры",
+    "manufacturer": "Apple",
+    "imageUrl": "http://example.com/product.jpg",
+    "freeShipping": true,
+    "id": 411867
+  },
+  {
+    "name": "1111",
+    "description": "Описание нового продукта",
+    "price": 100,
+    "category": "Компьютеры",
+    "manufacturer": "Apple",
+    "imageUrl": "http://example.com/product.jpg",
+    "freeShipping": true,
+    "id": 675936
+  },
+  {
+    "name": "1111",
+    "description": "Описание нового продукта",
+    "price": 100,
+    "category": "Компьютеры",
+    "manufacturer": "Apple",
+    "imageUrl": "http://example.com/product.jpg",
+    "freeShipping": true,
+    "id": 116771
+  },
+  {
+    "id": 462454,
+    "name": "string",
+    "description": "string",
+    "price": 0,
+    "category": "string",
+    "manufacturer": "string",
+    "imageUrl": "string",
+    "freeShipping": true
+  },
+  {
+    "name": "1111",
+    "description": "Описание нового продукта",
+    "price": 100,
+    "category": "Компьютеры",
+    "manufacturer": "Apple",
+    "imageUrl": "http://example.com/product.jpg",
+    "freeShipping": true,
+    "id": 147304
+  }
+]

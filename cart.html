@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Корзина</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <a href="index.html">Каталог</a>
+        <a href="about.html">О компании</a>
+        <a href="contacts.html">Контакты</a>
+        <a href="cart.html">
+          <span class="cart-icon">🛒</span>
+          Корзина
+        </a>
+        <span id="cart-count">(0)</span>
+        <button id="login-button" onclick="window.location.href='login.html'">
+          Регистрация / Войти
+        </button>
+      </nav>
+    </header>
+
+    <h1>Корзина</h1>
+    <div id="cart"></div>
+    <div id="cart-total"></div>
+    <div class="return-button-container">
+      <button onclick="window.location.href='index.html'">
+        Вернуться к покупкам
+      </button>
+    </div>
+
+    <footer>
+      <a href="policy.html">Политика использования</a>
+      <p>&copy; 2024 Интернет-магазин. Все права защищены.</p>
+    </footer>
+
+    <script src="app.js"></script>
+    <script src="cart.js"></script>
+  </body>
+</html>

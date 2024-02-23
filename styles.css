@@ -1,0 +1,277 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f4f4f4; /* Светлый фон для всей страницы */
+}
+
+header {
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: center; /* Центрирование всего содержимого header */
+    align-items: center;
+}
+
+header nav {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Центрирование элементов навигации */
+    gap: 10px; /* Устанавливаем интервал между элементами */
+    flex-wrap: wrap; /* Перенос элементов на новую строку при нехватке места */
+}
+
+header nav a {
+    color: white;
+    text-decoration: none;
+    padding: 5px 10px;
+    transition: background-color 0.3s;
+}
+
+header nav a:hover {
+    background-color: #555;
+    border-radius: 5px;
+}
+
+#login-button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    margin-left: auto; /* Помещаем кнопку в конец навигационной панели */
+}
+
+#login-button:hover {
+    background-color: #45a049;
+}
+
+footer a {
+    color: white; /* Цвет текста */
+    text-decoration: none; /* Убрать подчеркивание */
+    padding: 10px 15px; /* Добавить отступ для ссылки */
+}
+
+footer a:hover {
+    text-decoration: underline; /* Подчеркивание при наведении */
+}
+
+
+#pagination-container {
+    display: flex;
+    justify-content: center; /* Центрирование контейнера */
+    margin-top: 20px;
+    margin-bottom: 20px; /* Добавляем отступ снизу */
+}
+
+#pagination {
+    display: inline-flex; /* Сделать контейнер кнопок inline-flex для предотвращения растягивания */
+    gap: 10px; /* Добавление пространства между кнопками */
+}
+
+#pagination button {
+    padding: 5px 10px; /* Паддинг для кнопок */
+    min-width: 30px; /* Минимальная ширина для каждой кнопки */
+    text-align: center; /* Центрирование текста внутри кнопок */
+    background-color: #4CAF50; /* Цвет фона */
+    color: white; /* Цвет текста */
+    border: none; /* Удаление рамки */
+    border-radius: 5px; /* Скругление углов */
+    cursor: pointer; /* Стиль курсора */
+    transition: background-color 0.3s; /* Плавное изменение фона при наведении */
+}
+
+#pagination button:hover {
+    background-color: #45a049; /* Цвет фона при наведении */
+}
+
+
+.container {
+    display: flex;
+    flex: 1;
+    padding: 20px;
+}
+
+#filters {
+    flex-basis: 25%; /* Занимает одну четвертую страницы */
+    padding-right: 20px;
+    border-right: 1px solid #ddd;
+    margin-right: 20px;
+    display: flex;
+    flex-direction: column;
+    margin-left: 20px;
+}
+
+#filters button {
+    padding: 10px 15px; /* Увеличение паддинга для кнопок */
+    margin: 5px 10px 5px 0; /* Добавление отступа справа и сверху */
+    background-color: #4CAF50; /* Цвет фона */
+    color: white; /* Цвет текста */
+    border: none; /* Удаление рамки */
+    border-radius: 5px; /* Скругление углов */
+    cursor: pointer; /* Стиль курсора */
+    transition: background-color 0.3s; /* Плавное изменение фона при наведении */
+}
+
+#filters button:hover {
+    background-color: #45a049; /* Цвет фона при наведении */
+}
+
+#product-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start; /* Выравнивание элементов в начале */
+    gap: 10px; /* Добавляет пространство между карточками */
+    flex-grow: 1;
+}
+
+#product-list div {
+    flex-basis: calc(33.333% - 20px); /* Уменьшает ширину карточки для учета внутренних отступов */
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    padding: 20px; /* Внутренние отступы для создания воздуха внутри карточки */
+}
+
+@media screen and (max-width: 600px) {
+    #product-list div {
+        flex-basis: 100%;
+    }
+}
+
+input[type=number], select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px 20px;
+    margin-top: auto;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap; /* Позволяет элементам переноситься на следующую строку */
+}
+
+.sorting-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 200px; /* Фиксированная ширина для контейнера сортировки */
+    margin-left: auto; /* Выравнивание контейнера сортировки по правому краю */
+    margin-right: 20px; /* Отступ справа для выравнивания с другими элементами */
+}
+
+/* Дополнительные стили для аутентификации и модальных окон */
+.container-auth {
+    /* Стили остаются прежними */
+}
+
+.auth-section {
+    /* Стили остаются прежними */
+}
+
+/* Новые стили для кнопок и форм */
+input[type="text"], input[type="password"], input[type="number"] {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+
+input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+button, input[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+button:hover, input[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+
+
+#cart div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: white;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+#cart div > p {
+    flex: 1;
+    margin: 0;
+    padding-right: 10px;
+}
+
+#cart div > input[type='number'] {
+    flex: 0 0 25%;
+    padding: 5px;
+    margin-right: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: center;
+    order: 2; /* Изменяем порядок поля ввода */
+}
+
+#cart div > button {
+    flex: 0 0 25%;
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+    text-align: center;
+    order: 1; /* Изменяем порядок кнопки */
+}
+
+#cart div > button:hover {
+    background-color: #45a049;
+}
+
+#cart div > * {
+    margin-right: 10px; /* Добавляем отступ справа для всех элементов */
+}
+
+#cart div > *:last-child {
+    margin-right: 0; /* Убираем отступ у последнего элемента */
+}

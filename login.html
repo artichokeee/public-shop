@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Вход и регистрация</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <a href="index.html">Каталог</a>
+        <a href="about.html">О компании</a>
+        <a href="contacts.html">Контакты</a>
+        <a href="cart.html">
+          <span class="cart-icon">🛒</span>
+          Корзина
+        </a>
+        <span id="cart-count">(0)</span>
+        <button id="login-button" onclick="window.location.href='login.html'">
+          Регистрация / Войти
+        </button>
+      </nav>
+    </header>
+
+    <div class="container-auth">
+      <div class="auth-section">
+        <div id="login-area">
+          <h2>Войти</h2>
+          <form id="login-form">
+            <label for="username">Логин:</label>
+            <input type="text" id="username" name="username" />
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" name="password" />
+            <button type="submit">Войти</button>
+          </form>
+        </div>
+
+        <div id="register-area">
+          <h2>Регистрация</h2>
+          <form id="register-form">
+            <label for="reg-username">Логин:</label>
+            <input type="text" id="reg-username" name="username" />
+            <label for="reg-password">Пароль:</label>
+            <input type="password" id="reg-password" name="password" />
+            <button type="submit">Регистрация</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <a href="policy.html">Политика использования</a>
+      <p>&copy; 2024 Интернет-магазин. Все права защищены.</p>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>

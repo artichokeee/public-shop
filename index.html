@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Интернет-магазин</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <a href="index.html">Каталог</a>
+        <a href="about.html">О компании</a>
+        <a href="contacts.html">Контакты</a>
+        <a href="cart.html">
+          <span class="cart-icon">🛒</span>
+          Корзина
+        </a>
+        <span id="cart-count">(0)</span>
+        <button id="login-button" onclick="window.location.href='login.html'">
+          Регистрация / Войти
+        </button>
+      </nav>
+    </header>
+
+    <div class="container">
+      <div class="sidebar" id="sidebar">
+        <form id="login-form"></form>
+        <form id="register-form"></form>
+      </div>
+      <div id="filters">
+        <input type="number" id="min-price" placeholder="Мин. цена" />
+        <input type="number" id="max-price" placeholder="Макс. цена" />
+        <select id="category">
+          <option value="">Все категории</option>
+          <option value="Компьютеры">Компьютеры</option>
+          <option value="Смартфоны">Смартфоны</option>
+          <option value="Умные часы">Умные часы</option>
+        </select>
+        <select id="manufacturer">
+          <option value="">Все производители</option>
+          <option value="Apple">Apple</option>
+          <option value="Xiaomi">Xiaomi</option>
+          <option value="Huawei">Huawei</option>
+          <option value="Samsung">Samsung</option>
+        </select>
+        <label>
+          <input type="checkbox" id="free-shipping" /> Бесплатная доставка
+        </label>
+        <button onclick="applyFilters()">Применить фильтры</button>
+        <button onclick="resetFilters()">Сбросить фильтры</button>
+      </div>
+      <div class="products">
+        <h1>Интернет-магазин</h1>
+        <div class="top-bar">
+          <div id="sorting">
+            <label for="sort-order">Сортировка:</label>
+            <select id="sort-order">
+              <option value="name-asc">От A до Z</option>
+              <option value="name-desc">От Z до A</option>
+              <option value="price-asc">Цена по возрастанию</option>
+              <option value="price-desc">Цена по убыванию</option>
+            </select>
+          </div>
+        </div>
+        <div id="product-list"></div>
+        <div id="pagination-container">
+          <div id="pagination"></div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <a href="policy.html">Политика использования</a>
+      <p>&copy; 2024 Интернет-магазин. Все права защищены.</p>
+    </footer>
+
+    <script src="app.js"></script>
+    <script src="cart.js"></script>
+  </body>
+</html>
