@@ -1,10 +1,21 @@
 const express = require("express");
+const mysql = require("mysql2");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const fs = require("fs");
 const app = express();
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require("swagger-jsdoc");
+const dbConfig = require("../config/dbConfig");
+
+const pool = mysql.createPool({
+  ...dbConfig,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+});
+
+const promisePool = pool.promise();
 
 const swaggerOptions = {
   swaggerDefinition: {
@@ -74,7 +85,7 @@ fs.readFile("../data/products.json", "utf8", (err, data) => {
 });
 
 function generateId() {
-  return Math.floor(100000 + Math.random() * 900000);
+  return Math.floor(1000 + Math.random() * 9000);
 }
 
 /**

@@ -517,7 +517,7 @@
     "manufacturer": "Apple",
     "imageUrl": "http://example.com/product.jpg",
     "freeShipping": true,
-    "id": 1708695899568
+    "id": 1712
   },
   {
     "name": "Новый продукт",
@@ -527,7 +527,7 @@
     "manufacturer": "Apple",
     "imageUrl": "http://example.com/product.jpg",
     "freeShipping": true,
-    "id": 1708695942813
+    "id": 1711
   },
   {
     "name": "Новый продукт",
@@ -547,7 +547,7 @@
     "manufacturer": "Apple",
     "imageUrl": "http://example.com/product.jpg",
     "freeShipping": true,
-    "id": 1708695946324
+    "id": 1708
   },
   {
     "name": "Новый продукт",
@@ -557,7 +557,7 @@
     "manufacturer": "Apple",
     "imageUrl": "http://example.com/product.jpg",
     "freeShipping": true,
-    "id": 1708695946911
+    "id": 1709
   },
   {
     "name": "Новый продукт",
@@ -577,7 +577,7 @@
     "manufacturer": "Apple",
     "imageUrl": "http://example.com/product.jpg",
     "freeShipping": true,
-    "id": 973883
+    "id": 9738
   },
   {
     "name": "Новый продукт",
@@ -587,7 +587,7 @@
     "manufacturer": "Apple",
     "imageUrl": "http://example.com/product.jpg",
     "freeShipping": true,
-    "id": 908950
+    "id": 9089
   },
   {
     "name": "Новый продукт",
@@ -597,7 +597,7 @@
     "manufacturer": "Apple",
     "imageUrl": "http://example.com/product.jpg",
     "freeShipping": true,
-    "id": 411867
+    "id": 4118
   },
   {
     "name": "1111",
@@ -607,7 +607,7 @@
     "manufacturer": "Apple",
     "imageUrl": "http://example.com/product.jpg",
     "freeShipping": true,
-    "id": 675936
+    "id": 6756
   },
   {
     "name": "1111",
@@ -617,10 +617,10 @@
     "manufacturer": "Apple",
     "imageUrl": "http://example.com/product.jpg",
     "freeShipping": true,
-    "id": 116771
+    "id": 1167
   },
   {
-    "id": 462454,
+    "id": 4624,
     "name": "string",
     "description": "string",
     "price": 0,
@@ -637,6 +637,6 @@
     "manufacturer": "Apple",
     "imageUrl": "http://example.com/product.jpg",
     "freeShipping": true,
-    "id": 147304
+    "id": 1473
   }
 ]
