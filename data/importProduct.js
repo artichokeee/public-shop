@@ -18,7 +18,6 @@ async function insertProducts() {
 
   for (const product of products) {
     const {
-      id,
       name,
       description,
       price,
@@ -27,9 +26,8 @@ async function insertProducts() {
       freeShipping,
       imageUrl,
     } = product;
-    const sql = `INSERT INTO products (id, name, description, price, category, manufacturer, freeShipping, imageUrl) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+    const sql = `INSERT INTO products (name, description, price, category, manufacturer, freeShipping, imageUrl) VALUES (?, ?, ?, ?, ?, ?, ?)`;
     const values = [
-      id,
       name,
       description,
       price,

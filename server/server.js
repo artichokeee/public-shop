@@ -72,17 +72,8 @@ app.get("/policy", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/html/policy.html"));
 });
 
-let products = [];
 let cart = [];
 const users = {}; // Простейшее хранилище для пользователей
-
-fs.readFile("../data/products.json", "utf8", (err, data) => {
-  if (err) {
-    console.error("Ошибка при чтении файла: ", err);
-    return;
-  }
-  products = JSON.parse(data);
-});
 
 function generateId() {
   return Math.floor(1000 + Math.random() * 9000);
@@ -148,8 +139,14 @@ function generateId() {
  *                 $ref: '#/components/schemas/Product'
  */
 
-app.get("/products", (req, res) => {
-  res.json(products);
+app.get("/products", async (req, res) => {
+  try {
+    const [rows] = await promisePool.query("SELECT * FROM products");
+    res.json(rows);
+  } catch (err) {
+    console.error("Ошибка при получении продуктов: ", err);
+    res.status(500).send("Ошибка сервера при получении списка продуктов");
+  }
 });
 
 function isValidUsername(username) {
@@ -321,7 +318,7 @@ function isValidProduct(product) {
  *         description: Ошибка в данных продукта
  */
 
-app.post("/add-product", (req, res) => {
+app.post("/add-product", async (req, res) => {
   const newProduct = req.body;
   const validationMessage = isValidProduct(newProduct);
 
@@ -329,16 +326,16 @@ app.post("/add-product", (req, res) => {
     return res.status(400).send(validationMessage);
   }
 
-  newProduct.id = generateId();
-  products.push(newProduct);
-
-  fs.writeFile("products.json", JSON.stringify(products), (err) => {
-    if (err) {
-      console.error("Ошибка при записи в файл: ", err);
-      return res.status(500).send("Ошибка сервера при добавлении продукта.");
-    }
-    res.send(`Продукт успешно добавлен с ID: ${newProduct.id}`);
-  });
+  try {
+    const [result] = await promisePool.query(
+      "INSERT INTO products SET ?",
+      newProduct
+    );
+    res.send(`Продукт успешно добавлен с ID: ${result.insertId}`);
+  } catch (err) {
+    console.error("Ошибка при добавлении продукта: ", err);
+    res.status(500).send("Ошибка сервера при добавлении продукта");
+  }
 });
 
 // Поиск товара по ID
@@ -365,16 +362,26 @@ app.post("/add-product", (req, res) => {
  *       404:
  *         description: Товар с таким ID не найден
  */
-app.get("/products/id/:productId", (req, res) => {
+app.get("/products/id/:productId", async (req, res) => {
   const productId = parseInt(req.params.productId);
   if (isNaN(productId)) {
     return res.status(400).send("Неверный формат ID");
   }
-  const product = products.find((p) => p.id === productId);
-  if (!product) {
-    return res.status(404).send("Товар с таким ID не найден");
+
+  try {
+    const [rows] = await promisePool.query(
+      "SELECT * FROM products WHERE id = ?",
+      [productId]
+    );
+    const product = rows[0];
+    if (!product) {
+      return res.status(404).send("Товар с таким ID не найден");
+    }
+    res.json(product);
+  } catch (error) {
+    console.error("Ошибка при получении продукта:", error);
+    res.status(500).send("Ошибка сервера при получении продукта.");
   }
-  res.json(product);
 });
 
 // Поиск товара по категории
@@ -405,19 +412,25 @@ app.get("/products/id/:productId", (req, res) => {
  *       404:
  *         description: Товары в данной категории не найдены
  */
-app.get("/products/FindByCategory", (req, res) => {
-  const categories = req.query.category;
-  if (!categories) {
+app.get("/products/FindByCategory", async (req, res) => {
+  const category = req.query.category;
+  if (!category) {
     return res.status(400).send("Не указана категория");
   }
-  const categoryArray = Array.isArray(categories) ? categories : [categories];
-  const filteredProducts = products.filter((p) =>
-    categoryArray.includes(p.category)
-  );
-  if (filteredProducts.length === 0) {
-    return res.status(404).send("Товары в данной категории не найдены");
+
+  try {
+    const [rows] = await promisePool.query(
+      "SELECT * FROM products WHERE category = ?",
+      [category]
+    );
+    if (rows.length === 0) {
+      return res.status(404).send("Товары в данной категории не найдены");
+    }
+    res.json(rows);
+  } catch (err) {
+    console.error("Ошибка при поиске по категории:", err);
+    res.status(500).send("Ошибка сервера");
   }
-  res.json(filteredProducts);
 });
 
 // Поиск товара по производителю
@@ -448,21 +461,25 @@ app.get("/products/FindByCategory", (req, res) => {
  *       404:
  *         description: Товары данного производителя не найдены
  */
-app.get("/products/FindByManufacturer", (req, res) => {
-  const manufacturers = req.query.manufacturer;
-  if (!manufacturers) {
+app.get("/products/FindByManufacturer", async (req, res) => {
+  const manufacturer = req.query.manufacturer;
+  if (!manufacturer) {
     return res.status(400).send("Не указан производитель");
   }
-  const manufacturerArray = Array.isArray(manufacturers)
-    ? manufacturers
-    : [manufacturers];
-  const filteredProducts = products.filter((p) =>
-    manufacturerArray.includes(p.manufacturer)
-  );
-  if (filteredProducts.length === 0) {
-    return res.status(404).send("Товары данного производителя не найдены");
+
+  try {
+    const [rows] = await promisePool.query(
+      "SELECT * FROM products WHERE manufacturer = ?",
+      [manufacturer]
+    );
+    if (rows.length === 0) {
+      return res.status(404).send("Товары данного производителя не найдены");
+    }
+    res.json(rows);
+  } catch (err) {
+    console.error("Ошибка при поиске по производителю:", err);
+    res.status(500).send("Ошибка сервера");
   }
-  res.json(filteredProducts);
 });
 
 // Поиск товара по возможности бесплатной доставки
@@ -494,28 +511,29 @@ app.get("/products/FindByManufacturer", (req, res) => {
  *       404:
  *         description: Товары с указанным параметром бесплатной доставки не найдены
  */
-app.get("/products/FindByShipping", (req, res) => {
-  const freeShippingValues = req.query.freeShipping;
-  if (!freeShippingValues) {
+app.get("/products/FindByShipping", async (req, res) => {
+  const freeShipping = req.query.freeShipping;
+  if (freeShipping === undefined) {
     return res
       .status(400)
       .send("Не указан параметр 'freeShipping' для бесплатной доставки");
   }
 
-  const freeShippingArray = Array.isArray(freeShippingValues)
-    ? freeShippingValues.map((value) => value === "true") // Преобразуем строки в булевы значения
-    : [freeShippingValues === "true"];
-
-  const filteredProducts = products.filter((p) =>
-    freeShippingArray.includes(p.freeShipping)
-  );
-  if (filteredProducts.length === 0) {
-    return res
-      .status(404)
-      .send("Товары с указанным параметром бесплатной доставки не найдены");
+  try {
+    const [rows] = await promisePool.query(
+      "SELECT * FROM products WHERE freeShipping = ?",
+      [freeShipping === "true"]
+    );
+    if (rows.length === 0) {
+      return res
+        .status(404)
+        .send("Товары с указанным параметром бесплатной доставки не найдены");
+    }
+    res.json(rows);
+  } catch (err) {
+    console.error("Ошибка при поиске по бесплатной доставке:", err);
+    res.status(500).send("Ошибка сервера");
   }
-
-  res.json(filteredProducts);
 });
 
 // Удаление товара по ID
@@ -538,17 +556,25 @@ app.get("/products/FindByShipping", (req, res) => {
  *       404:
  *         description: Товар с таким ID не найден
  */
-app.delete("/products/id/:productId", (req, res) => {
+app.delete("/products/id/:productId", async (req, res) => {
   const productId = parseInt(req.params.productId);
   if (isNaN(productId)) {
     return res.status(400).send("Неверный формат ID");
   }
-  const index = products.findIndex((p) => p.id === productId);
-  if (index === -1) {
-    return res.status(404).send("Товар с таким ID не найден");
+
+  try {
+    const [result] = await promisePool.query(
+      "DELETE FROM products WHERE id = ?",
+      [productId]
+    );
+    if (result.affectedRows === 0) {
+      return res.status(404).send("Товар с таким ID не найден");
+    }
+    res.send("Товар удалён");
+  } catch (error) {
+    console.error("Ошибка при удалении продукта:", error);
+    res.status(500).send("Ошибка сервера при удалении продукта");
   }
-  products.splice(index, 1);
-  res.send("Товар удалён");
 });
 
 // Полное обновление товара по ID
@@ -579,10 +605,10 @@ app.delete("/products/id/:productId", (req, res) => {
  *       404:
  *         description: Товар с таким ID не найден
  */
-app.put("/products/id/:productId", (req, res) => {
+app.put("/products/id/:productId", async (req, res) => {
   const productId = parseInt(req.params.productId);
-  const newProduct = req.body;
-  const validationMessage = isValidProduct(newProduct);
+  const productData = req.body;
+  const validationMessage = isValidProduct(productData);
 
   if (isNaN(productId)) {
     return res.status(400).send("Неверный формат ID");
@@ -591,14 +617,19 @@ app.put("/products/id/:productId", (req, res) => {
     return res.status(400).send(validationMessage);
   }
 
-  const index = products.findIndex((p) => p.id === productId);
-  if (index === -1) {
-    return res.status(404).send("Товар с таким ID не найден");
+  try {
+    const [result] = await promisePool.query(
+      "UPDATE products SET ? WHERE id = ?",
+      [productData, productId]
+    );
+    if (result.affectedRows === 0) {
+      return res.status(404).send("Товар с таким ID не найден");
+    }
+    res.send("Товар обновлён");
+  } catch (error) {
+    console.error("Ошибка при обновлении продукта:", error);
+    res.status(500).send("Ошибка сервера при обновлении продукта");
   }
-
-  newProduct.id = productId; // Убедитесь, что ID остаётся прежним
-  products[index] = newProduct;
-  res.send("Товар обновлён");
 });
 
 // Частичное обновление товара по ID
@@ -645,7 +676,7 @@ app.put("/products/id/:productId", (req, res) => {
  *       404:
  *         description: Товар с таким ID не найден
  */
-app.patch("/products/id/:productId", (req, res) => {
+app.patch("/products/id/:productId", async (req, res) => {
   const productId = parseInt(req.params.productId);
   const productUpdates = req.body;
 
@@ -653,17 +684,19 @@ app.patch("/products/id/:productId", (req, res) => {
     return res.status(400).send("Неверный формат ID");
   }
 
-  const product = products.find((p) => p.id === productId);
-  if (!product) {
-    return res.status(404).send("Товар с таким ID не найден");
+  try {
+    const [result] = await promisePool.query(
+      "UPDATE products SET ? WHERE id = ?",
+      [productUpdates, productId]
+    );
+    if (result.affectedRows === 0) {
+      return res.status(404).send("Товар с таким ID не найден");
+    }
+    res.send("Товар частично обновлён");
+  } catch (error) {
+    console.error("Ошибка при частичном обновлении продукта:", error);
+    res.status(500).send("Ошибка сервера при частичном обновлении продукта");
   }
-
-  // Обновляем только предоставленные поля
-  Object.keys(productUpdates).forEach((key) => {
-    product[key] = productUpdates[key];
-  });
-
-  res.send("Товар частично обновлён");
 });
 
 // Добавление товара в корзину
@@ -896,42 +929,52 @@ app.delete("/users/:userId", (req, res) => {
  *       400:
  *         description: Ошибка запроса
  */
-app.get("/products/filter", (req, res) => {
+app.get("/products/filter", async (req, res) => {
   const { category, manufacturer, freeShipping, minPrice, maxPrice } =
     req.query;
 
-  let filteredProducts = products;
+  let query = "SELECT * FROM products WHERE ";
+  let conditions = [];
+  let params = [];
 
   if (category) {
-    filteredProducts = filteredProducts.filter((p) => p.category === category);
+    conditions.push("category = ?");
+    params.push(category);
   }
 
   if (manufacturer) {
-    filteredProducts = filteredProducts.filter(
-      (p) => p.manufacturer === manufacturer
-    );
+    conditions.push("manufacturer = ?");
+    params.push(manufacturer);
   }
 
   if (freeShipping) {
-    const freeShippingBool = freeShipping === "true";
-    filteredProducts = filteredProducts.filter(
-      (p) => p.freeShipping === freeShippingBool
-    );
+    conditions.push("freeShipping = ?");
+    params.push(freeShipping === "true");
   }
 
   if (minPrice) {
-    filteredProducts = filteredProducts.filter(
-      (p) => p.price >= Number(minPrice)
-    );
+    conditions.push("price >= ?");
+    params.push(minPrice);
   }
 
   if (maxPrice) {
-    filteredProducts = filteredProducts.filter(
-      (p) => p.price <= Number(maxPrice)
-    );
+    conditions.push("price <= ?");
+    params.push(maxPrice);
   }
 
-  res.json(filteredProducts);
+  if (conditions.length === 0) {
+    query = "SELECT * FROM products";
+  } else {
+    query += conditions.join(" AND ");
+  }
+
+  try {
+    const [rows] = await promisePool.query(query, params);
+    res.json(rows);
+  } catch (error) {
+    console.error("Ошибка при фильтрации продуктов:", error);
+    res.status(500).send("Ошибка сервера при фильтрации продуктов");
+  }
 });
 
 app.listen(3000, () => {

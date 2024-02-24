@@ -1,6 +1,5 @@
 [
   {
-    "id": 1,
     "name": "Huawei iPhone 19",
     "description": "Описание для Huawei iPhone 19",
     "price": 50,
@@ -10,7 +9,6 @@
     "imageUrl": "/images/phone.webp"
   },
   {
-    "id": 2,
     "name": "Samsung Active 5",
     "description": "Описание для Samsung Active 5",
     "price": 518,
@@ -20,7 +18,6 @@
     "imageUrl": "/images/watches.webp"
   },
   {
-    "id": 3,
     "name": "Samsung Air 12",
     "description": "Описание для Samsung Air 12",
     "price": 1289,
@@ -30,7 +27,6 @@
     "imageUrl": "/images/laptop.webp"
   },
   {
-    "id": 4,
     "name": "Apple Fit 20",
     "description": "Описание для Apple Fit 20",
     "price": 149,
@@ -40,7 +36,6 @@
     "imageUrl": "/images/watches.webp"
   },
   {
-    "id": 5,
     "name": "Samsung Book 2",
     "description": "Описание для Samsung Book 2",
     "price": 454,
@@ -50,7 +45,6 @@
     "imageUrl": "/images/laptop.webp"
   },
   {
-    "id": 6,
     "name": "Apple Gaming 10",
     "description": "Описание для Apple Gaming 10",
     "price": 1010,
@@ -60,7 +54,6 @@
     "imageUrl": "/images/laptop.webp"
   },
   {
-    "id": 7,
     "name": "Samsung P30 19",
     "description": "Описание для Samsung P30 19",
     "price": 306,
@@ -70,7 +63,6 @@
     "imageUrl": "/images/phone.webp"
   },
   {
-    "id": 8,
     "name": "Huawei Book 2",
     "description": "Описание для Huawei Book 2",
     "price": 659,
@@ -80,7 +72,6 @@
     "imageUrl": "/images/laptop.webp"
   },
   {
-    "id": 9,
     "name": "Xiaomi Watch 8",
     "description": "Описание для Xiaomi Watch 8",
     "price": 1080,
@@ -90,7 +81,6 @@
     "imageUrl": "/images/watches.webp"
   },
   {
-    "id": 10,
     "name": "Huawei Note 10",
     "description": "Описание для Huawei Note 10",
     "price": 93,
@@ -100,7 +90,6 @@
     "imageUrl": "/images/phone.webp"
   },
   {
-    "id": 11,
     "name": "Samsung Gear 18",
     "description": "Описание для Samsung Gear 18",
     "price": 920,
@@ -110,7 +99,6 @@
     "imageUrl": "/images/watches.webp"
   },
   {
-    "id": 12,
     "name": "Samsung Band 5",
     "description": "Описание для Samsung Band 5",
     "price": 878,
@@ -120,7 +108,6 @@
     "imageUrl": "/images/watches.webp"
   },
   {
-    "id": 13,
     "name": "Samsung Gear 3",
     "description": "Описание для Samsung Gear 3",
     "price": 869,
@@ -130,7 +117,6 @@
     "imageUrl": "/images/watches.webp"
   },
   {
-    "id": 14,
     "name": "Samsung Band 18",
     "description": "Описание для Samsung Band 18",
     "price": 212,
@@ -140,7 +126,6 @@
     "imageUrl": "/images/watches.webp"
   },
   {
-    "id": 15,
     "name": "Apple Ultra 20",
     "description": "Описание для Apple Ultra 20",
     "price": 689,
@@ -150,7 +135,6 @@
     "imageUrl": "/images/laptop.webp"
   },
   {
-    "id": 16,
     "name": "Xiaomi Note 17",
     "description": "Описание для Xiaomi Note 17",
     "price": 451,
@@ -160,7 +144,6 @@
     "imageUrl": "/images/phone.webp"
   },
   {
-    "id": 17,
     "name": "Xiaomi Band 10",
     "description": "Описание для Xiaomi Band 10",
     "price": 849,
@@ -170,7 +153,6 @@
     "imageUrl": "/images/watches.webp"
   },
   {
-    "id": 18,
     "name": "Apple Gaming 15",
     "description": "Описание для Apple Gaming 15",
     "price": 150,
@@ -180,7 +162,6 @@
     "imageUrl": "/images/laptop.webp"
   },
   {
-    "id": 19,
     "name": "Huawei Fit 3",
     "description": "Описание для Huawei Fit 3",
     "price": 780,
@@ -190,7 +171,6 @@
     "imageUrl": "/images/watches.webp"
   },
   {
-    "id": 20,
     "name": "Huawei Active 10",
     "description": "Описание для Huawei Active 10",
     "price": 550,
@@ -200,7 +180,6 @@
     "imageUrl": "/images/watches.webp"
   },
   {
-    "id": 21,
     "name": "Huawei iPhone 8",
     "description": "Описание для Huawei iPhone 8",
     "price": 631,
@@ -210,7 +189,6 @@
     "imageUrl": "/images/phone.webp"
   },
   {
-    "id": 22,
     "name": "Apple Studio 6",
     "description": "Описание для Apple Studio 6",
     "price": 579,
@@ -220,7 +198,6 @@
     "imageUrl": "/images/laptop.webp"
   },
   {
-    "id": 23,
     "name": "Huawei Note 12",
     "description": "Описание для Huawei Note 12",
     "price": 1038,
@@ -230,7 +207,6 @@
     "imageUrl": "/images/phone.webp"
   },
   {
-    "id": 24,
     "name": "Samsung Mi 10",
     "description": "Описание для Samsung Mi 10",
     "price": 1014,
@@ -240,7 +216,6 @@
     "imageUrl": "/images/phone.webp"
   },
   {
-    "id": 25,
     "name": "Xiaomi iPhone 7",
     "description": "Описание для Xiaomi iPhone 7",
     "price": 1167,
@@ -250,7 +225,6 @@
     "imageUrl": "/images/phone.webp"
   },
   {
-    "id": 26,
     "name": "Samsung Ultra 3",
     "description": "Описание для Samsung Ultra 3",
     "price": 1116,
@@ -260,7 +234,6 @@
     "imageUrl": "/images/laptop.webp"
   },
   {
-    "id": 27,
     "name": "Apple Galaxy 12",
     "description": "Описание для Apple Galaxy 12",
     "price": 403,
@@ -270,7 +243,6 @@
     "imageUrl": "/images/phone.webp"
   },
   {
-    "id": 28,
     "name": "Xiaomi Galaxy 3",
     "description": "Описание для Xiaomi Galaxy 3",
     "price": 1452,
@@ -280,7 +252,6 @@
     "imageUrl": "/images/phone.webp"
   },
   {
-    "id": 29,
     "name": "Xiaomi Note 19",
     "description": "Описание для Xiaomi Note 19",
     "price": 339,
@@ -290,7 +261,6 @@
     "imageUrl": "/images/phone.webp"
   },
   {
-    "id": 30,
     "name": "Huawei Mi 3",
     "description": "Описание для Huawei Mi 3",
     "price": 849,
@@ -300,7 +270,6 @@
     "imageUrl": "/images/phone.webp"
   },
   {
-    "id": 31,
     "name": "Apple Fit 12",
     "description": "Описание для Apple Fit 12",
     "price": 1127,
@@ -310,7 +279,6 @@
     "imageUrl": "/images/watches.webp"
   },
   {
-    "id": 32,
     "name": "Huawei Galaxy 5",
     "description": "Описание для Huawei Galaxy 5",
     "price": 1382,
@@ -320,7 +288,6 @@
     "imageUrl": "/images/phone.webp"
   },
   {
-    "id": 33,
     "name": "Huawei Air 16",
     "description": "Описание для Huawei Air 16",
     "price": 1286,
@@ -330,7 +297,6 @@
     "imageUrl": "/images/laptop.webp"
   },
   {
-    "id": 34,
     "name": "Huawei P30 9",
     "description": "Описание для Huawei P30 9",
     "price": 1010,
@@ -340,7 +306,6 @@
     "imageUrl": "/images/phone.webp"
   },
   {
-    "id": 35,
     "name": "Xiaomi iPhone 6",
     "description": "Описание для Xiaomi iPhone 6",
     "price": 902,
@@ -350,7 +315,6 @@
     "imageUrl": "/images/phone.webp"
   },
   {
-    "id": 36,
     "name": "Samsung P30 2",
     "description": "Описание для Samsung P30 2",
     "price": 65,
@@ -360,7 +324,6 @@
     "imageUrl": "/images/phone.webp"
   },
   {
-    "id": 37,
     "name": "Huawei Mi 5",
     "description": "Описание для Huawei Mi 5",
     "price": 1434,
@@ -370,7 +333,6 @@
     "imageUrl": "/images/phone.webp"
   },
   {
-    "id": 38,
     "name": "Huawei Active 8",
     "description": "Описание для Huawei Active 8",
     "price": 90,
@@ -380,7 +342,6 @@
     "imageUrl": "/images/watches.webp"
   },
   {
-    "id": 39,
     "name": "Apple Studio 20",
     "description": "Описание для Apple Studio 20",
     "price": 349,
@@ -390,7 +351,6 @@
     "imageUrl": "/images/laptop.webp"
   },
   {
-    "id": 40,
     "name": "Apple iPhone 11",
     "description": "Описание для Apple iPhone 11",
     "price": 822,
@@ -400,7 +360,6 @@
     "imageUrl": "/images/phone.webp"
   },
   {
-    "id": 41,
     "name": "Samsung Air 19",
     "description": "Описание для Samsung Air 19",
     "price": 487,
@@ -410,7 +369,6 @@
     "imageUrl": "/images/laptop.webp"
   },
   {
-    "id": 42,
     "name": "Apple Ultra 4",
     "description": "Описание для Apple Ultra 4",
     "price": 675,
@@ -420,7 +378,6 @@
     "imageUrl": "/images/laptop.webp"
   },
   {
-    "id": 43,
     "name": "Xiaomi Pro 9",
     "description": "Описание для Xiaomi Pro 9",
     "price": 977,
@@ -430,7 +387,6 @@
     "imageUrl": "/images/laptop.webp"
   },
   {
-    "id": 44,
     "name": "Xiaomi Pro 4",
     "description": "Описание для Xiaomi Pro 4",
     "price": 1284,
@@ -440,7 +396,6 @@
     "imageUrl": "/images/laptop.webp"
   },
   {
-    "id": 45,
     "name": "Huawei Mi 1",
     "description": "Описание для Huawei Mi 1",
     "price": 1313,
@@ -450,7 +405,6 @@
     "imageUrl": "/images/phone.webp"
   },
   {
-    "id": 46,
     "name": "Apple iPhone 11",
     "description": "Описание для Apple iPhone 11",
     "price": 312,
@@ -460,7 +414,6 @@
     "imageUrl": "/images/phone.webp"
   },
   {
-    "id": 47,
     "name": "Huawei Book 3",
     "description": "Описание для Huawei Book 3",
     "price": 393,
@@ -470,7 +423,6 @@
     "imageUrl": "/images/laptop.webp"
   },
   {
-    "id": 48,
     "name": "Apple Watch 11",
     "description": "Описание для Apple Watch 11",
     "price": 1196,
@@ -480,7 +432,6 @@
     "imageUrl": "/images/watches.webp"
   },
   {
-    "id": 49,
     "name": "Apple Fit 10",
     "description": "Описание для Apple Fit 10",
     "price": 1477,
@@ -490,7 +441,6 @@
     "imageUrl": "/images/watches.webp"
   },
   {
-    "id": 50,
     "name": "Huawei Mi 3",
     "description": "Описание для Huawei Mi 3",
     "price": 293,
@@ -498,145 +448,5 @@
     "manufacturer": "Huawei",
     "freeShipping": false,
     "imageUrl": "/images/phone.webp"
-  },
-  {
-    "name": "Новый продукт",
-    "description": "Описание нового продукта",
-    "price": "100",
-    "category": "Laptops",
-    "manufacturer": "Apple",
-    "imageUrl": "http://example.com/product.jpg",
-    "freeShipping": true,
-    "id": 51
-  },
-  {
-    "name": "Новый продукт",
-    "description": "Описание нового продукта",
-    "price": "100",
-    "category": "Laptops",
-    "manufacturer": "Apple",
-    "imageUrl": "http://example.com/product.jpg",
-    "freeShipping": true,
-    "id": 1712
-  },
-  {
-    "name": "Новый продукт",
-    "description": "Описание нового продукта",
-    "price": 100,
-    "category": "Laptops",
-    "manufacturer": "Apple",
-    "imageUrl": "http://example.com/product.jpg",
-    "freeShipping": true,
-    "id": 1711
-  },
-  {
-    "name": "Новый продукт",
-    "description": "Описание нового продукта",
-    "price": 100,
-    "category": "Laptops",
-    "manufacturer": "Apple",
-    "imageUrl": "http://example.com/product.jpg",
-    "freeShipping": true,
-    "id": 1708695945598
-  },
-  {
-    "name": "Новый продукт",
-    "description": "Описание нового продукта",
-    "price": 100,
-    "category": "Laptops",
-    "manufacturer": "Apple",
-    "imageUrl": "http://example.com/product.jpg",
-    "freeShipping": true,
-    "id": 1708
-  },
-  {
-    "name": "Новый продукт",
-    "description": "Описание нового продукта",
-    "price": 100,
-    "category": "Laptops",
-    "manufacturer": "Apple",
-    "imageUrl": "http://example.com/product.jpg",
-    "freeShipping": true,
-    "id": 1709
-  },
-  {
-    "name": "Новый продукт",
-    "description": "Описание нового продукта",
-    "price": 100,
-    "category": "Laptops",
-    "manufacturer": "Apple",
-    "imageUrl": "http://example.com/product.jpg",
-    "freeShipping": true,
-    "id": 385058
-  },
-  {
-    "name": "Новый продукт",
-    "description": "Описание нового продукта",
-    "price": 100,
-    "category": "Laptops",
-    "manufacturer": "Apple",
-    "imageUrl": "http://example.com/product.jpg",
-    "freeShipping": true,
-    "id": 9738
-  },
-  {
-    "name": "Новый продукт",
-    "description": "Описание нового продукта",
-    "price": 100,
-    "category": "",
-    "manufacturer": "Apple",
-    "imageUrl": "http://example.com/product.jpg",
-    "freeShipping": true,
-    "id": 9089
-  },
-  {
-    "name": "Новый продукт",
-    "description": "Описание нового продукта",
-    "price": 100,
-    "category": "Laptops",
-    "manufacturer": "Apple",
-    "imageUrl": "http://example.com/product.jpg",
-    "freeShipping": true,
-    "id": 4118
-  },
-  {
-    "name": "1111",
-    "description": "Описание нового продукта",
-    "price": 100,
-    "category": "Laptops",
-    "manufacturer": "Apple",
-    "imageUrl": "http://example.com/product.jpg",
-    "freeShipping": true,
-    "id": 6756
-  },
-  {
-    "name": "1111",
-    "description": "Описание нового продукта",
-    "price": 100,
-    "category": "Laptops",
-    "manufacturer": "Apple",
-    "imageUrl": "http://example.com/product.jpg",
-    "freeShipping": true,
-    "id": 1167
-  },
-  {
-    "id": 4624,
-    "name": "string",
-    "description": "string",
-    "price": 0,
-    "category": "string",
-    "manufacturer": "string",
-    "imageUrl": "string",
-    "freeShipping": true
-  },
-  {
-    "name": "1111",
-    "description": "Описание нового продукта",
-    "price": 100,
-    "category": "Laptops",
-    "manufacturer": "Apple",
-    "imageUrl": "http://example.com/product.jpg",
-    "freeShipping": true,
-    "id": 1473
   }
 ]
