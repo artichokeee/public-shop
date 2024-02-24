@@ -2,6 +2,8 @@ document.addEventListener("DOMContentLoaded", function () {
   let products = [];
   let filteredProducts = [];
 
+  updateCartCount();
+
   fetch("http://localhost:3000/products")
     .then((response) => response.json())
     .then((data) => {
