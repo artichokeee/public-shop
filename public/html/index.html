@@ -32,9 +32,9 @@
         <input type="number" id="max-price" placeholder="Макс. цена" />
         <select id="category">
           <option value="">Все категории</option>
-          <option value="Компьютеры">Компьютеры</option>
-          <option value="Смартфоны">Смартфоны</option>
-          <option value="Умные часы">Умные часы</option>
+          <option value="Laptops">Laptops</option>
+          <option value="Phones">Phones</option>
+          <option value="Watches">Watches</option>
         </select>
         <select id="manufacturer">
           <option value="">Все производители</option>
@@ -46,8 +46,8 @@
         <label>
           <input type="checkbox" id="free-shipping" /> Бесплатная доставка
         </label>
-        <button onclick="applyFilters()">Применить фильтры</button>
-        <button onclick="resetFilters()">Сбросить фильтры</button>
+        <button id="apply-filters">Применить фильтры</button>
+        <button id="reset-filters">Сбросить фильтры</button>
       </div>
       <div class="products">
         <h1>Интернет-магазин</h1>

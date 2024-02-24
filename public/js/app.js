@@ -1,15 +1,27 @@
 document.addEventListener("DOMContentLoaded", function () {
+  document
+    .getElementById("apply-filters")
+    .addEventListener("click", applyFilters);
+  document
+    .getElementById("reset-filters")
+    .addEventListener("click", resetFilters);
   let products = [];
   let filteredProducts = [];
 
   updateCartCount();
 
+  const sortOrderSelect = document.getElementById("sort-order");
+  sortOrderSelect.value = "name-asc";
+  sortOrderSelect.addEventListener("change", function () {
+    sortAndDisplayProducts();
+  });
+
   fetch("http://localhost:3000/products")
     .then((response) => response.json())
     .then((data) => {
-      products = data;
-      filteredProducts = [...products]; // Initialize filteredProducts with all products
-      displayProducts(filteredProducts, 1); // Use filteredProducts here
+      products = data.sort((a, b) => a.name.localeCompare(b.name)); // Сортировка полученных данных
+      filteredProducts = [...products];
+      displayProducts(filteredProducts, 1); // Отображение отсортированных продуктов
     })
     .catch((error) =>
       console.error("Ошибка при получении данных с сервера:", error)
@@ -18,7 +30,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const loginButton = document.getElementById("login-button");
   const loginForm = document.getElementById("login-form");
   const registerForm = document.getElementById("register-form");
-  const sortOrderSelect = document.getElementById("sort-order");
   if (sortOrderSelect) {
     sortOrderSelect.addEventListener("change", function () {
       sortAndDisplayProducts();
@@ -107,7 +118,7 @@ document.addEventListener("DOMContentLoaded", function () {
           logoutButton.style.display = "block";
 
           // Редирект на index.html после успешного входа
-          window.location.href = "index.html";
+          window.location.href = "/index";
         } else if (data === "Регистрация выполнена успешно") {
           // Дополнительные действия после регистрации, если необходимо
         }
@@ -226,52 +237,70 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  sortOrderSelect.addEventListener("change", function () {
-    sortAndDisplayProducts();
-  });
-
   function sortAndDisplayProducts() {
-    filteredProducts = sortProducts(filteredProducts, sortOrderSelect.value);
-    currentPage = 1; // Сброс текущей страницы
-    displayProducts(filteredProducts, currentPage);
+    filteredProducts = sortProducts(products, sortOrderSelect.value);
+    displayProducts(filteredProducts, 1);
   }
 
   sortAndDisplayProducts();
 
-  window.applyFilters = () => {
+  function applyFilters() {
     const minPrice = document.getElementById("min-price").value;
     const maxPrice = document.getElementById("max-price").value;
     const selectedCategory = document.getElementById("category").value;
     const selectedManufacturer = document.getElementById("manufacturer").value;
     const freeShipping = document.getElementById("free-shipping").checked;
 
-    filteredProducts = products.filter((product) => {
-      return (
-        (!minPrice || product.price >= minPrice) &&
-        (!maxPrice || product.price <= maxPrice) &&
-        (!selectedCategory || product.category === selectedCategory) &&
-        (!selectedManufacturer ||
-          product.manufacturer === selectedManufacturer) &&
-        (!freeShipping || product.freeShipping)
+    let url = new URL(`http://localhost:3000/products/filter`);
+
+    // Правильное добавление параметров в URL
+    if (selectedCategory) {
+      url.searchParams.append("category", selectedCategory);
+    }
+    if (selectedManufacturer) {
+      url.searchParams.append("manufacturer", selectedManufacturer);
+    }
+    if (freeShipping) {
+      url.searchParams.append("freeShipping", freeShipping.toString());
+    }
+    if (minPrice) {
+      url.searchParams.append("minPrice", minPrice);
+    }
+    if (maxPrice) {
+      url.searchParams.append("maxPrice", maxPrice);
+    }
+
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        filteredProducts = data.sort((a, b) =>
+          sortOrderSelect.value === "name-asc"
+            ? a.name.localeCompare(b.name)
+            : b.name.localeCompare(a.name)
+        );
+        displayProducts(filteredProducts, 1);
+      })
+      .catch((error) =>
+        console.error("Ошибка при фильтрации продуктов:", error)
       );
-    });
+  }
 
-    currentPage = 1;
-    displayProducts(filteredProducts, currentPage);
-  };
-
-  window.resetFilters = () => {
+  function resetFilters() {
     document.getElementById("min-price").value = "";
     document.getElementById("max-price").value = "";
     document.getElementById("category").value = "";
     document.getElementById("manufacturer").value = "";
     document.getElementById("free-shipping").checked = false;
 
-    filteredProducts = [...products];
-    currentPage = 1;
-    displayProducts(filteredProducts, currentPage);
-  };
-
-  displayProducts(products, currentPage);
-  updateCartCount();
+    fetch("http://localhost:3000/products")
+      .then((response) => response.json())
+      .then((data) => {
+        products = data.sort((a, b) => a.name.localeCompare(b.name));
+        filteredProducts = [...products];
+        displayProducts(filteredProducts, 1);
+      })
+      .catch((error) =>
+        console.error("Ошибка при получении данных с сервера:", error)
+      );
+  }
 });

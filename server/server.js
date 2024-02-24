@@ -835,6 +835,94 @@ app.delete("/users/:userId", (req, res) => {
   res.send(`Пользователь с ID: ${userId} успешно удален.`);
 });
 
+// Общий эндпоинт для фильтрации продуктов
+/**
+ * @swagger
+ * /products/filter:
+ *   get:
+ *     summary: Фильтрация списка продуктов
+ *     tags: [Products]
+ *     parameters:
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Категория продукта
+ *       - in: query
+ *         name: manufacturer
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Производитель продукта
+ *       - in: query
+ *         name: freeShipping
+ *         schema:
+ *           type: boolean
+ *         required: false
+ *         description: Наличие бесплатной доставки
+ *       - in: query
+ *         name: minPrice
+ *         schema:
+ *           type: number
+ *         required: false
+ *         description: Минимальная цена продукта
+ *       - in: query
+ *         name: maxPrice
+ *         schema:
+ *           type: number
+ *         required: false
+ *         description: Максимальная цена продукта
+ *     responses:
+ *       200:
+ *         description: Отфильтрованный список продуктов
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Product'
+ *       400:
+ *         description: Ошибка запроса
+ */
+app.get("/products/filter", (req, res) => {
+  const { category, manufacturer, freeShipping, minPrice, maxPrice } =
+    req.query;
+
+  let filteredProducts = products;
+
+  if (category) {
+    filteredProducts = filteredProducts.filter((p) => p.category === category);
+  }
+
+  if (manufacturer) {
+    filteredProducts = filteredProducts.filter(
+      (p) => p.manufacturer === manufacturer
+    );
+  }
+
+  if (freeShipping) {
+    const freeShippingBool = freeShipping === "true";
+    filteredProducts = filteredProducts.filter(
+      (p) => p.freeShipping === freeShippingBool
+    );
+  }
+
+  if (minPrice) {
+    filteredProducts = filteredProducts.filter(
+      (p) => p.price >= Number(minPrice)
+    );
+  }
+
+  if (maxPrice) {
+    filteredProducts = filteredProducts.filter(
+      (p) => p.price <= Number(maxPrice)
+    );
+  }
+
+  res.json(filteredProducts);
+});
+
 app.listen(3000, () => {
   console.log("Сервер запущен на http://localhost:3000");
 });

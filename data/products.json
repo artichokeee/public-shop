@@ -4,7 +4,7 @@
     "name": "Huawei iPhone 19",
     "description": "Описание для Huawei iPhone 19",
     "price": 50,
-    "category": "Смартфоны",
+    "category": "Phones",
     "manufacturer": "Huawei",
     "freeShipping": true,
     "imageUrl": "/images/phone.webp"
@@ -14,7 +14,7 @@
     "name": "Samsung Active 5",
     "description": "Описание для Samsung Active 5",
     "price": 518,
-    "category": "Умные часы",
+    "category": "Watches",
     "manufacturer": "Samsung",
     "freeShipping": false,
     "imageUrl": "/images/watches.webp"
@@ -24,7 +24,7 @@
     "name": "Samsung Air 12",
     "description": "Описание для Samsung Air 12",
     "price": 1289,
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Samsung",
     "freeShipping": false,
     "imageUrl": "/images/laptop.webp"
@@ -34,7 +34,7 @@
     "name": "Apple Fit 20",
     "description": "Описание для Apple Fit 20",
     "price": 149,
-    "category": "Умные часы",
+    "category": "Watches",
     "manufacturer": "Apple",
     "freeShipping": false,
     "imageUrl": "/images/watches.webp"
@@ -44,7 +44,7 @@
     "name": "Samsung Book 2",
     "description": "Описание для Samsung Book 2",
     "price": 454,
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Samsung",
     "freeShipping": true,
     "imageUrl": "/images/laptop.webp"
@@ -54,7 +54,7 @@
     "name": "Apple Gaming 10",
     "description": "Описание для Apple Gaming 10",
     "price": 1010,
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Apple",
     "freeShipping": false,
     "imageUrl": "/images/laptop.webp"
@@ -64,7 +64,7 @@
     "name": "Samsung P30 19",
     "description": "Описание для Samsung P30 19",
     "price": 306,
-    "category": "Смартфоны",
+    "category": "Phones",
     "manufacturer": "Samsung",
     "freeShipping": false,
     "imageUrl": "/images/phone.webp"
@@ -74,7 +74,7 @@
     "name": "Huawei Book 2",
     "description": "Описание для Huawei Book 2",
     "price": 659,
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Huawei",
     "freeShipping": false,
     "imageUrl": "/images/laptop.webp"
@@ -84,7 +84,7 @@
     "name": "Xiaomi Watch 8",
     "description": "Описание для Xiaomi Watch 8",
     "price": 1080,
-    "category": "Умные часы",
+    "category": "Watches",
     "manufacturer": "Xiaomi",
     "freeShipping": false,
     "imageUrl": "/images/watches.webp"
@@ -94,7 +94,7 @@
     "name": "Huawei Note 10",
     "description": "Описание для Huawei Note 10",
     "price": 93,
-    "category": "Смартфоны",
+    "category": "Phones",
     "manufacturer": "Huawei",
     "freeShipping": false,
     "imageUrl": "/images/phone.webp"
@@ -104,7 +104,7 @@
     "name": "Samsung Gear 18",
     "description": "Описание для Samsung Gear 18",
     "price": 920,
-    "category": "Умные часы",
+    "category": "Watches",
     "manufacturer": "Samsung",
     "freeShipping": false,
     "imageUrl": "/images/watches.webp"
@@ -114,7 +114,7 @@
     "name": "Samsung Band 5",
     "description": "Описание для Samsung Band 5",
     "price": 878,
-    "category": "Умные часы",
+    "category": "Watches",
     "manufacturer": "Samsung",
     "freeShipping": false,
     "imageUrl": "/images/watches.webp"
@@ -124,7 +124,7 @@
     "name": "Samsung Gear 3",
     "description": "Описание для Samsung Gear 3",
     "price": 869,
-    "category": "Умные часы",
+    "category": "Watches",
     "manufacturer": "Samsung",
     "freeShipping": true,
     "imageUrl": "/images/watches.webp"
@@ -134,7 +134,7 @@
     "name": "Samsung Band 18",
     "description": "Описание для Samsung Band 18",
     "price": 212,
-    "category": "Умные часы",
+    "category": "Watches",
     "manufacturer": "Samsung",
     "freeShipping": false,
     "imageUrl": "/images/watches.webp"
@@ -144,7 +144,7 @@
     "name": "Apple Ultra 20",
     "description": "Описание для Apple Ultra 20",
     "price": 689,
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Apple",
     "freeShipping": false,
     "imageUrl": "/images/laptop.webp"
@@ -154,7 +154,7 @@
     "name": "Xiaomi Note 17",
     "description": "Описание для Xiaomi Note 17",
     "price": 451,
-    "category": "Смартфоны",
+    "category": "Phones",
     "manufacturer": "Xiaomi",
     "freeShipping": false,
     "imageUrl": "/images/phone.webp"
@@ -164,7 +164,7 @@
     "name": "Xiaomi Band 10",
     "description": "Описание для Xiaomi Band 10",
     "price": 849,
-    "category": "Умные часы",
+    "category": "Watches",
     "manufacturer": "Xiaomi",
     "freeShipping": true,
     "imageUrl": "/images/watches.webp"
@@ -174,7 +174,7 @@
     "name": "Apple Gaming 15",
     "description": "Описание для Apple Gaming 15",
     "price": 150,
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Apple",
     "freeShipping": false,
     "imageUrl": "/images/laptop.webp"
@@ -184,7 +184,7 @@
     "name": "Huawei Fit 3",
     "description": "Описание для Huawei Fit 3",
     "price": 780,
-    "category": "Умные часы",
+    "category": "Watches",
     "manufacturer": "Huawei",
     "freeShipping": false,
     "imageUrl": "/images/watches.webp"
@@ -194,7 +194,7 @@
     "name": "Huawei Active 10",
     "description": "Описание для Huawei Active 10",
     "price": 550,
-    "category": "Умные часы",
+    "category": "Watches",
     "manufacturer": "Huawei",
     "freeShipping": true,
     "imageUrl": "/images/watches.webp"
@@ -204,7 +204,7 @@
     "name": "Huawei iPhone 8",
     "description": "Описание для Huawei iPhone 8",
     "price": 631,
-    "category": "Смартфоны",
+    "category": "Phones",
     "manufacturer": "Huawei",
     "freeShipping": true,
     "imageUrl": "/images/phone.webp"
@@ -214,7 +214,7 @@
     "name": "Apple Studio 6",
     "description": "Описание для Apple Studio 6",
     "price": 579,
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Apple",
     "freeShipping": true,
     "imageUrl": "/images/laptop.webp"
@@ -224,7 +224,7 @@
     "name": "Huawei Note 12",
     "description": "Описание для Huawei Note 12",
     "price": 1038,
-    "category": "Смартфоны",
+    "category": "Phones",
     "manufacturer": "Huawei",
     "freeShipping": false,
     "imageUrl": "/images/phone.webp"
@@ -234,7 +234,7 @@
     "name": "Samsung Mi 10",
     "description": "Описание для Samsung Mi 10",
     "price": 1014,
-    "category": "Смартфоны",
+    "category": "Phones",
     "manufacturer": "Samsung",
     "freeShipping": false,
     "imageUrl": "/images/phone.webp"
@@ -244,7 +244,7 @@
     "name": "Xiaomi iPhone 7",
     "description": "Описание для Xiaomi iPhone 7",
     "price": 1167,
-    "category": "Смартфоны",
+    "category": "Phones",
     "manufacturer": "Xiaomi",
     "freeShipping": false,
     "imageUrl": "/images/phone.webp"
@@ -254,7 +254,7 @@
     "name": "Samsung Ultra 3",
     "description": "Описание для Samsung Ultra 3",
     "price": 1116,
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Samsung",
     "freeShipping": true,
     "imageUrl": "/images/laptop.webp"
@@ -264,7 +264,7 @@
     "name": "Apple Galaxy 12",
     "description": "Описание для Apple Galaxy 12",
     "price": 403,
-    "category": "Смартфоны",
+    "category": "Phones",
     "manufacturer": "Apple",
     "freeShipping": true,
     "imageUrl": "/images/phone.webp"
@@ -274,7 +274,7 @@
     "name": "Xiaomi Galaxy 3",
     "description": "Описание для Xiaomi Galaxy 3",
     "price": 1452,
-    "category": "Смартфоны",
+    "category": "Phones",
     "manufacturer": "Xiaomi",
     "freeShipping": true,
     "imageUrl": "/images/phone.webp"
@@ -284,7 +284,7 @@
     "name": "Xiaomi Note 19",
     "description": "Описание для Xiaomi Note 19",
     "price": 339,
-    "category": "Смартфоны",
+    "category": "Phones",
     "manufacturer": "Xiaomi",
     "freeShipping": false,
     "imageUrl": "/images/phone.webp"
@@ -294,7 +294,7 @@
     "name": "Huawei Mi 3",
     "description": "Описание для Huawei Mi 3",
     "price": 849,
-    "category": "Смартфоны",
+    "category": "Phones",
     "manufacturer": "Huawei",
     "freeShipping": false,
     "imageUrl": "/images/phone.webp"
@@ -304,7 +304,7 @@
     "name": "Apple Fit 12",
     "description": "Описание для Apple Fit 12",
     "price": 1127,
-    "category": "Умные часы",
+    "category": "Watches",
     "manufacturer": "Apple",
     "freeShipping": true,
     "imageUrl": "/images/watches.webp"
@@ -314,7 +314,7 @@
     "name": "Huawei Galaxy 5",
     "description": "Описание для Huawei Galaxy 5",
     "price": 1382,
-    "category": "Смартфоны",
+    "category": "Phones",
     "manufacturer": "Huawei",
     "freeShipping": false,
     "imageUrl": "/images/phone.webp"
@@ -324,7 +324,7 @@
     "name": "Huawei Air 16",
     "description": "Описание для Huawei Air 16",
     "price": 1286,
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Huawei",
     "freeShipping": false,
     "imageUrl": "/images/laptop.webp"
@@ -334,7 +334,7 @@
     "name": "Huawei P30 9",
     "description": "Описание для Huawei P30 9",
     "price": 1010,
-    "category": "Смартфоны",
+    "category": "Phones",
     "manufacturer": "Huawei",
     "freeShipping": true,
     "imageUrl": "/images/phone.webp"
@@ -344,7 +344,7 @@
     "name": "Xiaomi iPhone 6",
     "description": "Описание для Xiaomi iPhone 6",
     "price": 902,
-    "category": "Смартфоны",
+    "category": "Phones",
     "manufacturer": "Xiaomi",
     "freeShipping": false,
     "imageUrl": "/images/phone.webp"
@@ -354,7 +354,7 @@
     "name": "Samsung P30 2",
     "description": "Описание для Samsung P30 2",
     "price": 65,
-    "category": "Смартфоны",
+    "category": "Phones",
     "manufacturer": "Samsung",
     "freeShipping": false,
     "imageUrl": "/images/phone.webp"
@@ -364,7 +364,7 @@
     "name": "Huawei Mi 5",
     "description": "Описание для Huawei Mi 5",
     "price": 1434,
-    "category": "Смартфоны",
+    "category": "Phones",
     "manufacturer": "Huawei",
     "freeShipping": true,
     "imageUrl": "/images/phone.webp"
@@ -374,7 +374,7 @@
     "name": "Huawei Active 8",
     "description": "Описание для Huawei Active 8",
     "price": 90,
-    "category": "Умные часы",
+    "category": "Watches",
     "manufacturer": "Huawei",
     "freeShipping": true,
     "imageUrl": "/images/watches.webp"
@@ -384,7 +384,7 @@
     "name": "Apple Studio 20",
     "description": "Описание для Apple Studio 20",
     "price": 349,
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Apple",
     "freeShipping": false,
     "imageUrl": "/images/laptop.webp"
@@ -394,7 +394,7 @@
     "name": "Apple iPhone 11",
     "description": "Описание для Apple iPhone 11",
     "price": 822,
-    "category": "Смартфоны",
+    "category": "Phones",
     "manufacturer": "Apple",
     "freeShipping": true,
     "imageUrl": "/images/phone.webp"
@@ -404,7 +404,7 @@
     "name": "Samsung Air 19",
     "description": "Описание для Samsung Air 19",
     "price": 487,
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Samsung",
     "freeShipping": false,
     "imageUrl": "/images/laptop.webp"
@@ -414,7 +414,7 @@
     "name": "Apple Ultra 4",
     "description": "Описание для Apple Ultra 4",
     "price": 675,
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Apple",
     "freeShipping": true,
     "imageUrl": "/images/laptop.webp"
@@ -424,7 +424,7 @@
     "name": "Xiaomi Pro 9",
     "description": "Описание для Xiaomi Pro 9",
     "price": 977,
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Xiaomi",
     "freeShipping": true,
     "imageUrl": "/images/laptop.webp"
@@ -434,7 +434,7 @@
     "name": "Xiaomi Pro 4",
     "description": "Описание для Xiaomi Pro 4",
     "price": 1284,
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Xiaomi",
     "freeShipping": false,
     "imageUrl": "/images/laptop.webp"
@@ -444,7 +444,7 @@
     "name": "Huawei Mi 1",
     "description": "Описание для Huawei Mi 1",
     "price": 1313,
-    "category": "Смартфоны",
+    "category": "Phones",
     "manufacturer": "Huawei",
     "freeShipping": false,
     "imageUrl": "/images/phone.webp"
@@ -454,7 +454,7 @@
     "name": "Apple iPhone 11",
     "description": "Описание для Apple iPhone 11",
     "price": 312,
-    "category": "Смартфоны",
+    "category": "Phones",
     "manufacturer": "Apple",
     "freeShipping": true,
     "imageUrl": "/images/phone.webp"
@@ -464,7 +464,7 @@
     "name": "Huawei Book 3",
     "description": "Описание для Huawei Book 3",
     "price": 393,
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Huawei",
     "freeShipping": false,
     "imageUrl": "/images/laptop.webp"
@@ -474,7 +474,7 @@
     "name": "Apple Watch 11",
     "description": "Описание для Apple Watch 11",
     "price": 1196,
-    "category": "Умные часы",
+    "category": "Watches",
     "manufacturer": "Apple",
     "freeShipping": true,
     "imageUrl": "/images/watches.webp"
@@ -484,7 +484,7 @@
     "name": "Apple Fit 10",
     "description": "Описание для Apple Fit 10",
     "price": 1477,
-    "category": "Умные часы",
+    "category": "Watches",
     "manufacturer": "Apple",
     "freeShipping": true,
     "imageUrl": "/images/watches.webp"
@@ -494,7 +494,7 @@
     "name": "Huawei Mi 3",
     "description": "Описание для Huawei Mi 3",
     "price": 293,
-    "category": "Смартфоны",
+    "category": "Phones",
     "manufacturer": "Huawei",
     "freeShipping": false,
     "imageUrl": "/images/phone.webp"
@@ -503,7 +503,7 @@
     "name": "Новый продукт",
     "description": "Описание нового продукта",
     "price": "100",
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Apple",
     "imageUrl": "http://example.com/product.jpg",
     "freeShipping": true,
@@ -513,7 +513,7 @@
     "name": "Новый продукт",
     "description": "Описание нового продукта",
     "price": "100",
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Apple",
     "imageUrl": "http://example.com/product.jpg",
     "freeShipping": true,
@@ -523,7 +523,7 @@
     "name": "Новый продукт",
     "description": "Описание нового продукта",
     "price": 100,
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Apple",
     "imageUrl": "http://example.com/product.jpg",
     "freeShipping": true,
@@ -533,7 +533,7 @@
     "name": "Новый продукт",
     "description": "Описание нового продукта",
     "price": 100,
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Apple",
     "imageUrl": "http://example.com/product.jpg",
     "freeShipping": true,
@@ -543,7 +543,7 @@
     "name": "Новый продукт",
     "description": "Описание нового продукта",
     "price": 100,
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Apple",
     "imageUrl": "http://example.com/product.jpg",
     "freeShipping": true,
@@ -553,7 +553,7 @@
     "name": "Новый продукт",
     "description": "Описание нового продукта",
     "price": 100,
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Apple",
     "imageUrl": "http://example.com/product.jpg",
     "freeShipping": true,
@@ -563,7 +563,7 @@
     "name": "Новый продукт",
     "description": "Описание нового продукта",
     "price": 100,
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Apple",
     "imageUrl": "http://example.com/product.jpg",
     "freeShipping": true,
@@ -573,7 +573,7 @@
     "name": "Новый продукт",
     "description": "Описание нового продукта",
     "price": 100,
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Apple",
     "imageUrl": "http://example.com/product.jpg",
     "freeShipping": true,
@@ -593,7 +593,7 @@
     "name": "Новый продукт",
     "description": "Описание нового продукта",
     "price": 100,
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Apple",
     "imageUrl": "http://example.com/product.jpg",
     "freeShipping": true,
@@ -603,7 +603,7 @@
     "name": "1111",
     "description": "Описание нового продукта",
     "price": 100,
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Apple",
     "imageUrl": "http://example.com/product.jpg",
     "freeShipping": true,
@@ -613,7 +613,7 @@
     "name": "1111",
     "description": "Описание нового продукта",
     "price": 100,
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Apple",
     "imageUrl": "http://example.com/product.jpg",
     "freeShipping": true,
@@ -633,7 +633,7 @@
     "name": "1111",
     "description": "Описание нового продукта",
     "price": 100,
-    "category": "Компьютеры",
+    "category": "Laptops",
     "manufacturer": "Apple",
     "imageUrl": "http://example.com/product.jpg",
     "freeShipping": true,
