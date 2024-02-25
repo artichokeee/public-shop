@@ -185,20 +185,26 @@ function isValidPassword(password) {
  *         description: Неверные данные пользователя
  */
 
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
   if (!isValidUsername(username) || !isValidPassword(password)) {
     return res.status(400).send("Неверные данные пользователя.");
   }
 
-  const user = Object.values(users).find(
-    (user) => user.username === username && user.password === password
-  );
-  if (user) {
-    res.send("Вход выполнен успешно");
-  } else {
-    res.status(400).send("Неверный логин или пароль");
+  try {
+    const [users] = await promisePool.query(
+      "SELECT * FROM users WHERE login = ? AND password = ?",
+      [username, password]
+    );
+    if (users.length > 0) {
+      res.send("Вход выполнен успешно");
+    } else {
+      res.status(400).send("Неверный логин или пароль");
+    }
+  } catch (err) {
+    console.error("Ошибка при авторизации пользователя: ", err);
+    res.status(500).send("Ошибка сервера при авторизации пользователя");
   }
 });
 
@@ -227,25 +233,33 @@ app.post("/login", (req, res) => {
  *         description: Неверные данные пользователя или пользователь уже существует
  */
 
-app.post("/register", (req, res) => {
+app.post("/register", async (req, res) => {
   const { username, password } = req.body;
 
   if (!isValidUsername(username) || !isValidPassword(password)) {
     return res.status(400).send("Неверные данные пользователя.");
   }
 
-  // Проверяем, существует ли уже пользователь с таким username
-  const userExists = Object.values(users).some(
-    (user) => user.username === username
-  );
-  if (userExists) {
-    return res.status(400).send("Такой пользователь уже существует");
+  try {
+    const [existingUser] = await promisePool.query(
+      "SELECT * FROM users WHERE login = ?",
+      [username]
+    );
+
+    if (existingUser.length > 0) {
+      return res.status(400).send("Такой пользователь уже существует");
+    }
+
+    await promisePool.query(
+      "INSERT INTO users (login, password) VALUES (?, ?)",
+      [username, password]
+    );
+
+    res.send("Регистрация выполнена успешно");
+  } catch (err) {
+    console.error("Ошибка при регистрации пользователя: ", err);
+    res.status(500).send("Ошибка сервера при регистрации пользователя");
   }
-
-  const userId = generateId();
-  users[userId] = { username, password };
-
-  res.send("Регистрация выполнена успешно");
 });
 
 // Функция для валидации данных продукта
@@ -825,22 +839,34 @@ app.delete("/cart/:productId", (req, res) => {
  *       400:
  *         description: Неверные данные пользователя
  */
-app.post("/users", (req, res) => {
+app.post("/users", async (req, res) => {
   const { username, password } = req.body;
 
   if (!isValidUsername(username) || !isValidPassword(password)) {
     return res.status(400).send("Неверные данные пользователя.");
   }
 
-  // Проверяем уникальность имени пользователя
-  if (Object.values(users).find((user) => user.username === username)) {
-    return res.status(400).send("Пользователь с таким именем уже существует.");
+  try {
+    // Проверяем, существует ли уже пользователь с таким именем пользователя
+    const [existingUsers] = await promisePool.query(
+      "SELECT * FROM users WHERE login = ?",
+      [username]
+    );
+
+    if (existingUsers.length > 0) {
+      return res.status(400).send("Такой пользователь уже существует.");
+    }
+
+    // Добавляем нового пользователя
+    const [result] = await promisePool.query(
+      "INSERT INTO users (login, password) VALUES (?, ?)",
+      [username, password]
+    );
+    res.send(`Пользователь успешно добавлен с ID: ${result.insertId}`);
+  } catch (error) {
+    console.error("Ошибка при добавлении пользователя:", error);
+    res.status(500).send("Ошибка сервера при добавлении пользователя");
   }
-
-  const userId = generateId();
-  users[userId] = { username, password };
-
-  res.send(`Пользователь с ID: ${userId} успешно добавлен.`);
 });
 
 // Удаление пользователя по ID
@@ -863,20 +889,27 @@ app.post("/users", (req, res) => {
  *       404:
  *         description: Пользователь не найден
  */
-app.delete("/users/:userId", (req, res) => {
+app.delete("/users/:userId", async (req, res) => {
   const userId = parseInt(req.params.userId);
 
   if (isNaN(userId)) {
     return res.status(400).send("Неверный формат ID пользователя");
   }
 
-  if (!users[userId]) {
-    return res.status(404).send("Пользователь не найден");
+  try {
+    const [result] = await promisePool.query(
+      "DELETE FROM users WHERE user_id = ?",
+      [userId]
+    );
+    if (result.affectedRows === 0) {
+      return res.status(404).send("Пользователь не найден");
+    }
+
+    res.send(`Пользователь с ID: ${userId} успешно удален.`);
+  } catch (error) {
+    console.error("Ошибка при удалении пользователя:", error);
+    res.status(500).send("Ошибка сервера при удалении пользователя");
   }
-
-  delete users[userId];
-
-  res.send(`Пользователь с ID: ${userId} успешно удален.`);
 });
 
 // Общий эндпоинт для фильтрации продуктов
