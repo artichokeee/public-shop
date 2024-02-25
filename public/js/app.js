@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
   document
     .getElementById("reset-filters")
     .addEventListener("click", resetFilters);
+
   let products = [];
   let filteredProducts = [];
 
@@ -27,55 +28,16 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error("Ошибка при получении данных с сервера:", error)
     );
 
-  const loginButton = document.getElementById("login-button");
-  const loginForm = document.getElementById("login-form");
-  const registerForm = document.getElementById("register-form");
   if (sortOrderSelect) {
     sortOrderSelect.addEventListener("change", function () {
       sortAndDisplayProducts();
     });
   }
 
+  const loginButton = document.getElementById("login-button");
+  const loginForm = document.getElementById("login-form");
+  const registerForm = document.getElementById("register-form");
   const logoutButton = document.createElement("button");
-  logoutButton.textContent = "Выйти";
-  logoutButton.id = "logout-button";
-  logoutButton.style.display = "none";
-
-  function addToCart(productId) {
-    const quantity = parseInt(
-      document.getElementById(`quantity-${productId}`).value
-    );
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const product = products.find((p) => p.id === productId);
-    const cartItem = cart.find((item) => item.product.id === productId);
-
-    if (cartItem) {
-      cartItem.quantity += quantity;
-    } else {
-      cart.push({ product, quantity });
-    }
-
-    localStorage.setItem("cart", JSON.stringify(cart));
-    showAddedToCartMessage(product, quantity);
-    updateCartCount();
-  }
-
-  window.addToCart = addToCart;
-
-  if (document.querySelector("header nav")) {
-    document.querySelector("header nav").appendChild(logoutButton);
-  }
-
-  logoutButton.addEventListener("click", function () {
-    localStorage.removeItem("isLoggedIn");
-    logoutButton.style.display = "none";
-    loginButton.style.display = "block";
-  });
-
-  if (localStorage.getItem("isLoggedIn") === "true") {
-    loginButton.style.display = "none";
-    logoutButton.style.display = "block";
-  }
 
   function isValidUsername(username) {
     const usernameRegex = /^[a-zA-Z0-9_]{3,15}$/;
@@ -139,6 +101,46 @@ document.addEventListener("DOMContentLoaded", function () {
       sendAuthRequest("register");
     });
   }
+
+  logoutButton.textContent = "Выйти";
+  logoutButton.id = "logout-button";
+  logoutButton.style.display = "none";
+
+  if (document.querySelector("header nav")) {
+    document.querySelector("header nav").appendChild(logoutButton);
+  }
+
+  logoutButton.addEventListener("click", function () {
+    localStorage.removeItem("isLoggedIn");
+    logoutButton.style.display = "none";
+    loginButton.style.display = "block";
+  });
+
+  if (localStorage.getItem("isLoggedIn") === "true") {
+    loginButton.style.display = "none";
+    logoutButton.style.display = "block";
+  }
+
+  function addToCart(productId) {
+    const quantity = parseInt(
+      document.getElementById(`quantity-${productId}`).value
+    );
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const product = products.find((p) => p.id === productId);
+    const cartItem = cart.find((item) => item.product.id === productId);
+
+    if (cartItem) {
+      cartItem.quantity += quantity;
+    } else {
+      cart.push({ product, quantity });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    showAddedToCartMessage(product, quantity);
+    updateCartCount();
+  }
+
+  window.addToCart = addToCart;
 
   const productsPerPage = 6;
   let currentPage = 1;

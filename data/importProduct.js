@@ -11,7 +11,7 @@ async function insertProducts() {
     database: "web_shop",
   });
 
-  await connection.execute("TRUNCATE TABLE products");
+  //   await connection.execute("TRUNCATE TABLE products");
 
   let rawdata = fs.readFileSync("data/products.json");
   let products = JSON.parse(rawdata);

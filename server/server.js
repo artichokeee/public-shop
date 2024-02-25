@@ -73,11 +73,6 @@ app.get("/policy", (req, res) => {
 });
 
 let cart = [];
-const users = {}; // Простейшее хранилище для пользователей
-
-function generateId() {
-  return Math.floor(1000 + Math.random() * 9000);
-}
 
 /**
  * @swagger
@@ -186,6 +181,7 @@ function isValidPassword(password) {
  */
 
 app.post("/login", async (req, res) => {
+  console.log("Получен запрос на /login:", req.body);
   const { username, password } = req.body;
 
   if (!isValidUsername(username) || !isValidPassword(password)) {
@@ -234,6 +230,7 @@ app.post("/login", async (req, res) => {
  */
 
 app.post("/register", async (req, res) => {
+  console.log("Получен запрос на /register:", req.body);
   const { username, password } = req.body;
 
   if (!isValidUsername(username) || !isValidPassword(password)) {
