@@ -14,6 +14,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const sortOrderSelect = document.getElementById("sort-order");
   sortOrderSelect.value = "name-asc";
 
+  const productsPerPage = 6;
+  let currentPage = 1;
+  const productList = document.getElementById("product-list");
+  const paginationElement = document.getElementById("pagination");
+
   sortOrderSelect.addEventListener("change", function () {
     sortAndDisplayProducts();
   });
@@ -35,64 +40,46 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function addToCart(productId) {
-    const quantity = parseInt(
-      document.getElementById(`quantity-${productId}`).value
-    );
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const product = products.find((p) => p.id === productId);
-    const cartItem = cart.find((item) => item.product.id === productId);
-
-    if (cartItem) {
-      cartItem.quantity += quantity;
-    } else {
-      cart.push({ product, quantity });
-    }
-
-    localStorage.setItem("cart", JSON.stringify(cart));
-    showAddedToCartMessage(product, quantity);
-    updateCartCount();
-  }
-
-  window.addToCart = addToCart;
-
-  const productsPerPage = 6;
-  let currentPage = 1;
-  const productList = document.getElementById("product-list");
-  const paginationElement = document.getElementById("pagination");
-
   function displayProducts(productsToDisplay, page) {
     const startIndex = (page - 1) * productsPerPage;
     const endIndex = startIndex + productsPerPage;
     const productsToShow = productsToDisplay.slice(startIndex, endIndex);
 
     productList.innerHTML = "";
+
     productsToShow.forEach((product) => {
       const productElement = document.createElement("div");
       productElement.innerHTML = `
-                  <img src="${product.imageUrl}" alt="${
+        <img src="${product.imageUrl}" alt="${
         product.name
       }" style="width:100px;height:100px;">
-                  <h2>${product.name}</h2>
-                  <p>${product.description}</p>
-                  <p>Цена: ${product.price} USD</p>
-                  <p>Категория: ${product.category}</p>
-                  <p>Производитель: ${product.manufacturer}</p>
-                  <p>Бесплатная доставка: ${
-                    product.freeShipping ? "Да" : "Нет"
-                  }</p>
-                  <input type="number" id="quantity-${
-                    product.id
-                  }" min="1" value="1" style="width: 50px;">
-                  <button onclick="addToCart(${
-                    product.id
-                  })">&#128722; Добавить в корзину</button>
-              `;
+        <h2>${product.name}</h2>
+        <p>${product.description}</p>
+        <p>Цена: ${product.price} USD</p>
+        <p>Категория: ${product.category}</p>
+        <p>Производитель: ${product.manufacturer}</p>
+        <p>Бесплатная доставка: ${product.freeShipping ? "Да" : "Нет"}</p>
+        <input type="number" id="quantity-${
+          product.product_id
+        }" min="1" value="1" style="width: 50px;">
+        <button class="add-to-cart-button" data-product-id="${
+          product.product_id
+        }">Добавить в корзину</button>
+        `;
+
       productList.appendChild(productElement);
     });
 
     displayPaginationButtons(productsToDisplay.length, page);
   }
+
+  document.querySelectorAll(".add-to-cart-button").forEach((button) => {
+    button.addEventListener("click", () => {
+      const productId = button.getAttribute("data-product-id");
+      const quantity = 1; // или получить количество из интерфейса, если необходимо
+      window.addToCart(productId, quantity);
+    });
+  });
 
   function displayPaginationButtons(totalProducts, currentPage) {
     paginationElement.innerHTML = "";

@@ -3,6 +3,44 @@ document.addEventListener("DOMContentLoaded", function () {
   const cartTotalElement = document.getElementById("cart-total");
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
+  document.addEventListener("click", function (event) {
+    if (event.target.matches(".add-to-cart-button")) {
+      const productId = event.target.getAttribute("data-product-id");
+      window.addToCart(productId);
+    }
+  });
+
+  window.addToCart = (productId) => {
+    console.log("Добавление в корзину товара с ID:", productId);
+    const cartElement = document.getElementById("cart");
+    const quantityInput = document.getElementById(`quantity-${productId}`);
+    const quantity = quantityInput ? parseInt(quantityInput.value) : 1;
+    const authToken = localStorage.getItem("authToken");
+
+    if (!authToken) {
+      alert("Пожалуйста, войдите в систему, чтобы добавить товар в корзину");
+      return;
+    }
+
+    axios
+      .post(
+        "http://localhost:3000/cart",
+        { productId, quantity },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+      )
+      .then(() => {
+        alert("Товар добавлен в корзину");
+        if (cartElement) {
+          updateCartDisplay(); // Только если элемент cart существует
+          updateCartCount(); // Только если элемент cart существует
+        }
+      })
+      .catch((error) => {
+        console.error("Ошибка при добавлении товара в корзину:", error);
+        alert("Ошибка при добавлении товара в корзину");
+      });
+  };
+
   function updateCartDisplay() {
     cartElement.innerHTML = "";
     cart.forEach((item) => {
