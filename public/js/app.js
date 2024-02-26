@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const sortOrderSelect = document.getElementById("sort-order");
   sortOrderSelect.value = "name-asc";
+
   sortOrderSelect.addEventListener("change", function () {
     sortAndDisplayProducts();
   });
@@ -32,93 +33,6 @@ document.addEventListener("DOMContentLoaded", function () {
     sortOrderSelect.addEventListener("change", function () {
       sortAndDisplayProducts();
     });
-  }
-
-  const loginButton = document.getElementById("login-button");
-  const loginForm = document.getElementById("login-form");
-  const registerForm = document.getElementById("register-form");
-  const logoutButton = document.createElement("button");
-
-  function isValidUsername(username) {
-    const usernameRegex = /^[a-zA-Z0-9_]{3,15}$/;
-    return usernameRegex.test(username);
-  }
-
-  function isValidPassword(password) {
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-    return passwordRegex.test(password);
-  }
-
-  function sendAuthRequest(endpoint) {
-    const username = document.getElementById(
-      endpoint === "login" ? "username" : "reg-username"
-    ).value;
-    const password = document.getElementById(
-      endpoint === "login" ? "password" : "reg-password"
-    ).value;
-
-    if (!isValidUsername(username) || !isValidPassword(password)) {
-      alert("Неверные данные пользователя.");
-      return;
-    }
-
-    const formData = new URLSearchParams();
-    formData.append("username", username);
-    formData.append("password", password);
-
-    fetch(`http://localhost:3000/${endpoint}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: formData,
-    })
-      .then((response) => response.text())
-      .then((data) => {
-        alert(data);
-        if (data === "Вход выполнен успешно") {
-          localStorage.setItem("isLoggedIn", "true");
-          loginButton.style.display = "none";
-          logoutButton.style.display = "block";
-
-          // Редирект на index.html после успешного входа
-          window.location.href = "/index";
-        } else if (data === "Регистрация выполнена успешно") {
-          // Дополнительные действия после регистрации, если необходимо
-        }
-      })
-      .catch((error) => console.error("Error:", error));
-  }
-
-  if (loginForm) {
-    loginForm.addEventListener("submit", function (event) {
-      event.preventDefault();
-      sendAuthRequest("login");
-    });
-  }
-
-  if (registerForm) {
-    registerForm.addEventListener("submit", function (event) {
-      event.preventDefault();
-      sendAuthRequest("register");
-    });
-  }
-
-  logoutButton.textContent = "Выйти";
-  logoutButton.id = "logout-button";
-  logoutButton.style.display = "none";
-
-  if (document.querySelector("header nav")) {
-    document.querySelector("header nav").appendChild(logoutButton);
-  }
-
-  logoutButton.addEventListener("click", function () {
-    localStorage.removeItem("isLoggedIn");
-    logoutButton.style.display = "none";
-    loginButton.style.display = "block";
-  });
-
-  if (localStorage.getItem("isLoggedIn") === "true") {
-    loginButton.style.display = "none";
-    logoutButton.style.display = "block";
   }
 
   function addToCart(productId) {
@@ -240,8 +154,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function sortAndDisplayProducts() {
-    filteredProducts = sortProducts(products, sortOrderSelect.value);
-    displayProducts(filteredProducts, 1);
+    filteredProducts = sortProducts(filteredProducts, sortOrderSelect.value);
+    displayProducts(filteredProducts, 1); // Возможно, вам нужно будет обновить текущую страницу, если используется пагинация
   }
 
   sortAndDisplayProducts();
@@ -255,7 +169,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let url = new URL(`http://localhost:3000/products/filter`);
 
-    // Правильное добавление параметров в URL
     if (selectedCategory) {
       url.searchParams.append("category", selectedCategory);
     }
@@ -275,12 +188,10 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
-        filteredProducts = data.sort((a, b) =>
-          sortOrderSelect.value === "name-asc"
-            ? a.name.localeCompare(b.name)
-            : b.name.localeCompare(a.name)
-        );
-        displayProducts(filteredProducts, 1);
+        // Обновляем filteredProducts с учетом результатов фильтрации
+        filteredProducts = [...data];
+        // Вызываем функцию сортировки и отображения продуктов
+        sortAndDisplayProducts();
       })
       .catch((error) =>
         console.error("Ошибка при фильтрации продуктов:", error)

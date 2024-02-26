@@ -222,6 +222,17 @@ button:hover, input[type="submit"]:hover {
     background-color: #45a049;
 }
 
+/* Стили для поля ввода количества товара */
+.cart-item-quantity {
+    width: 100%; /* Растягиваем поле ввода на всю доступную ширину */
+    text-align: center; /* Выравнивание текста по центру */
+}
+
+/* Стили для кнопки удаления товара из корзины */
+.cart-item-remove {
+    width: 100%; /* Растягиваем кнопку на всю доступную ширину */
+    margin-top: 10px; /* Добавляем отступ сверху */
+}
 
 
 #cart div {
@@ -275,3 +286,57 @@ button:hover, input[type="submit"]:hover {
 #cart div > *:last-child {
     margin-right: 0; /* Убираем отступ у последнего элемента */
 }
+
+/* Стили для контейнера с формами входа и регистрации */
+.auth-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Выравнивание по центру по горизонтали */
+    margin-top: 50px; /* Добавляем отступ сверху для центрирования */
+}
+
+/* Стили для форм входа и регистрации */
+#login-section,
+#register-section {
+    max-width: 300px; /* Максимальная ширина формы */
+    width: 100%; /* Занимает всю доступную ширину */
+    padding: 20px; /* Добавляем внутренний отступ */
+    border: 1px solid #ccc; /* Добавляем рамку */
+    border-radius: 5px; /* Скругляем углы */
+    margin-bottom: 20px; /* Добавляем отступ снизу между формами */
+}
+
+/* Стили для элементов внутри форм входа и регистрации */
+#login-section label,
+#register-section label {
+    display: block; /* Отображаем метку на новой строке */
+    margin-bottom: 10px; /* Добавляем отступ снизу для элементов формы */
+}
+
+#login-section input,
+#register-section input {
+    width: 100%; /* Растягиваем поля ввода на всю доступную ширину */
+    padding: 10px; /* Добавляем внутренний отступ */
+    margin-bottom: 10px; /* Добавляем отступ снизу */
+    border-radius: 3px; /* Скругляем углы */
+    border: 1px solid #ccc; /* Добавляем рамку */
+}
+
+/* Стили для кнопок входа и регистрации */
+#login-section button,
+#register-section button {
+    width: 100%; /* Растягиваем кнопку на всю доступную ширину */
+    padding: 10px; /* Добавляем внутренний отступ */
+    background-color: #4CAF50; /* Цвет фона */
+    color: white; /* Цвет текста */
+    border: none; /* Убираем рамку */
+    border-radius: 3px; /* Скругляем углы */
+    cursor: pointer; /* Устанавливаем стиль курсора */
+    transition: background-color 0.3s; /* Плавное изменение цвета фона при наведении */
+}
+
+#login-section button:hover,
+#register-section button:hover {
+    background-color: #45a049; /* Цвет фона при наведении */
+}
+

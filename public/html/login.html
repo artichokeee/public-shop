@@ -19,32 +19,38 @@
         <button id="login-button" onclick="window.location.href='/login'">
           Регистрация / Войти
         </button>
+        <button id="logout-button" style="display: none">Выйти</button>
       </nav>
     </header>
 
-    <div class="container-auth">
-      <div class="auth-section">
-        <div id="login-area">
-          <h2>Войти</h2>
-          <form id="login-form">
-            <label for="username">Логин:</label>
-            <input type="text" id="username" name="username" />
-            <label for="password">Пароль:</label>
-            <input type="password" id="password" name="password" />
-            <button type="submit">Войти</button>
-          </form>
-        </div>
+    <div class="auth-container">
+      <!-- Форма входа -->
+      <div id="login-section">
+        <h2>Вход</h2>
+        <form id="login-form">
+          <label for="login-username">Логин:</label>
+          <input type="text" id="login-username" name="username" required />
+          <label for="login-password">Пароль:</label>
+          <input type="password" id="login-password" name="password" required />
+          <button type="submit">Войти</button>
+        </form>
+      </div>
 
-        <div id="register-area">
-          <h2>Регистрация</h2>
-          <form id="register-form">
-            <label for="reg-username">Логин:</label>
-            <input type="text" id="reg-username" name="username" />
-            <label for="reg-password">Пароль:</label>
-            <input type="password" id="reg-password" name="password" />
-            <button type="submit">Регистрация</button>
-          </form>
-        </div>
+      <!-- Форма регистрации -->
+      <div id="register-section">
+        <h2>Регистрация</h2>
+        <form id="register-form">
+          <label for="register-username">Логин:</label>
+          <input type="text" id="register-username" name="username" required />
+          <label for="register-password">Пароль:</label>
+          <input
+            type="password"
+            id="register-password"
+            name="password"
+            required
+          />
+          <button type="submit">Зарегистрироваться</button>
+        </form>
       </div>
     </div>
 
@@ -53,7 +59,9 @@
       <p>&copy; 2024 Интернет-магазин. Все права защищены.</p>
     </footer>
 
-    <script src="../js/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="../js/login.js"></script>
     <script src="../js/cart.js"></script>
+    <script src="../js/app.js"></script>
   </body>
 </html>
