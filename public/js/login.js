@@ -5,6 +5,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginButton = document.getElementById("login-button");
   const logoutButton = document.getElementById("logout-button");
 
+  // Функция для отображения сообщений об ошибках
+  function displayErrorMessages(messages) {
+    alert(messages.join("\n"));
+  }
+
   // Валидация имени пользователя
   function isValidUsername(username) {
     const usernameRegex = /^[a-zA-Z0-9_]{3,15}$/;
@@ -20,18 +25,27 @@ document.addEventListener("DOMContentLoaded", () => {
   // Функция отправки запроса на сервер
   const sendAuthRequest = (url, username, password) => {
     if (!isValidUsername(username) || !isValidPassword(password)) {
-      alert("Неверные данные пользователя.");
+      const errorMessages = [];
+      if (!isValidUsername(username)) {
+        errorMessages.push(
+          "Логин должен содержать от 3 до 15 символов и может включать буквы, цифры и символы: _"
+        );
+      }
+      if (!isValidPassword(password)) {
+        errorMessages.push(
+          "Пароль должен содержать не менее 8 символов, включая минимум одну букву и одну цифру"
+        );
+      }
+      displayErrorMessages(errorMessages);
       return;
     }
 
     axios
       .post(url, { username, password })
       .then((response) => {
-        alert(response.data);
-        if (
-          response.data === "Вход выполнен успешно" ||
-          response.data === "Регистрация выполнена успешно"
-        ) {
+        alert(response.data.message);
+        if (response.data.token) {
+          localStorage.setItem("authToken", response.data.token);
           localStorage.setItem("isLoggedIn", "true");
           window.location.reload(); // Обновление страницы
         }
@@ -66,6 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (logoutButton) {
     logoutButton.addEventListener("click", () => {
       localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("authToken"); // Удаление токена
       window.location.reload(); // Обновление страницы
     });
   }

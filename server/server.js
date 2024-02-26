@@ -7,6 +7,16 @@ const app = express();
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require("swagger-jsdoc");
 const dbConfig = require("../config/dbConfig");
+const jwt = require("jsonwebtoken");
+
+// Читаем содержимое файла с секретным ключом
+const secretKeyData = fs.readFileSync("../config.json");
+
+// Преобразуем содержимое файла в объект JavaScript
+const secretKeyObj = JSON.parse(secretKeyData);
+
+// Используем значение секретного ключа из объекта
+const secretKey = secretKeyObj.secretKey;
 
 const pool = mysql.createPool({
   ...dbConfig,
@@ -44,6 +54,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use(cors()); // Включите CORS для всех маршрутов
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(express.json());
 
 const path = require("path");
 app.use(express.static(path.join(__dirname, "../public")));
@@ -194,7 +205,19 @@ app.post("/login", async (req, res) => {
       [username, password]
     );
     if (users.length > 0) {
-      res.send("Вход выполнен успешно");
+      const user = users[0];
+      const token = jwt.sign(
+        { id: user.user_id }, // Изменено с userId на id
+        secretKey,
+        { expiresIn: "24h" }
+      );
+
+      await promisePool.query("UPDATE users SET token = ? WHERE user_id = ?", [
+        token,
+        user.user_id,
+      ]);
+
+      res.send({ message: "Вход выполнен успешно", token });
     } else {
       res.status(400).send("Неверный логин или пароль");
     }
@@ -233,8 +256,24 @@ app.post("/register", async (req, res) => {
   console.log("Получен запрос на /register:", req.body);
   const { username, password } = req.body;
 
-  if (!isValidUsername(username) || !isValidPassword(password)) {
-    return res.status(400).send("Неверные данные пользователя.");
+  const validationErrors = [];
+
+  if (!isValidUsername(username)) {
+    validationErrors.push(
+      "Логин должен содержать от 3 до 15 символов и может включать буквы, цифры и символы: _"
+    );
+  }
+
+  if (!isValidPassword(password)) {
+    validationErrors.push(
+      "Пароль должен содержать не менее 8 символов, включая минимум одну букву и одну цифру"
+    );
+  }
+
+  if (validationErrors.length > 0) {
+    return res
+      .status(400)
+      .json({ error: "Неверные данные пользователя", validationErrors });
   }
 
   try {
@@ -252,7 +291,7 @@ app.post("/register", async (req, res) => {
       [username, password]
     );
 
-    res.send("Регистрация выполнена успешно");
+    res.json({ message: "Регистрация выполнена успешно" });
   } catch (err) {
     console.error("Ошибка при регистрации пользователя: ", err);
     res.status(500).send("Ошибка сервера при регистрации пользователя");
@@ -717,6 +756,8 @@ app.patch("/products/id/:productId", async (req, res) => {
  *   post:
  *     tags: [Cart]
  *     summary: Добавляет товар в корзину пользователя
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -738,75 +779,132 @@ app.patch("/products/id/:productId", async (req, res) => {
  *         description: Товар добавлен в корзину
  *       400:
  *         description: Неверный запрос
+ *       404:
+ *         description: Пользователь не найден
+ *       500:
+ *         description: Ошибка сервера при добавлении товара в корзину
  */
-app.post("/cart", (req, res) => {
+
+app.post("/cart", async (req, res) => {
   const { productId, quantity } = req.body;
+  const token = req.headers.authorization?.split(" ")[1];
 
-  // Валидация
-  if (!productId || !quantity) {
-    return res.status(400).send("Некорректные данные товара или количество");
+  if (!token) {
+    return res.status(401).send("Токен не предоставлен");
   }
 
-  const product = products.find((p) => p.id === productId);
-  if (!product) {
-    return res.status(404).send("Продукт не найден");
-  }
+  try {
+    const decoded = jwt.verify(token, secretKey);
+    const userId = decoded.id;
 
-  // Здесь должна быть логика добавления в корзину
-  // Для примера, добавим товар в массив cart
-  const cartItem = { productId, quantity };
-  // предполагается, что у нас уже есть массив cart
-  cart.push(cartItem);
+    if (!userId) {
+      return res
+        .status(401)
+        .send("Ошибка при декодировании токена: отсутствует userId");
+    }
 
-  return res
-    .status(200)
-    .send(
-      `Товар с ID: ${productId} добавлен в корзину в количестве ${quantity}`
+    // Проверяем, существует ли уже товар в корзине для данного пользователя
+    const [existingCartItem] = await promisePool.query(
+      "SELECT * FROM cart_items WHERE user_id = ? AND product_id = ?",
+      [userId, productId]
     );
+
+    if (existingCartItem.length > 0) {
+      // Если товар уже присутствует в корзине, обновляем количество товара
+      const updatedQuantity = existingCartItem[0].quantity + quantity;
+      await promisePool.query(
+        "UPDATE cart_items SET quantity = ? WHERE user_id = ? AND product_id = ?",
+        [updatedQuantity, userId, productId]
+      );
+
+      res.status(200).send(`Количество товара в корзине обновлено`);
+    } else {
+      // Если товар еще не присутствует в корзине, добавляем новую запись
+      await promisePool.query(
+        "INSERT INTO cart_items (user_id, product_id, quantity) VALUES (?, ?, ?)",
+        [userId, productId, quantity]
+      );
+
+      res
+        .status(200)
+        .send(`Товар добавлен в корзину пользователя с ID: ${userId}`);
+    }
+  } catch (err) {
+    console.error("Ошибка при добавлении товара в корзину: ", err);
+    if (err.name === "JsonWebTokenError") {
+      return res.status(401).send("Недействительный токен");
+    }
+    res.status(500).send("Ошибка сервера при добавлении товара в корзину");
+  }
 });
 
 // Удаление товара из корзины
 /**
  * @swagger
- * /cart/{productId}:
+ * /cart/{cartItemId}:
  *   delete:
  *     tags: [Cart]
  *     summary: Удаляет товар из корзины пользователя
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: productId
+ *         name: cartItemId
  *         required: true
  *         schema:
  *           type: integer
- *         description: Идентификатор продукта для удаления из корзины
+ *         description: Идентификатор элемента корзины для удаления
  *     responses:
  *       200:
  *         description: Товар удален из корзины
  *       400:
- *         description: Неверный запрос
+ *         description: Неверный формат ID товара в корзине
  *       404:
- *         description: Товар не найден в корзине
+ *         description: Товар не найден в корзине или у пользователя нет прав на его удаление
+ *       500:
+ *         description: Ошибка сервера при удалении товара из корзины
  */
-app.delete("/cart/:productId", (req, res) => {
-  const productId = parseInt(req.params.productId);
+app.delete("/cart/:cartItemId", async (req, res) => {
+  const cartItemId = parseInt(req.params.cartItemId);
+  const token = req.headers.authorization?.split(" ")[1];
 
-  // Валидация
-  if (isNaN(productId)) {
-    return res.status(400).send("Неверный формат ID товара");
+  if (!token) {
+    return res.status(401).send("Токен не предоставлен");
   }
 
-  // Находим индекс товара в корзине
-  const index = cart.findIndex((item) => item.productId === productId);
-
-  // Проверяем, есть ли товар в корзине
-  if (index === -1) {
-    return res.status(404).send("Товар не найден в корзине");
+  if (isNaN(cartItemId)) {
+    return res.status(400).send("Неверный формат ID товара в корзине");
   }
 
-  // Удаляем товар из корзины
-  cart.splice(index, 1);
+  try {
+    const decoded = jwt.verify(token, secretKey);
+    const userId = decoded.id;
+    if (!userId) {
+      return res
+        .status(401)
+        .send("Ошибка при декодировании токена: отсутствует userId");
+    }
 
-  return res.status(200).send(`Товар с ID: ${productId} удален из корзины`);
+    const [result] = await promisePool.query(
+      "DELETE FROM cart_items WHERE cart_item_id = ? AND user_id = ?",
+      [cartItemId, userId]
+    );
+    if (result.affectedRows === 0) {
+      return res
+        .status(404)
+        .send(
+          "Товар не найден в корзине или у пользователя нет прав на его удаление"
+        );
+    }
+
+    res.status(200).send(`Товар с ID: ${cartItemId} удален из корзины`);
+  } catch (err) {
+    console.error("Ошибка при удалении товара из корзины: ", err);
+    if (err.name === "JsonWebTokenError") {
+      return res.status(401).send("Недействительный токен");
+    }
+    res.status(500).send("Ошибка сервера при удалении товара из корзины");
+  }
 });
 
 // Добавление нового пользователя
