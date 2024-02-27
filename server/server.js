@@ -925,6 +925,95 @@ app.get("/getCart", async (req, res) => {
   }
 });
 
+//Изменение количества товаров в корзине
+
+/**
+ * @swagger
+ * /cart/{cartItemId}/quantity:
+ *   put:
+ *     tags: [Cart]
+ *     summary: Обновляет количество товара в корзине пользователя
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: cartItemId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Идентификатор элемента в корзине
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - quantity
+ *             properties:
+ *               quantity:
+ *                 type: integer
+ *                 description: Новое количество товара
+ *     responses:
+ *       200:
+ *         description: Количество товара в корзине обновлено
+ *       400:
+ *         description: Неверный запрос
+ *       401:
+ *         description: Пользователь не авторизован
+ *       404:
+ *         description: Элемент корзины не найден
+ *       500:
+ *         description: Ошибка сервера
+ */
+app.patch("/cart/:cartItemId", async (req, res) => {
+  const { cartItemId } = req.params;
+  const { quantity } = req.body;
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({ message: "Токен не предоставлен" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, secretKey);
+    const userId = decoded.id;
+
+    if (!userId) {
+      return res
+        .status(401)
+        .json({
+          message: "Ошибка при декодировании токена: отсутствует userId",
+        });
+    }
+
+    // Проверяем, существует ли товар в корзине
+    const [existingCartItem] = await promisePool.query(
+      "SELECT * FROM cart_items WHERE cart_item_id = ? AND user_id = ?",
+      [cartItemId, userId]
+    );
+
+    if (existingCartItem.length === 0) {
+      return res.status(404).json({ message: "Товар в корзине не найден" });
+    }
+
+    // Обновляем количество товара в корзине
+    await promisePool.query(
+      "UPDATE cart_items SET quantity = ? WHERE cart_item_id = ? AND user_id = ?",
+      [quantity, cartItemId, userId]
+    );
+
+    res.json({ message: "Количество товара в корзине обновлено" });
+  } catch (err) {
+    console.error("Ошибка при обновлении количества товара в корзине: ", err);
+    res
+      .status(500)
+      .json({
+        message: "Ошибка сервера при обновлении количества товара в корзине",
+      });
+  }
+});
+
 // Удаление товара из корзины
 /**
  * @swagger

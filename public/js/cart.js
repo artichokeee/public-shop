@@ -37,6 +37,37 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   }
 
+  window.updateProductQuantityInCart = (cartItemId, newQuantity) => {
+    const authToken = localStorage.getItem("authToken");
+
+    if (!authToken) {
+      showNotification(
+        "Пожалуйста, войдите в систему, чтобы изменить количество товара в корзине"
+      );
+      return;
+    }
+
+    axios
+      .patch(
+        `http://localhost:3000/cart/${cartItemId}`,
+        { quantity: newQuantity },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+      )
+      .then(() => {
+        showNotification("Количество товара в корзине обновлено");
+        loadCart(); // Перезагружаем содержимое корзины
+        const event = new CustomEvent("cartUpdated");
+        window.dispatchEvent(event);
+      })
+      .catch((error) => {
+        console.error(
+          "Ошибка при изменении количества товара в корзине:",
+          error
+        );
+        showNotification("Ошибка при изменении количества товара в корзине");
+      });
+  };
+
   window.addToCart = (productId) => {
     console.log("Добавление в корзину товара с ID:", productId);
     const quantityInput = document.querySelector(`#quantity-${productId}`);
@@ -75,23 +106,21 @@ document.addEventListener("DOMContentLoaded", function () {
       const cartItemElement = document.createElement("div");
       cartItemElement.id = `cart-item-${item.cart_item_id}`;
       cartItemElement.innerHTML = `
-                  <p>${item.name}: ${item.quantity} шт. (Цена за шт.: ${item.price} руб.)</p>
-                  <button onclick="removeFromCart(${item.cart_item_id})">Удалить</button>
-                  <input type="number" value="${item.quantity}" min="1" onchange="changeQuantity(${item.cart_item_id}, this.value)">
-              `;
+            <p>${item.name}: <input type="number" value="${item.quantity}" min="1" id="quantity-${item.cart_item_id}" class="quantity-input"> шт. (Цена за шт.: ${item.price} руб.)</p>
+            <button onclick="window.removeFromCart(${item.cart_item_id})">Удалить</button>
+        `;
       cartElement.appendChild(cartItemElement);
       cartElements[item.cart_item_id] = cartItemElement; // Сохраняем ссылку на элемент
+
+      // Добавляем обработчик события change к полю ввода количества
+      document
+        .getElementById(`quantity-${item.cart_item_id}`)
+        .addEventListener("change", (e) => {
+          const newQuantity = parseInt(e.target.value);
+          window.updateProductQuantityInCart(item.cart_item_id, newQuantity);
+        });
     });
     updateCartTotal();
-    // Обновляем ссылки на элементы корзины
-    Object.keys(cartElements).forEach((cartItemId) => {
-      const cartItemElement = document.getElementById(
-        `cart-item-${cartItemId}`
-      );
-      if (cartItemElement) {
-        cartElements[cartItemId] = cartItemElement;
-      }
-    });
   }
 
   function updateCartCount() {
