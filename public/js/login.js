@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Функция для отображения сообщений об ошибках
   function displayErrorMessages(messages) {
-    alert(messages.join("\n"));
+    showNotification(messages.join("\n"), false);
   }
 
   // Валидация имени пользователя
@@ -43,16 +43,16 @@ document.addEventListener("DOMContentLoaded", () => {
     axios
       .post(url, { username, password })
       .then((response) => {
-        alert(response.data.message);
+        showNotification(response.data.message, true);
         if (response.data.token) {
           localStorage.setItem("authToken", response.data.token);
           localStorage.setItem("isLoggedIn", "true");
-          window.location.reload(); // Обновление страницы
+          window.location.href = "/"; // Обновление страницы
         }
       })
       .catch((error) => {
         console.error("Ошибка:", error);
-        alert("Произошла ошибка при обработке запроса");
+        showNotification("Произошла ошибка при обработке запроса", false);
       });
   };
 
@@ -97,4 +97,30 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   updateAuthButtons();
+
+  function showNotification(message, isSuccess = true) {
+    const notificationElement = document.createElement("div");
+    notificationElement.textContent = message;
+    notificationElement.style.position = "fixed";
+    notificationElement.style.top = "20px";
+    notificationElement.style.left = "50%";
+    notificationElement.style.transform = "translateX(-50%)";
+    notificationElement.style.minWidth = "300px"; // Фиксированный размер
+    notificationElement.style.maxWidth = "80%"; // Максимальный размер, чтобы уведомление не было слишком широким на маленьких экранах
+    notificationElement.style.height = "auto";
+    notificationElement.style.backgroundColor = isSuccess
+      ? "lightgreen"
+      : "#ff6347";
+    notificationElement.style.color = "white";
+    notificationElement.style.padding = "15px";
+    notificationElement.style.borderRadius = "5px";
+    notificationElement.style.zIndex = "1000";
+    notificationElement.style.textAlign = "center"; // Текст по центру
+    notificationElement.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.1)"; // Добавление тени для лучшей видимости
+    document.body.appendChild(notificationElement);
+
+    setTimeout(() => {
+      notificationElement.remove();
+    }, 3000);
+  }
 });

@@ -838,6 +838,93 @@ app.post("/cart", async (req, res) => {
   }
 });
 
+// Получение содержимого корзины пользователя
+
+/**
+ * @swagger
+ * /cart:
+ *   get:
+ *     tags:
+ *       - Cart
+ *     summary: Получение содержимого корзины пользователя
+ *     description: Возвращает содержимое корзины пользователя. Требует авторизации.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Успешный ответ с данными корзины
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   cart_item_id:
+ *                     type: integer
+ *                     description: Идентификатор элемента корзины
+ *                   quantity:
+ *                     type: integer
+ *                     description: Количество товара в корзине
+ *                   product:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                       name:
+ *                         type: string
+ *                       description:
+ *                         type: string
+ *                       price:
+ *                         type: number
+ *                       imageUrl:
+ *                         type: string
+ *                       category:
+ *                         type: string
+ *                       manufacturer:
+ *                         type: string
+ *                       freeShipping:
+ *                         type: boolean
+ *       401:
+ *         description: Неавторизованный доступ или проблемы с токеном
+ *       500:
+ *         description: Ошибка сервера
+ */
+app.get("/getCart", async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({ message: "Токен не предоставлен" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, secretKey);
+    const userId = decoded.id;
+
+    if (!userId) {
+      return res.status(401).json({
+        message: "Ошибка при декодировании токена: отсутствует userId",
+      });
+    }
+
+    const [cartItems] = await promisePool.query(
+      "SELECT ci.cart_item_id, ci.quantity, p.product_id, p.name, p.price FROM cart_items ci JOIN products p ON ci.product_id = p.product_id WHERE ci.user_id = ?",
+      [userId]
+    );
+
+    if (cartItems.length === 0) {
+      return res.status(404).json({ message: "Корзина пуста" });
+    }
+
+    res.json(cartItems);
+  } catch (err) {
+    console.error("Ошибка при получении содержимого корзины: ", err);
+    res
+      .status(500)
+      .json({ message: "Ошибка сервера при получении содержимого корзины" });
+  }
+});
+
 // Удаление товара из корзины
 /**
  * @swagger
@@ -1102,6 +1189,31 @@ app.get("/products/filter", async (req, res) => {
   } catch (error) {
     console.error("Ошибка при фильтрации продуктов:", error);
     res.status(500).send("Ошибка сервера при фильтрации продуктов");
+  }
+});
+
+//счетчиккорзины
+app.get("/getCartCount", async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({ message: "Токен не предоставлен" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, secretKey);
+    const userId = decoded.id;
+
+    const [result] = await promisePool.query(
+      "SELECT SUM(quantity) AS count FROM cart_items WHERE user_id = ?",
+      [userId]
+    );
+
+    const count = result[0].count || 0;
+    res.json({ count });
+  } catch (err) {
+    console.error("Ошибка при получении количества товаров в корзине:", err);
+    res.status(500).json({ message: "Ошибка сервера" });
   }
 });
 

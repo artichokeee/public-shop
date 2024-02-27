@@ -9,8 +9,6 @@ document.addEventListener("DOMContentLoaded", function () {
   let products = [];
   let filteredProducts = [];
 
-  updateCartCount();
-
   const sortOrderSelect = document.getElementById("sort-order");
   sortOrderSelect.value = "name-asc";
 
@@ -99,30 +97,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   displayProducts(products, currentPage);
-
-  function updateCartCount() {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    let totalCount = cart.reduce((count, item) => count + item.quantity, 0);
-    document.getElementById("cart-count").textContent = `(${totalCount})`;
-  }
-
-  function showAddedToCartMessage(product, quantity) {
-    const message = document.createElement("div");
-    message.innerText = `${quantity} x ${product.name} добавлен в корзину!`;
-    message.style.position = "fixed";
-    message.style.bottom = "20px";
-    message.style.right = "20px";
-    message.style.backgroundColor = "lightgreen";
-    message.style.padding = "10px";
-    message.style.borderRadius = "5px";
-    message.style.boxShadow = "0 2px 4px rgba(0,0,0,0.2)";
-    message.style.zIndex = "1000";
-    document.body.appendChild(message);
-
-    setTimeout(() => {
-      message.remove();
-    }, 3000);
-  }
 
   function sortProducts(products, sortOrder) {
     let sortedProducts = [...products];
