@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Интернет-магазин</title>
+    <link rel="stylesheet" href="../css/styles.css" />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <a href="/">Каталог</a>
+        <a href="/about">О компании</a>
+        <a href="/contacts">Контакты</a>
+        <a href="/cart">
+          <span class="cart-icon">🛒</span>
+          Корзина
+        </a>
+        <span id="cart-count">(0)</span>
+        <a href="/payment">Оплата</a>
+        <button id="login-button" onclick="window.location.href='/login'">
+          Регистрация / Войти
+        </button>
+        <button id="logout-button" style="display: none">Выйти</button>
+      </nav>
+    </header>
+
+    <div class="payment-form">
+      <h2>Оплата</h2>
+      <div id="order-items-list">
+        <h2>Товары в заказе</h2>
+        <!-- Здесь будут отображаться товары -->
+      </div>
+      <div id="order-summary">
+        <h2>Сумма заказа</h2>
+        <p>Общая стоимость: <span id="total-price">0</span> USD</p>
+      </div>
+      <div id="shipping-fee" style="display: none">
+        <p>Дополнительно $5 за доставку</p>
+      </div>
+      <form id="payment-form">
+        <div class="payment-method">
+          <label
+            ><input type="radio" name="paymentMethod" value="Visa" checked />
+            <img src="../images/visa.png" alt="Visa" class="payment-logo"
+          /></label>
+          <label
+            ><input type="radio" name="paymentMethod" value="MasterCard" />
+            <img
+              src="../images/mastercard.png"
+              alt="MasterCard"
+              class="payment-logo"
+          /></label>
+          <label
+            ><input type="radio" name="paymentMethod" value="Paypal" />
+            <img src="../images/paypal.png" alt="Paypal" class="payment-logo"
+          /></label>
+        </div>
+        <div id="card-details">
+          <input
+            type="text"
+            id="card-number"
+            placeholder="Номер карты"
+            maxlength="16"
+          />
+          <input type="text" id="card-name" placeholder="Имя" />
+          <input type="text" id="card-surname" placeholder="Фамилия" />
+          <div class="expiry-date">
+            <input
+              type="text"
+              id="card-expiry-month"
+              placeholder="ММ"
+              maxlength="2"
+            />
+            <input
+              type="text"
+              id="card-expiry-year"
+              placeholder="ГГ"
+              maxlength="2"
+            />
+          </div>
+          <input type="text" id="card-cvv" placeholder="CVV" maxlength="3" />
+        </div>
+        <div id="paypal-email" style="display: none">
+          <input
+            type="email"
+            id="paypal-email-input"
+            placeholder="Email для PayPal"
+          />
+        </div>
+        <input
+          type="email"
+          id="receipt-email"
+          placeholder="Email для отправки чека"
+        />
+        <button id="checkout-button" type="button">Оформить заказ</button>
+      </form>
+    </div>
+
+    <footer>
+      <a href="/policy">Политика использования</a>
+      <p>&copy; 2024 Интернет-магазин. Все права защищены.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="../js/cart.js"></script>
+    <script src="../js/cart-counter.js"></script>
+    <script src="../js/login.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/payment.js"></script>
+    <script src="../js/authCheck.js"></script>
+  </body>
+</html>

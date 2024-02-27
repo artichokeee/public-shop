@@ -83,6 +83,10 @@ app.get("/policy", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/html/policy.html"));
 });
 
+app.get("/payment", (req, res) => {
+  res.sendFile(path.join(__dirname, "../public/html/payment.html"));
+});
+
 let cart = [];
 
 /**
@@ -980,11 +984,9 @@ app.patch("/cart/:cartItemId", async (req, res) => {
     const userId = decoded.id;
 
     if (!userId) {
-      return res
-        .status(401)
-        .json({
-          message: "Ошибка при декодировании токена: отсутствует userId",
-        });
+      return res.status(401).json({
+        message: "Ошибка при декодировании токена: отсутствует userId",
+      });
     }
 
     // Проверяем, существует ли товар в корзине
@@ -1006,11 +1008,9 @@ app.patch("/cart/:cartItemId", async (req, res) => {
     res.json({ message: "Количество товара в корзине обновлено" });
   } catch (err) {
     console.error("Ошибка при обновлении количества товара в корзине: ", err);
-    res
-      .status(500)
-      .json({
-        message: "Ошибка сервера при обновлении количества товара в корзине",
-      });
+    res.status(500).json({
+      message: "Ошибка сервера при обновлении количества товара в корзине",
+    });
   }
 });
 
