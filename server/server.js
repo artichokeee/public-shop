@@ -1,3 +1,18 @@
+async function updateOrderTotal(orderId) {
+  const [totalResult] = await promisePool.query(
+    "SELECT SUM(p.price * oi.quantity) AS total " +
+      "FROM order_items oi JOIN products p ON oi.product_id = p.product_id " +
+      "WHERE oi.order_id = ?",
+    [orderId]
+  );
+  const total = totalResult[0].total || 0;
+
+  await promisePool.query("UPDATE orders SET total = ? WHERE order_id = ?", [
+    total,
+    orderId,
+  ]);
+}
+
 const express = require("express");
 const mysql = require("mysql2");
 const bodyParser = require("body-parser");
@@ -213,7 +228,7 @@ app.post("/login", async (req, res) => {
       const token = jwt.sign(
         { id: user.user_id }, // Изменено с userId на id
         secretKey,
-        { expiresIn: "24h" }
+        { expiresIn: "100 days" }
       );
 
       await promisePool.query("UPDATE users SET token = ? WHERE user_id = ?", [
@@ -934,7 +949,7 @@ app.get("/getCart", async (req, res) => {
 /**
  * @swagger
  * /cart/{cartItemId}/quantity:
- *   put:
+ *   patch:
  *     tags: [Cart]
  *     summary: Обновляет количество товара в корзине пользователя
  *     security:
@@ -1304,6 +1319,262 @@ app.get("/getCartCount", async (req, res) => {
     console.error("Ошибка при получении количества товаров в корзине:", err);
     res.status(500).json({ message: "Ошибка сервера" });
   }
+});
+
+// POST: Создание заказа из элементов в корзине
+/**
+ * @swagger
+ * /orders:
+ *   post:
+ *     tags: [Orders]
+ *     summary: Создание заказа из товаров в корзине пользователя
+ *     security:
+ *       - bearerAuth: []
+ *     description: Создает новый заказ, перемещает все товары из корзины пользователя в заказ и очищает корзину.
+ *     responses:
+ *       201:
+ *         description: Заказ успешно создан.
+ *       401:
+ *         description: Пользователь не авторизован.
+ *       500:
+ *         description: Ошибка сервера.
+ */
+app.post("/orders", async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).send("Токен не предоставлен");
+
+  try {
+    const decoded = jwt.verify(token, secretKey);
+    const userId = decoded.id;
+
+    // Вычисляем общую сумму товаров в корзине пользователя
+    const [totalResult] = await promisePool.query(
+      "SELECT SUM(p.price * ci.quantity) AS total " +
+        "FROM cart_items ci " +
+        "JOIN products p ON ci.product_id = p.product_id " +
+        "WHERE ci.user_id = ?",
+      [userId]
+    );
+    const total = totalResult[0].total;
+
+    if (total === null) {
+      return res.status(400).send("Корзина пуста.");
+    }
+
+    // Создаем новый заказ с общей суммой
+    const [orderResult] = await promisePool.query(
+      "INSERT INTO orders (user_id, status, total) VALUES (?, 'неоплаченно', ?)",
+      [userId, total]
+    );
+    const orderId = orderResult.insertId;
+
+    // Перемещаем товары из корзины пользователя в заказ, используя orderId
+    await promisePool.query(
+      "INSERT INTO order_items (order_id, product_id, quantity) " +
+        "SELECT ?, product_id, quantity FROM cart_items WHERE user_id = ?",
+      [orderId, userId]
+    );
+
+    // Очищаем корзину пользователя после перемещения товаров в заказ
+    await promisePool.query("DELETE FROM cart_items WHERE user_id = ?", [
+      userId,
+    ]);
+
+    res.status(201).json({ message: "Заказ успешно создан", orderId: orderId });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Ошибка сервера при создании заказа.");
+  }
+});
+
+// DELETE: Удаление продукта из заказа
+/**
+ * @swagger
+ * /orders/{orderId}/products/{productId}:
+ *   delete:
+ *     tags: [Orders]
+ *     summary: Удаление товара из заказа
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: orderId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Идентификатор заказа
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Идентификатор товара
+ *     responses:
+ *       200:
+ *         description: Товар успешно удален из заказа.
+ *       400:
+ *         description: Неверный запрос.
+ *       401:
+ *         description: Пользователь не авторизован.
+ *       404:
+ *         description: Товар или заказ не найдены.
+ *       500:
+ *         description: Ошибка сервера.
+ */
+app.delete("/orders/:orderId/products/:productId", async (req, res) => {
+  const { orderId, productId } = req.params;
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).send("Токен не предоставлен.");
+  }
+
+  try {
+    const decoded = jwt.verify(token, secretKey);
+    const userId = decoded.id;
+
+    // Проверка наличия заказа у пользователя
+    const [order] = await promisePool.query(
+      "SELECT * FROM orders WHERE order_id = ? AND user_id = ?",
+      [orderId, userId]
+    );
+
+    if (order.length === 0) {
+      return res
+        .status(404)
+        .send("Заказ не найден или у вас нет к нему доступа.");
+    }
+
+    // Извлечение количества удаляемого товара
+    const [[{ quantity }]] = await promisePool.query(
+      "SELECT quantity FROM order_items WHERE order_id = ? AND product_id = ?",
+      [orderId, productId]
+    );
+
+    // Удаление продукта из order_items
+    await promisePool.query(
+      "DELETE FROM order_items WHERE order_id = ? AND product_id = ?",
+      [orderId, productId]
+    );
+
+    // Проверка существования товара в корзине
+    const [[cartItem]] = await promisePool.query(
+      "SELECT quantity FROM cart_items WHERE user_id = ? AND product_id = ?",
+      [userId, productId]
+    );
+
+    if (cartItem) {
+      // Если товар уже в корзине, обновляем его количество
+      await promisePool.query(
+        "UPDATE cart_items SET quantity = quantity + ? WHERE user_id = ? AND product_id = ?",
+        [quantity, userId, productId]
+      );
+    } else {
+      // Если товара нет в корзине, добавляем его
+      await promisePool.query(
+        "INSERT INTO cart_items (user_id, product_id, quantity) VALUES (?, ?, ?)",
+        [userId, productId, quantity]
+      );
+    }
+
+    await updateOrderTotal(orderId);
+    res.send("Продукт возвращен в корзину и удален из заказа.");
+  } catch (error) {
+    console.error(error);
+    if (error.name === "JsonWebTokenError") {
+      res.status(401).send("Недействительный токен.");
+    } else {
+      res.status(500).send("Ошибка сервера");
+    }
+  }
+});
+
+// PATCH: Изменение количества продуктов в заказе
+/**
+ * @swagger
+ * /orders/{orderId}/products/{productId}:
+ *   patch:
+ *     tags: [Orders]
+ *     summary: Изменение количества товара в заказе
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: orderId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Идентификатор заказа
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Идентификатор товара
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               quantity:
+ *                 type: integer
+ *                 description: Новое количество товара
+ *     responses:
+ *       200:
+ *         description: Количество товара в заказе успешно обновлено.
+ *       400:
+ *         description: Неверный запрос.
+ *       401:
+ *         description: Пользователь не авторизован.
+ *       404:
+ *         description: Товар или заказ не найдены.
+ *       500:
+ *         description: Ошибка сервера.
+ */
+// PATCH: Изменение количества продуктов в заказе
+app.patch("/orders/:orderId/products/:productId", async (req, res) => {
+  const { orderId, productId } = req.params;
+  const { quantity } = req.body;
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).send("Токен не предоставлен.");
+  }
+
+  try {
+    const decoded = jwt.verify(token, secretKey);
+    const userId = decoded.id;
+
+    // Проверка наличия заказа у пользователя
+    const [order] = await promisePool.query(
+      "SELECT * FROM orders WHERE order_id = ? AND user_id = ?",
+      [orderId, userId]
+    );
+
+    if (order.length === 0) {
+      return res
+        .status(404)
+        .send("Заказ не найден или у вас нет к нему доступа.");
+    }
+
+    // Обновление количества в order_items
+    await promisePool.query(
+      "UPDATE order_items SET quantity = ? WHERE order_id = ? AND product_id = ?",
+      [quantity, orderId, productId]
+    );
+    await updateOrderTotal(orderId);
+    res.send("Количество товара обновлено в заказе");
+  } catch (error) {
+    console.error(error);
+    if (error.name === "JsonWebTokenError") {
+      res.status(401).send("Недействительный токен.");
+    } else {
+      res.status(500).send("Ошибка сервера");
+    }
+  }
+  await updateOrderTotal(orderId);
 });
 
 app.listen(3000, () => {
