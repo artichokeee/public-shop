@@ -207,6 +207,37 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   };
 
+  function handleCheckout() {
+    const authToken = localStorage.getItem("authToken");
+    if (!authToken) {
+      alert("Пожалуйста, войдите в систему для оформления заказа.");
+      return;
+    }
+
+    axios
+      .post(
+        "http://localhost:3000/orders",
+        {},
+        {
+          headers: { Authorization: `Bearer ${authToken}` },
+        }
+      )
+      .then((response) => {
+        alert("Заказ успешно оформлен!");
+        console.log(response.data);
+        // Здесь можно добавить дальнейшие действия, например, переход на страницу подтверждения заказа
+        window.location.href = "/payment"; // Пример перехода на страницу подтверждения
+      })
+      .catch((error) => {
+        console.error("Ошибка при оформлении заказа: ", error);
+        alert("Ошибка при оформлении заказа. Пожалуйста, попробуйте еще раз.");
+      });
+  }
+
+  document
+    .getElementById("checkout-button")
+    .addEventListener("click", handleCheckout);
+
   // Функция для отображения всплывающего сообщения
   function showNotification(message) {
     const notificationElement = document.createElement("div");

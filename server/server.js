@@ -1321,6 +1321,80 @@ app.get("/getCartCount", async (req, res) => {
   }
 });
 
+//информация обо всех товарах в заказе
+/**
+ * @swagger
+ * /user-orders:
+ *   get:
+ *     tags: [Orders]
+ *     summary: Получение списка всех заказов пользователя
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Список заказов успешно получен.
+ *       401:
+ *         description: Пользователь не авторизован.
+ *       500:
+ *         description: Ошибка сервера.
+ */
+app.get("/user-orders", async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) return res.status(401).send("Токен не предоставлен");
+
+  try {
+    const decoded = jwt.verify(token, secretKey);
+    const userId = decoded.id;
+
+    // Получаем все заказы пользователя, включая информацию о товарах в каждом заказе
+    const ordersQuery = `
+      SELECT o.order_id, o.total, oi.quantity, p.name, p.price, p.product_id
+      FROM orders o
+      JOIN order_items oi ON o.order_id = oi.order_id
+      JOIN products p ON oi.product_id = p.product_id
+      WHERE o.user_id = ?
+      ORDER BY o.order_id DESC`;
+
+    const [orders] = await promisePool.query(ordersQuery, [userId]);
+
+    if (orders.length === 0) {
+      return res.status(404).send("Заказы не найдены.");
+    }
+
+    // Группируем товары по заказам
+    const groupedOrders = orders.reduce((acc, current) => {
+      const order = acc.find((order) => order.order_id === current.order_id);
+      if (order) {
+        order.items.push({
+          product_id: current.product_id,
+          name: current.name,
+          price: current.price,
+          quantity: current.quantity,
+        });
+      } else {
+        acc.push({
+          order_id: current.order_id,
+          total: current.total,
+          items: [
+            {
+              product_id: current.product_id,
+              name: current.name,
+              price: current.price,
+              quantity: current.quantity,
+            },
+          ],
+        });
+      }
+      return acc;
+    }, []);
+
+    res.json(groupedOrders);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Ошибка сервера при получении заказов.");
+  }
+});
+
 // POST: Создание заказа из элементов в корзине
 /**
  * @swagger
