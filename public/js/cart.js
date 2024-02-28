@@ -100,19 +100,23 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   function updateCartDisplay() {
-    cartElement.innerHTML = "";
-    cartElements = {}; // Очищаем объект при обновлении корзины
+    cartElement.innerHTML = ""; // Очищаем содержимое элемента корзины
+    cartElements = {}; // Очищаем ссылки на элементы корзины
+
     cart.forEach((item) => {
       const cartItemElement = document.createElement("div");
       cartItemElement.id = `cart-item-${item.cart_item_id}`;
+      // Добавляем элемент с изображением товара
       cartItemElement.innerHTML = `
-            <p>${item.name}: <input type="number" value="${item.quantity}" min="1" id="quantity-${item.cart_item_id}" class="quantity-input"> шт. (Цена за шт.: ${item.price} руб.)</p>
-            <button onclick="window.removeFromCart(${item.cart_item_id})">Удалить</button>
-        `;
+        <img src="${item.imageUrl}" alt="${item.name}" style="width: 100px; height: auto;">
+        <p>${item.name}: <input type="number" value="${item.quantity}" min="1" id="quantity-${item.cart_item_id}" class="quantity-input"> шт. (Цена за шт.: ${item.price} руб.)</p>
+        <button onclick="window.removeFromCart(${item.cart_item_id})">Удалить</button>
+      `;
+
       cartElement.appendChild(cartItemElement);
       cartElements[item.cart_item_id] = cartItemElement; // Сохраняем ссылку на элемент
 
-      // Добавляем обработчик события change к полю ввода количества
+      // Добавляем обработчик события изменения количества
       document
         .getElementById(`quantity-${item.cart_item_id}`)
         .addEventListener("change", (e) => {
@@ -120,6 +124,7 @@ document.addEventListener("DOMContentLoaded", function () {
           window.updateProductQuantityInCart(item.cart_item_id, newQuantity);
         });
     });
+
     updateCartTotal();
   }
 
@@ -210,7 +215,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function handleCheckout() {
     const authToken = localStorage.getItem("authToken");
     if (!authToken) {
-      alert("Пожалуйста, войдите в систему для оформления заказа.");
+      showNotification("Пожалуйста, войдите в систему для оформления заказа.");
       return;
     }
 
@@ -223,14 +228,15 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       )
       .then((response) => {
-        alert("Заказ успешно оформлен!");
         console.log(response.data);
         // Здесь можно добавить дальнейшие действия, например, переход на страницу подтверждения заказа
         window.location.href = "/payment"; // Пример перехода на страницу подтверждения
       })
       .catch((error) => {
         console.error("Ошибка при оформлении заказа: ", error);
-        alert("Ошибка при оформлении заказа. Пожалуйста, попробуйте еще раз.");
+        showNotification(
+          "Ошибка при оформлении заказа. Пожалуйста, попробуйте еще раз."
+        );
       });
   }
 

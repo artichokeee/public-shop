@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!response.ok) {
         throw new Error("Ошибка при удалении продукта из заказа.");
       }
-      showNotification("Продукт удален из заказа и пермещен в корзину.");
+      showNotification("Продукт удален из заказа и перемещен в корзину.");
       fetchUserOrders(); // Повторный запрос информации о заказах после удаления продукта
       updateTotalAmount();
       updateCartCount();
@@ -89,13 +89,24 @@ document.addEventListener("DOMContentLoaded", function () {
   function displayOrders(orders) {
     const ordersContainer = document.getElementById("order-items-list");
     ordersContainer.innerHTML = ""; // Очищаем контейнер заказов перед отображением новых данных
+
     orders.forEach((order) => {
       const orderElement = document.createElement("div");
       orderElement.className = "order";
       let orderContent = `<h3>Заказ #${order.order_id}, Общая стоимость: ${order.total} USD</h3><ul>`;
+
       order.items.forEach((item) => {
-        orderContent += `<li>${item.name} - ${item.quantity} x ${item.price} USD <button onclick="deleteProductFromOrder(${order.order_id}, ${item.product_id})">Удалить</button> <button onclick="changeProductQuantityInOrder(${order.order_id}, ${item.product_id}, prompt('Новое количество:', ${item.quantity}))">Изменить количество</button></li>`;
+        // Проверяем статус бесплатной доставки для каждого товара
+        const shippingStatus = item.freeShipping ? "" : " (Платная доставка)";
+        orderContent += `
+                <li>
+                    <img src="${item.imageUrl}" alt="${item.name}" style="width: 50px; height: auto;">
+                    ${item.name} - ${item.quantity} x ${item.price} USD${shippingStatus}
+                    <button onclick="deleteProductFromOrder(${order.order_id}, ${item.product_id})">Удалить</button>
+                    <button onclick="changeProductQuantityInOrder(${order.order_id}, ${item.product_id}, prompt('Новое количество:', ${item.quantity}))">Изменить количество</button>
+                </li>`;
       });
+
       orderContent += "</ul>";
       orderElement.innerHTML = orderContent;
       ordersContainer.appendChild(orderElement);
