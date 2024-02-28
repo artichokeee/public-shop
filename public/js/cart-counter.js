@@ -37,4 +37,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Начальное обновление счетчика при загрузке страницы
   updateCartCount();
+  window.updateCartCount = updateCartCount;
 });

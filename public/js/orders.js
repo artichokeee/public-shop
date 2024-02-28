@@ -2,6 +2,12 @@ document.addEventListener("DOMContentLoaded", function () {
   async function fetchUserOrders() {
     try {
       const authToken = localStorage.getItem("authToken");
+      if (!authToken) {
+        console.error("Токен авторизации не найден.");
+        displayNoOrdersMessage();
+        return [];
+      }
+
       const response = await fetch("/user-orders", {
         method: "GET",
         headers: {
@@ -9,25 +15,32 @@ document.addEventListener("DOMContentLoaded", function () {
         },
       });
 
-      // Отдельная обработка для случая, когда заказы не найдены
       if (response.status === 404) {
-        displayNoOrdersMessage(); // Функция, отображающая сообщение об отсутствии заказов
-        return;
+        displayNoOrdersMessage();
+        return []; // Возвращаем пустой массив, чтобы вызывающий код мог корректно обработать этот случай
       }
 
       if (!response.ok) {
         throw new Error("Ошибка при получении информации о заказах.");
       }
+
       const orders = await response.json();
-      displayOrders(orders);
+      if (orders.length === 0) {
+        displayNoOrdersMessage();
+      } else {
+        displayOrders(orders); // Отображаем заказы, если они есть
+      }
+      return orders; // Возвращаем заказы для дальнейшей обработки
     } catch (error) {
-      console.error("Ошибка:", error);
+      console.error("Ошибка при получении информации о заказах:", error);
+      displayNoOrdersMessage();
+      return []; // В случае ошибки также возвращаем пустой массив
     }
   }
 
   function displayNoOrdersMessage() {
     const ordersContainer = document.getElementById("order-items-list");
-    ordersContainer.innerHTML = "<p>Заказы не найдены.</p>"; // Очищаем контейнер заказов и выводим сообщение
+    ordersContainer.innerHTML = "<p>Заказы не найдены.</p>";
   }
 
   async function deleteProductFromOrder(orderId, productId) {
@@ -44,6 +57,8 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       showNotification("Продукт удален из заказа и пермещен в корзину.");
       fetchUserOrders(); // Повторный запрос информации о заказах после удаления продукта
+      updateTotalAmount();
+      updateCartCount();
     } catch (error) {
       console.error("Ошибка:", error);
     }
@@ -65,6 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       showNotification("Количество продукта обновлено в заказе.");
       fetchUserOrders(); // Повторный запрос информации о заказах после изменения количества продукта
+      updateTotalAmount();
     } catch (error) {
       console.error("Ошибка:", error);
     }
