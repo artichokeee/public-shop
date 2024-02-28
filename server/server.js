@@ -1,5 +1,5 @@
 async function updateOrderTotal(orderId) {
-  const [totalResult] = await promisePool.query(
+  const [totalResult] = await pool.query(
     "SELECT SUM(p.price * oi.quantity) AS total " +
       "FROM order_items oi JOIN products p ON oi.product_id = p.product_id " +
       "WHERE oi.order_id = ?",
@@ -7,14 +7,15 @@ async function updateOrderTotal(orderId) {
   );
   const total = totalResult[0].total || 0;
 
-  await promisePool.query("UPDATE orders SET total = ? WHERE order_id = ?", [
+  await pool.query("UPDATE orders SET total = ? WHERE order_id = ?", [
     total,
     orderId,
   ]);
 }
 
 const express = require("express");
-const mysql = require("mysql2");
+const { body, validationResult } = require("express-validator");
+const mysql = require("mysql2/promise");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const fs = require("fs");
@@ -40,8 +41,6 @@ const pool = mysql.createPool({
   queueLimit: 0,
 });
 
-const promisePool = pool.promise();
-
 const swaggerOptions = {
   swaggerDefinition: {
     openapi: "3.0.0",
@@ -65,6 +64,31 @@ const swaggerOptions = {
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+const cardValidation = [
+  body("card_type").isIn(["VISA", "MasterCard"]),
+  body("card_code").isLength({ min: 16, max: 16 }).isNumeric(),
+  body("expiry_month")
+    .isInt({ min: 1, max: 12 })
+    .withMessage("Месяц истечения срока должен быть числом от 1 до 12."),
+  body("expiry_year")
+    .isInt({ min: 0, max: 99 })
+    .withMessage("Год истечения срока должен быть числом от 0 до 99."),
+  body("cvv")
+    .isLength({ min: 3, max: 3 })
+    .isNumeric()
+    .withMessage("CVV должен состоять из 3 цифр."),
+  body("email").isEmail().withMessage("Укажите действующий email."),
+];
+
+const paypalValidation = [
+  body("email_paypal")
+    .isEmail()
+    .withMessage("Укажите действующий email аккаунта PayPal."),
+  body("email")
+    .isEmail()
+    .withMessage("Укажите действующий email для отправки счета."),
+];
 
 app.use(cors()); // Включите CORS для всех маршрутов
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -166,7 +190,7 @@ let cart = [];
 
 app.get("/products", async (req, res) => {
   try {
-    const [rows] = await promisePool.query("SELECT * FROM products");
+    const [rows] = await pool.query("SELECT * FROM products");
     res.json(rows);
   } catch (err) {
     console.error("Ошибка при получении продуктов: ", err);
@@ -219,7 +243,7 @@ app.post("/login", async (req, res) => {
   }
 
   try {
-    const [users] = await promisePool.query(
+    const [users] = await pool.query(
       "SELECT * FROM users WHERE login = ? AND password = ?",
       [username, password]
     );
@@ -231,7 +255,7 @@ app.post("/login", async (req, res) => {
         { expiresIn: "100 days" }
       );
 
-      await promisePool.query("UPDATE users SET token = ? WHERE user_id = ?", [
+      await pool.query("UPDATE users SET token = ? WHERE user_id = ?", [
         token,
         user.user_id,
       ]);
@@ -296,7 +320,7 @@ app.post("/register", async (req, res) => {
   }
 
   try {
-    const [existingUser] = await promisePool.query(
+    const [existingUser] = await pool.query(
       "SELECT * FROM users WHERE login = ?",
       [username]
     );
@@ -305,10 +329,10 @@ app.post("/register", async (req, res) => {
       return res.status(400).send("Такой пользователь уже существует");
     }
 
-    await promisePool.query(
-      "INSERT INTO users (login, password) VALUES (?, ?)",
-      [username, password]
-    );
+    await pool.query("INSERT INTO users (login, password) VALUES (?, ?)", [
+      username,
+      password,
+    ]);
 
     res.json({ message: "Регистрация выполнена успешно" });
   } catch (err) {
@@ -396,10 +420,7 @@ app.post("/add-product", async (req, res) => {
   }
 
   try {
-    const [result] = await promisePool.query(
-      "INSERT INTO products SET ?",
-      newProduct
-    );
+    const [result] = await pool.query("INSERT INTO products SET ?", newProduct);
     res.send(`Продукт успешно добавлен с ID: ${result.insertId}`);
   } catch (err) {
     console.error("Ошибка при добавлении продукта: ", err);
@@ -438,10 +459,9 @@ app.get("/products/id/:productId", async (req, res) => {
   }
 
   try {
-    const [rows] = await promisePool.query(
-      "SELECT * FROM products WHERE id = ?",
-      [productId]
-    );
+    const [rows] = await pool.query("SELECT * FROM products WHERE id = ?", [
+      productId,
+    ]);
     const product = rows[0];
     if (!product) {
       return res.status(404).send("Товар с таким ID не найден");
@@ -488,7 +508,7 @@ app.get("/products/FindByCategory", async (req, res) => {
   }
 
   try {
-    const [rows] = await promisePool.query(
+    const [rows] = await pool.query(
       "SELECT * FROM products WHERE category = ?",
       [category]
     );
@@ -537,7 +557,7 @@ app.get("/products/FindByManufacturer", async (req, res) => {
   }
 
   try {
-    const [rows] = await promisePool.query(
+    const [rows] = await pool.query(
       "SELECT * FROM products WHERE manufacturer = ?",
       [manufacturer]
     );
@@ -589,7 +609,7 @@ app.get("/products/FindByShipping", async (req, res) => {
   }
 
   try {
-    const [rows] = await promisePool.query(
+    const [rows] = await pool.query(
       "SELECT * FROM products WHERE freeShipping = ?",
       [freeShipping === "true"]
     );
@@ -632,10 +652,9 @@ app.delete("/products/id/:productId", async (req, res) => {
   }
 
   try {
-    const [result] = await promisePool.query(
-      "DELETE FROM products WHERE id = ?",
-      [productId]
-    );
+    const [result] = await pool.query("DELETE FROM products WHERE id = ?", [
+      productId,
+    ]);
     if (result.affectedRows === 0) {
       return res.status(404).send("Товар с таким ID не найден");
     }
@@ -687,10 +706,10 @@ app.put("/products/id/:productId", async (req, res) => {
   }
 
   try {
-    const [result] = await promisePool.query(
-      "UPDATE products SET ? WHERE id = ?",
-      [productData, productId]
-    );
+    const [result] = await pool.query("UPDATE products SET ? WHERE id = ?", [
+      productData,
+      productId,
+    ]);
     if (result.affectedRows === 0) {
       return res.status(404).send("Товар с таким ID не найден");
     }
@@ -754,10 +773,10 @@ app.patch("/products/id/:productId", async (req, res) => {
   }
 
   try {
-    const [result] = await promisePool.query(
-      "UPDATE products SET ? WHERE id = ?",
-      [productUpdates, productId]
-    );
+    const [result] = await pool.query("UPDATE products SET ? WHERE id = ?", [
+      productUpdates,
+      productId,
+    ]);
     if (result.affectedRows === 0) {
       return res.status(404).send("Товар с таким ID не найден");
     }
@@ -823,7 +842,7 @@ app.post("/cart", async (req, res) => {
     }
 
     // Проверяем, существует ли уже товар в корзине для данного пользователя
-    const [existingCartItem] = await promisePool.query(
+    const [existingCartItem] = await pool.query(
       "SELECT * FROM cart_items WHERE user_id = ? AND product_id = ?",
       [userId, productId]
     );
@@ -831,7 +850,7 @@ app.post("/cart", async (req, res) => {
     if (existingCartItem.length > 0) {
       // Если товар уже присутствует в корзине, обновляем количество товара
       const updatedQuantity = existingCartItem[0].quantity + quantity;
-      await promisePool.query(
+      await pool.query(
         "UPDATE cart_items SET quantity = ? WHERE user_id = ? AND product_id = ?",
         [updatedQuantity, userId, productId]
       );
@@ -839,7 +858,7 @@ app.post("/cart", async (req, res) => {
       res.status(200).send(`Количество товара в корзине обновлено`);
     } else {
       // Если товар еще не присутствует в корзине, добавляем новую запись
-      await promisePool.query(
+      await pool.query(
         "INSERT INTO cart_items (user_id, product_id, quantity) VALUES (?, ?, ?)",
         [userId, productId, quantity]
       );
@@ -926,8 +945,8 @@ app.get("/getCart", async (req, res) => {
       });
     }
 
-    const [cartItems] = await promisePool.query(
-      "SELECT ci.cart_item_id, ci.quantity, p.product_id, p.name, p.price FROM cart_items ci JOIN products p ON ci.product_id = p.product_id WHERE ci.user_id = ?",
+    const [cartItems] = await pool.query(
+      "SELECT ci.cart_item_id, ci.quantity, p.product_id, p.name, p.price, p.imageUrl FROM cart_items ci JOIN products p ON ci.product_id = p.product_id WHERE ci.user_id = ?",
       [userId]
     );
 
@@ -1005,7 +1024,7 @@ app.patch("/cart/:cartItemId", async (req, res) => {
     }
 
     // Проверяем, существует ли товар в корзине
-    const [existingCartItem] = await promisePool.query(
+    const [existingCartItem] = await pool.query(
       "SELECT * FROM cart_items WHERE cart_item_id = ? AND user_id = ?",
       [cartItemId, userId]
     );
@@ -1015,7 +1034,7 @@ app.patch("/cart/:cartItemId", async (req, res) => {
     }
 
     // Обновляем количество товара в корзине
-    await promisePool.query(
+    await pool.query(
       "UPDATE cart_items SET quantity = ? WHERE cart_item_id = ? AND user_id = ?",
       [quantity, cartItemId, userId]
     );
@@ -1076,7 +1095,7 @@ app.delete("/cart/:cartItemId", async (req, res) => {
         .send("Ошибка при декодировании токена: отсутствует userId");
     }
 
-    const [result] = await promisePool.query(
+    const [result] = await pool.query(
       "DELETE FROM cart_items WHERE cart_item_id = ? AND user_id = ?",
       [cartItemId, userId]
     );
@@ -1134,7 +1153,7 @@ app.post("/users", async (req, res) => {
 
   try {
     // Проверяем, существует ли уже пользователь с таким именем пользователя
-    const [existingUsers] = await promisePool.query(
+    const [existingUsers] = await pool.query(
       "SELECT * FROM users WHERE login = ?",
       [username]
     );
@@ -1144,7 +1163,7 @@ app.post("/users", async (req, res) => {
     }
 
     // Добавляем нового пользователя
-    const [result] = await promisePool.query(
+    const [result] = await pool.query(
       "INSERT INTO users (login, password) VALUES (?, ?)",
       [username, password]
     );
@@ -1183,10 +1202,9 @@ app.delete("/users/:userId", async (req, res) => {
   }
 
   try {
-    const [result] = await promisePool.query(
-      "DELETE FROM users WHERE user_id = ?",
-      [userId]
-    );
+    const [result] = await pool.query("DELETE FROM users WHERE user_id = ?", [
+      userId,
+    ]);
     if (result.affectedRows === 0) {
       return res.status(404).send("Пользователь не найден");
     }
@@ -1288,7 +1306,7 @@ app.get("/products/filter", async (req, res) => {
   }
 
   try {
-    const [rows] = await promisePool.query(query, params);
+    const [rows] = await pool.query(query, params);
     res.json(rows);
   } catch (error) {
     console.error("Ошибка при фильтрации продуктов:", error);
@@ -1308,7 +1326,7 @@ app.get("/getCartCount", async (req, res) => {
     const decoded = jwt.verify(token, secretKey);
     const userId = decoded.id;
 
-    const [result] = await promisePool.query(
+    const [result] = await pool.query(
       "SELECT SUM(quantity) AS count FROM cart_items WHERE user_id = ?",
       [userId]
     );
@@ -1346,22 +1364,22 @@ app.get("/user-orders", async (req, res) => {
     const decoded = jwt.verify(token, secretKey);
     const userId = decoded.id;
 
-    // Получаем все заказы пользователя, включая информацию о товарах в каждом заказе
+    // Получаем все заказы пользователя, включая информацию о товарах и индивидуальном статусе бесплатной доставки каждого товара
     const ordersQuery = `
-      SELECT o.order_id, o.total, oi.quantity, p.name, p.price, p.product_id
+      SELECT o.order_id, o.total, oi.quantity, p.name, p.price, p.product_id, p.freeShipping, p.imageUrl
       FROM orders o
       JOIN order_items oi ON o.order_id = oi.order_id
       JOIN products p ON oi.product_id = p.product_id
       WHERE o.user_id = ?
       ORDER BY o.order_id DESC`;
 
-    const [orders] = await promisePool.query(ordersQuery, [userId]);
+    const [orders] = await pool.query(ordersQuery, [userId]);
 
     if (orders.length === 0) {
       return res.status(404).send("Заказы не найдены.");
     }
 
-    // Группируем товары по заказам
+    // Группируем товары по заказам и добавляем информацию о бесплатной доставке к каждому товару
     const groupedOrders = orders.reduce((acc, current) => {
       const order = acc.find((order) => order.order_id === current.order_id);
       if (order) {
@@ -1370,6 +1388,8 @@ app.get("/user-orders", async (req, res) => {
           name: current.name,
           price: current.price,
           quantity: current.quantity,
+          freeShipping: current.freeShipping === 1, // Преобразуем 1 в true, предполагая, что 1 означает true в вашей БД
+          imageUrl: current.imageUrl,
         });
       } else {
         acc.push({
@@ -1381,6 +1401,8 @@ app.get("/user-orders", async (req, res) => {
               name: current.name,
               price: current.price,
               quantity: current.quantity,
+              freeShipping: current.freeShipping === 1,
+              imageUrl: current.imageUrl,
             },
           ],
         });
@@ -1422,7 +1444,7 @@ app.post("/orders", async (req, res) => {
     const userId = decoded.id;
 
     // Вычисляем общую сумму товаров в корзине пользователя
-    const [totalResult] = await promisePool.query(
+    const [totalResult] = await pool.query(
       "SELECT SUM(p.price * ci.quantity) AS total " +
         "FROM cart_items ci " +
         "JOIN products p ON ci.product_id = p.product_id " +
@@ -1436,23 +1458,21 @@ app.post("/orders", async (req, res) => {
     }
 
     // Создаем новый заказ с общей суммой
-    const [orderResult] = await promisePool.query(
-      "INSERT INTO orders (user_id, status, total) VALUES (?, 'неоплаченно', ?)",
+    const [orderResult] = await pool.query(
+      "INSERT INTO orders (user_id, status, total) VALUES (?, 'unpaid', ?)",
       [userId, total]
     );
     const orderId = orderResult.insertId;
 
     // Перемещаем товары из корзины пользователя в заказ, используя orderId
-    await promisePool.query(
+    await pool.query(
       "INSERT INTO order_items (order_id, product_id, quantity) " +
         "SELECT ?, product_id, quantity FROM cart_items WHERE user_id = ?",
       [orderId, userId]
     );
 
     // Очищаем корзину пользователя после перемещения товаров в заказ
-    await promisePool.query("DELETE FROM cart_items WHERE user_id = ?", [
-      userId,
-    ]);
+    await pool.query("DELETE FROM cart_items WHERE user_id = ?", [userId]);
 
     res.status(201).json({ message: "Заказ успешно создан", orderId: orderId });
   } catch (error) {
@@ -1508,7 +1528,7 @@ app.delete("/orders/:orderId/products/:productId", async (req, res) => {
     const userId = decoded.id;
 
     // Проверка наличия заказа у пользователя
-    const [order] = await promisePool.query(
+    const [order] = await pool.query(
       "SELECT * FROM orders WHERE order_id = ? AND user_id = ?",
       [orderId, userId]
     );
@@ -1520,32 +1540,32 @@ app.delete("/orders/:orderId/products/:productId", async (req, res) => {
     }
 
     // Извлечение количества удаляемого товара
-    const [[{ quantity }]] = await promisePool.query(
+    const [[{ quantity }]] = await pool.query(
       "SELECT quantity FROM order_items WHERE order_id = ? AND product_id = ?",
       [orderId, productId]
     );
 
     // Удаление продукта из order_items
-    await promisePool.query(
+    await pool.query(
       "DELETE FROM order_items WHERE order_id = ? AND product_id = ?",
       [orderId, productId]
     );
 
     // Проверка существования товара в корзине
-    const [[cartItem]] = await promisePool.query(
+    const [[cartItem]] = await pool.query(
       "SELECT quantity FROM cart_items WHERE user_id = ? AND product_id = ?",
       [userId, productId]
     );
 
     if (cartItem) {
       // Если товар уже в корзине, обновляем его количество
-      await promisePool.query(
+      await pool.query(
         "UPDATE cart_items SET quantity = quantity + ? WHERE user_id = ? AND product_id = ?",
         [quantity, userId, productId]
       );
     } else {
       // Если товара нет в корзине, добавляем его
-      await promisePool.query(
+      await pool.query(
         "INSERT INTO cart_items (user_id, product_id, quantity) VALUES (?, ?, ?)",
         [userId, productId, quantity]
       );
@@ -1622,7 +1642,7 @@ app.patch("/orders/:orderId/products/:productId", async (req, res) => {
     const userId = decoded.id;
 
     // Проверка наличия заказа у пользователя
-    const [order] = await promisePool.query(
+    const [order] = await pool.query(
       "SELECT * FROM orders WHERE order_id = ? AND user_id = ?",
       [orderId, userId]
     );
@@ -1634,7 +1654,7 @@ app.patch("/orders/:orderId/products/:productId", async (req, res) => {
     }
 
     // Обновление количества в order_items
-    await promisePool.query(
+    await pool.query(
       "UPDATE order_items SET quantity = ? WHERE order_id = ? AND product_id = ?",
       [quantity, orderId, productId]
     );
@@ -1650,6 +1670,233 @@ app.patch("/orders/:orderId/products/:productId", async (req, res) => {
   }
   await updateOrderTotal(orderId);
 });
+
+//Оплата
+/**
+ * @swagger
+ * /pay:
+ *   post:
+ *     tags:
+ *       - Payment
+ *     summary: Оплата заказов пользователя
+ *     description: Процесс оплаты заказов с использованием карты или PayPal. Валидация входных данных осуществляется в зависимости от выбранного метода оплаты.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - card_type
+ *             properties:
+ *               card_type:
+ *                 type: string
+ *                 enum: [VISA, MasterCard, Paypal]
+ *                 description: Тип карты для оплаты. Для PayPal выберите 'Paypal'.
+ *               card_code:
+ *                 type: string
+ *                 description: Код карты, требуется если тип оплаты VISA или MasterCard.
+ *               expiry_month:
+ *                 type: integer
+ *                 description: Месяц истечения срока карты, требуется если тип оплаты VISA или MasterCard.
+ *               expiry_year:
+ *                 type: integer
+ *                 description: Год истечения срока карты, требуется если тип оплаты VISA или MasterCard.
+ *               cvv:
+ *                 type: string
+ *                 description: CVV код карты, требуется если тип оплаты VISA или MasterCard.
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Email для отправки счета, требуется для всех типов оплаты.
+ *               email_paypal:
+ *                 type: string
+ *                 format: email
+ *                 description: Email аккаунта PayPal, требуется если тип оплаты 'Paypal'.
+ *     responses:
+ *       200:
+ *         description: Платеж успешно проведен и заказы оплачены.
+ *       400:
+ *         description: Ошибка в данных карты или недостаточно средств/Данный тип карты или платежной системы не поддерживается.
+ *       401:
+ *         description: Пользователь не авторизован.
+ *       500:
+ *         description: Ошибка сервера при обработке платежа.
+ */
+
+function cardValidationMiddleware(req, res, next) {
+  // Запускаем все валидации
+  cardValidation.forEach((validation) => validation.run(req));
+
+  // Проверяем результат валидации
+  const result = validationResult(req);
+  if (result.isEmpty()) {
+    next();
+  } else {
+    res.status(400).json({ errors: result.array() });
+  }
+}
+
+function paypalValidationMiddleware(req, res, next) {
+  // Запускаем все валидации
+  paypalValidation.forEach((validation) => validation.run(req));
+
+  // Проверяем результат валидации
+  const result = validationResult(req);
+  if (result.isEmpty()) {
+    next();
+  } else {
+    res.status(400).json({ errors: result.array() });
+  }
+}
+
+app.post(
+  "/pay",
+  // Выбираем нужные валидации в зависимости от типа оплаты
+  (req, res, next) => {
+    const { card_type } = req.body;
+    // Определяем, какую валидацию использовать на основе типа карты
+    const validationMiddleware =
+      card_type === "Paypal"
+        ? paypalValidationMiddleware
+        : cardValidationMiddleware;
+    // Выполняем выбранную валидацию
+    validationMiddleware(req, res, next);
+  },
+  async (req, res) => {
+    const {
+      card_type,
+      card_code,
+      expiry_month,
+      expiry_year,
+      cvv,
+      email,
+      email_paypal,
+    } = req.body;
+
+    let decoded;
+    try {
+      const authToken = req.headers.authorization?.split(" ")[1];
+      if (!authToken) {
+        return res.status(401).send("Требуется авторизация.");
+      }
+      decoded = jwt.verify(authToken, secretKey);
+    } catch (error) {
+      return res.status(401).send("Неверный токен авторизации.");
+    }
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+
+    try {
+      let paymentProcessed = false;
+      let totalOrderCost = 0;
+      let deliveryCharge = 0;
+
+      // Получаем общую стоимость заказов пользователя с учётом стоимости доставки
+      const [orders] = await pool.query(
+        `
+      SELECT o.order_id, o.total, p.freeShipping
+      FROM orders o
+      JOIN order_items oi ON o.order_id = oi.order_id
+      JOIN products p ON oi.product_id = p.product_id
+      WHERE o.user_id = ? AND o.status = 'unpaid'`,
+        [decoded.id]
+      );
+
+      if (orders.length > 0) {
+        // Рассчитываем общую стоимость и проверяем наличие платной доставки
+        orders.forEach((order) => {
+          totalOrderCost += parseFloat(order.total);
+          if (!order.freeShipping) {
+            deliveryCharge = 5; // Добавляем стоимость доставки, если есть хотя бы один товар с платной доставкой
+          }
+        });
+      }
+
+      totalOrderCost += deliveryCharge; // Добавляем стоимость доставки к общей сумме
+
+      // Обработка платежа по карте
+      if (["VISA", "MasterCard"].includes(card_type)) {
+        const [cards] = await pool.query(
+          "SELECT * FROM card_info WHERE card_code = ? AND expiry_month = ? AND expiry_year = ? AND cvv = ?",
+          [card_code, expiry_month, expiry_year, cvv]
+        );
+
+        if (cards.length === 0) {
+          return res.status(400).send("Данные карты неверны.");
+        } else if (cards[0].status !== "valid") {
+          return res.status(400).send("Карта недействительна.");
+        } else if (cards[0].balance < totalOrderCost) {
+          return res.status(400).send("Недостаточно средств на карте.");
+        }
+
+        // Списание средств с карты
+        await pool.query(
+          "UPDATE card_info SET balance = balance - ? WHERE card_id = ?",
+          [totalOrderCost, cards[0].card_id]
+        );
+        paymentProcessed = true;
+      }
+
+      // Обработка платежа через PayPal
+      else if (card_type === "Paypal") {
+        const [paypalAccounts] = await pool.query(
+          "SELECT * FROM paypal_info WHERE email = ?",
+          [email_paypal]
+        );
+
+        if (
+          paypalAccounts.length === 0 ||
+          paypalAccounts[0].balance < totalOrderCost
+        ) {
+          return res
+            .status(400)
+            .send("Учетная запись PayPal неверна или недостаточно средств");
+        }
+
+        // Списание средств с PayPal
+        await pool.query(
+          "UPDATE paypal_info SET balance = balance - ? WHERE paypal_id = ?",
+          [totalOrderCost, paypalAccounts[0].paypal_id]
+        );
+        paymentProcessed = true;
+      } else {
+        return res
+          .status(400)
+          .send("Данный тип карты или платежной системы не поддерживается");
+      }
+
+      // Если платеж прошел успешно, обновляем статус заказов
+      if (paymentProcessed) {
+        // Обновляем статус заказов на "оплачено" для данного пользователя
+        await pool.query(
+          'UPDATE orders SET status = "paid" WHERE user_id = ? AND status = "unpaid"',
+          [decoded.id]
+        );
+
+        // Удаляем купленные товары из order_items для оплаченных заказов данного пользователя
+        await pool.query(
+          `DELETE FROM order_items WHERE order_id IN (
+                SELECT order_id FROM orders WHERE user_id = ? AND status = "paid"
+            )`,
+          [decoded.id]
+        );
+
+        res.send(
+          "Платеж успешно проведен, заказы оплачены, и товары удалены из заказов."
+        );
+      } else {
+        res.status(400).send("Платеж не был обработан");
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Ошибка сервера при обработке платежа");
+    }
+  }
+);
 
 app.listen(3000, () => {
   console.log("Сервер запущен на http://localhost:3000");
