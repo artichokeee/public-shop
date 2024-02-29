@@ -1489,7 +1489,9 @@ app.post("/orders", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Ошибка сервера при создании заказа.");
-  } // POST: Создание заказа из элементов в корзине
+  }
+
+  // POST: Создание заказа из элементов в корзине
   /**
    * @swagger
    * /orders:
@@ -1545,10 +1547,7 @@ app.post("/orders", async (req, res) => {
 
       // Очищаем корзину пользователя после перемещения товаров в заказ
       await pool.query("DELETE FROM cart_items WHERE user_id = ?", [userId]);
-
-      // Обновляем общую сумму заказов
       await updateOrdersTotal(userId);
-
       res
         .status(201)
         .json({ message: "Заказ успешно создан", orderId: orderId });
@@ -1841,18 +1840,14 @@ app.post("/orders", async (req, res) => {
       res.status(400).json({ errors: result.array() });
     }
   }
-
   app.post(
     "/pay",
-    // Выбираем нужные валидации в зависимости от типа оплаты
     (req, res, next) => {
       const { card_type } = req.body;
-      // Определяем, какую валидацию использовать на основе типа карты
       const validationMiddleware =
         card_type === "Paypal"
           ? paypalValidationMiddleware
           : cardValidationMiddleware;
-      // Выполняем выбранную валидацию
       validationMiddleware(req, res, next);
     },
     async (req, res) => {
@@ -1862,7 +1857,6 @@ app.post("/orders", async (req, res) => {
         expiry_month,
         expiry_year,
         cvv,
-        email,
         email_paypal,
       } = req.body;
 
@@ -1882,36 +1876,25 @@ app.post("/orders", async (req, res) => {
         return res.status(422).json({ errors: errors.array() });
       }
 
+      await updateOrdersTotal(decoded.id);
+
+      let paymentProcessed = false;
+
+      const [[ordersTotal]] = await pool.query(
+        "SELECT total FROM orders_total WHERE user_id = ?",
+        [decoded.id]
+      );
+
+      if (!ordersTotal || ordersTotal.total <= 0) {
+        return res
+          .status(404)
+          .send("Нет заказов для оплаты или сумма равна нулю.");
+      }
+
+      const totalOrderCost = ordersTotal.total;
+
       try {
-        let paymentProcessed = false;
-        let totalOrderCost = 0;
-        let deliveryCharge = 0;
-
-        // Получаем общую стоимость заказов пользователя с учётом стоимости доставки
-        const [orders] = await pool.query(
-          `
-      SELECT o.order_id, o.total, p.freeShipping
-      FROM orders o
-      JOIN order_items oi ON o.order_id = oi.order_id
-      JOIN products p ON oi.product_id = p.product_id
-      WHERE o.user_id = ? AND o.status = 'unpaid'`,
-          [decoded.id]
-        );
-
-        if (orders.length > 0) {
-          // Рассчитываем общую стоимость и проверяем наличие платной доставки
-          orders.forEach((order) => {
-            totalOrderCost += parseFloat(order.total);
-            if (!order.freeShipping) {
-              deliveryCharge = 5; // Добавляем стоимость доставки, если есть хотя бы один товар с платной доставкой
-            }
-          });
-        }
-
-        totalOrderCost += deliveryCharge; // Добавляем стоимость доставки к общей сумме
-
-        // Обработка платежа по карте
-        if (["VISA", "MasterCard"].includes(card_type)) {
+        if (card_type === "VISA" || card_type === "MasterCard") {
           const [cards] = await pool.query(
             "SELECT * FROM card_info WHERE card_code = ? AND expiry_month = ? AND expiry_year = ? AND cvv = ?",
             [card_code, expiry_month, expiry_year, cvv]
@@ -1925,31 +1908,25 @@ app.post("/orders", async (req, res) => {
             return res.status(400).send("Недостаточно средств на карте.");
           }
 
-          // Списание средств с карты
           await pool.query(
             "UPDATE card_info SET balance = balance - ? WHERE card_id = ?",
             [totalOrderCost, cards[0].card_id]
           );
           paymentProcessed = true;
-        }
-
-        // Обработка платежа через PayPal
-        else if (card_type === "Paypal") {
+        } else if (card_type === "Paypal") {
           const [paypalAccounts] = await pool.query(
             "SELECT * FROM paypal_info WHERE email = ?",
             [email_paypal]
           );
 
-          if (
-            paypalAccounts.length === 0 ||
-            paypalAccounts[0].balance < totalOrderCost
-          ) {
+          if (paypalAccounts.length === 0) {
+            return res.status(400).send("Учетная запись PayPal неверна.");
+          } else if (paypalAccounts[0].balance < totalOrderCost) {
             return res
               .status(400)
-              .send("Учетная запись PayPal неверна или недостаточно средств");
+              .send("Недостаточно средств на счете PayPal.");
           }
 
-          // Списание средств с PayPal
           await pool.query(
             "UPDATE paypal_info SET balance = balance - ? WHERE paypal_id = ?",
             [totalOrderCost, paypalAccounts[0].paypal_id]
@@ -1958,34 +1935,40 @@ app.post("/orders", async (req, res) => {
         } else {
           return res
             .status(400)
-            .send("Данный тип карты или платежной системы не поддерживается");
+            .send("Данный тип карты или платежной системы не поддерживается.");
         }
 
-        // Если платеж прошел успешно, обновляем статус заказов
         if (paymentProcessed) {
-          // Обновляем статус заказов на "оплачено" для данного пользователя
           await pool.query(
-            'UPDATE orders SET status = "paid" WHERE user_id = ? AND status = "unpaid"',
+            "UPDATE orders SET status = 'paid' WHERE user_id = ? AND status = 'unpaid'",
             [decoded.id]
           );
 
-          // Удаляем купленные товары из order_items для оплаченных заказов данного пользователя
-          await pool.query(
-            `DELETE FROM order_items WHERE order_id IN (
-                SELECT order_id FROM orders WHERE user_id = ? AND status = "paid"
-            )`,
+          const [paidOrders] = await pool.query(
+            "SELECT order_id FROM orders WHERE user_id = ? AND status = 'paid'",
             [decoded.id]
           );
 
-          res.send(
-            "Платеж успешно проведен, заказы оплачены, и товары удалены из заказов."
+          const orderIds = paidOrders.map((order) => order.order_id);
+
+          if (orderIds.length > 0) {
+            await pool.query("DELETE FROM order_items WHERE order_id IN (?)", [
+              orderIds,
+            ]);
+          }
+
+          await pool.query(
+            "UPDATE orders_total SET total = 0 WHERE user_id = ?",
+            [decoded.id]
           );
+
+          res.send("Платеж успешно проведен, заказы оплачены.");
         } else {
-          res.status(400).send("Платеж не был обработан");
+          res.status(400).send("Платеж не был обработан.");
         }
       } catch (error) {
         console.error(error);
-        res.status(500).send("Ошибка сервера при обработке платежа");
+        res.status(500).send("Ошибка сервера при обработке платежа.");
       }
     }
   );
