@@ -1,16 +1,27 @@
 async function updateOrderTotal(orderId) {
-  const [totalResult] = await pool.query(
-    "SELECT SUM(p.price * oi.quantity) AS total " +
-      "FROM order_items oi JOIN products p ON oi.product_id = p.product_id " +
-      "WHERE oi.order_id = ?",
-    [orderId]
-  );
-  const total = totalResult[0].total || 0;
+  try {
+    // Получаем общую сумму заказа без учета платной доставки
+    const [result] = await pool.query(
+      `SELECT SUM(p.price * oi.quantity) AS total
+       FROM order_items oi
+       JOIN products p ON oi.product_id = p.product_id
+       WHERE oi.order_id = ?`,
+      [orderId]
+    );
 
-  await pool.query("UPDATE orders SET total = ? WHERE order_id = ?", [
-    total,
-    orderId,
-  ]);
+    let total = result[0]?.total || 0;
+
+    // Обновляем общую сумму заказа в базе данных
+    await pool.query("UPDATE orders SET total = ? WHERE order_id = ?", [
+      total,
+      orderId,
+    ]);
+
+    return total; // Возвращаем обновленную сумму для возможной дальнейшей обработки
+  } catch (error) {
+    console.error("Ошибка при обновлении общей суммы заказа:", error);
+    throw error; // Возможно, здесь стоит выбросить ошибку для внешней обработки
+  }
 }
 
 const express = require("express");
@@ -1478,425 +1489,629 @@ app.post("/orders", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Ошибка сервера при создании заказа.");
-  }
-});
+  } // POST: Создание заказа из элементов в корзине
+  /**
+   * @swagger
+   * /orders:
+   *   post:
+   *     tags: [Orders]
+   *     summary: Создание заказа из товаров в корзине пользователя
+   *     security:
+   *       - bearerAuth: []
+   *     description: Создает новый заказ, перемещает все товары из корзины пользователя в заказ и очищает корзину.
+   *     responses:
+   *       201:
+   *         description: Заказ успешно создан.
+   *       401:
+   *         description: Пользователь не авторизован.
+   *       500:
+   *         description: Ошибка сервера.
+   */
+  app.post("/orders", async (req, res) => {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).send("Токен не предоставлен");
 
-// DELETE: Удаление продукта из заказа
-/**
- * @swagger
- * /orders/{orderId}/products/{productId}:
- *   delete:
- *     tags: [Orders]
- *     summary: Удаление товара из заказа
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: orderId
- *         required: true
- *         schema:
- *           type: integer
- *         description: Идентификатор заказа
- *       - in: path
- *         name: productId
- *         required: true
- *         schema:
- *           type: integer
- *         description: Идентификатор товара
- *     responses:
- *       200:
- *         description: Товар успешно удален из заказа.
- *       400:
- *         description: Неверный запрос.
- *       401:
- *         description: Пользователь не авторизован.
- *       404:
- *         description: Товар или заказ не найдены.
- *       500:
- *         description: Ошибка сервера.
- */
-app.delete("/orders/:orderId/products/:productId", async (req, res) => {
-  const { orderId, productId } = req.params;
-  const token = req.headers.authorization?.split(" ")[1];
-
-  if (!token) {
-    return res.status(401).send("Токен не предоставлен.");
-  }
-
-  try {
-    const decoded = jwt.verify(token, secretKey);
-    const userId = decoded.id;
-
-    // Проверка наличия заказа у пользователя
-    const [order] = await pool.query(
-      "SELECT * FROM orders WHERE order_id = ? AND user_id = ?",
-      [orderId, userId]
-    );
-
-    if (order.length === 0) {
-      return res
-        .status(404)
-        .send("Заказ не найден или у вас нет к нему доступа.");
-    }
-
-    // Извлечение количества удаляемого товара
-    const [[{ quantity }]] = await pool.query(
-      "SELECT quantity FROM order_items WHERE order_id = ? AND product_id = ?",
-      [orderId, productId]
-    );
-
-    // Удаление продукта из order_items
-    await pool.query(
-      "DELETE FROM order_items WHERE order_id = ? AND product_id = ?",
-      [orderId, productId]
-    );
-
-    // Проверка существования товара в корзине
-    const [[cartItem]] = await pool.query(
-      "SELECT quantity FROM cart_items WHERE user_id = ? AND product_id = ?",
-      [userId, productId]
-    );
-
-    if (cartItem) {
-      // Если товар уже в корзине, обновляем его количество
-      await pool.query(
-        "UPDATE cart_items SET quantity = quantity + ? WHERE user_id = ? AND product_id = ?",
-        [quantity, userId, productId]
-      );
-    } else {
-      // Если товара нет в корзине, добавляем его
-      await pool.query(
-        "INSERT INTO cart_items (user_id, product_id, quantity) VALUES (?, ?, ?)",
-        [userId, productId, quantity]
-      );
-    }
-
-    await updateOrderTotal(orderId);
-    res.send("Продукт возвращен в корзину и удален из заказа.");
-  } catch (error) {
-    console.error(error);
-    if (error.name === "JsonWebTokenError") {
-      res.status(401).send("Недействительный токен.");
-    } else {
-      res.status(500).send("Ошибка сервера");
-    }
-  }
-});
-
-// PATCH: Изменение количества продуктов в заказе
-/**
- * @swagger
- * /orders/{orderId}/products/{productId}:
- *   patch:
- *     tags: [Orders]
- *     summary: Изменение количества товара в заказе
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: orderId
- *         required: true
- *         schema:
- *           type: integer
- *         description: Идентификатор заказа
- *       - in: path
- *         name: productId
- *         required: true
- *         schema:
- *           type: integer
- *         description: Идентификатор товара
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               quantity:
- *                 type: integer
- *                 description: Новое количество товара
- *     responses:
- *       200:
- *         description: Количество товара в заказе успешно обновлено.
- *       400:
- *         description: Неверный запрос.
- *       401:
- *         description: Пользователь не авторизован.
- *       404:
- *         description: Товар или заказ не найдены.
- *       500:
- *         description: Ошибка сервера.
- */
-// PATCH: Изменение количества продуктов в заказе
-app.patch("/orders/:orderId/products/:productId", async (req, res) => {
-  const { orderId, productId } = req.params;
-  const { quantity } = req.body;
-  const token = req.headers.authorization?.split(" ")[1];
-
-  if (!token) {
-    return res.status(401).send("Токен не предоставлен.");
-  }
-
-  try {
-    const decoded = jwt.verify(token, secretKey);
-    const userId = decoded.id;
-
-    // Проверка наличия заказа у пользователя
-    const [order] = await pool.query(
-      "SELECT * FROM orders WHERE order_id = ? AND user_id = ?",
-      [orderId, userId]
-    );
-
-    if (order.length === 0) {
-      return res
-        .status(404)
-        .send("Заказ не найден или у вас нет к нему доступа.");
-    }
-
-    // Обновление количества в order_items
-    await pool.query(
-      "UPDATE order_items SET quantity = ? WHERE order_id = ? AND product_id = ?",
-      [quantity, orderId, productId]
-    );
-    await updateOrderTotal(orderId);
-    res.send("Количество товара обновлено в заказе");
-  } catch (error) {
-    console.error(error);
-    if (error.name === "JsonWebTokenError") {
-      res.status(401).send("Недействительный токен.");
-    } else {
-      res.status(500).send("Ошибка сервера");
-    }
-  }
-  await updateOrderTotal(orderId);
-});
-
-//Оплата
-/**
- * @swagger
- * /pay:
- *   post:
- *     tags:
- *       - Payment
- *     summary: Оплата заказов пользователя
- *     description: Процесс оплаты заказов с использованием карты или PayPal. Валидация входных данных осуществляется в зависимости от выбранного метода оплаты.
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - card_type
- *             properties:
- *               card_type:
- *                 type: string
- *                 enum: [VISA, MasterCard, Paypal]
- *                 description: Тип карты для оплаты. Для PayPal выберите 'Paypal'.
- *               card_code:
- *                 type: string
- *                 description: Код карты, требуется если тип оплаты VISA или MasterCard.
- *               expiry_month:
- *                 type: integer
- *                 description: Месяц истечения срока карты, требуется если тип оплаты VISA или MasterCard.
- *               expiry_year:
- *                 type: integer
- *                 description: Год истечения срока карты, требуется если тип оплаты VISA или MasterCard.
- *               cvv:
- *                 type: string
- *                 description: CVV код карты, требуется если тип оплаты VISA или MasterCard.
- *               email:
- *                 type: string
- *                 format: email
- *                 description: Email для отправки счета, требуется для всех типов оплаты.
- *               email_paypal:
- *                 type: string
- *                 format: email
- *                 description: Email аккаунта PayPal, требуется если тип оплаты 'Paypal'.
- *     responses:
- *       200:
- *         description: Платеж успешно проведен и заказы оплачены.
- *       400:
- *         description: Ошибка в данных карты или недостаточно средств/Данный тип карты или платежной системы не поддерживается.
- *       401:
- *         description: Пользователь не авторизован.
- *       500:
- *         description: Ошибка сервера при обработке платежа.
- */
-
-function cardValidationMiddleware(req, res, next) {
-  // Запускаем все валидации
-  cardValidation.forEach((validation) => validation.run(req));
-
-  // Проверяем результат валидации
-  const result = validationResult(req);
-  if (result.isEmpty()) {
-    next();
-  } else {
-    res.status(400).json({ errors: result.array() });
-  }
-}
-
-function paypalValidationMiddleware(req, res, next) {
-  // Запускаем все валидации
-  paypalValidation.forEach((validation) => validation.run(req));
-
-  // Проверяем результат валидации
-  const result = validationResult(req);
-  if (result.isEmpty()) {
-    next();
-  } else {
-    res.status(400).json({ errors: result.array() });
-  }
-}
-
-app.post(
-  "/pay",
-  // Выбираем нужные валидации в зависимости от типа оплаты
-  (req, res, next) => {
-    const { card_type } = req.body;
-    // Определяем, какую валидацию использовать на основе типа карты
-    const validationMiddleware =
-      card_type === "Paypal"
-        ? paypalValidationMiddleware
-        : cardValidationMiddleware;
-    // Выполняем выбранную валидацию
-    validationMiddleware(req, res, next);
-  },
-  async (req, res) => {
-    const {
-      card_type,
-      card_code,
-      expiry_month,
-      expiry_year,
-      cvv,
-      email,
-      email_paypal,
-    } = req.body;
-
-    let decoded;
     try {
-      const authToken = req.headers.authorization?.split(" ")[1];
-      if (!authToken) {
-        return res.status(401).send("Требуется авторизация.");
+      const decoded = jwt.verify(token, secretKey);
+      const userId = decoded.id;
+
+      // Вычисляем общую сумму товаров в корзине пользователя
+      const [totalResult] = await pool.query(
+        "SELECT SUM(p.price * ci.quantity) AS total " +
+          "FROM cart_items ci " +
+          "JOIN products p ON ci.product_id = p.product_id " +
+          "WHERE ci.user_id = ?",
+        [userId]
+      );
+      const total = totalResult[0].total;
+
+      if (total === null) {
+        return res.status(400).send("Корзина пуста.");
       }
-      decoded = jwt.verify(authToken, secretKey);
-    } catch (error) {
-      return res.status(401).send("Неверный токен авторизации.");
-    }
 
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() });
+      // Создаем новый заказ с общей суммой
+      const [orderResult] = await pool.query(
+        "INSERT INTO orders (user_id, status, total) VALUES (?, 'unpaid', ?)",
+        [userId, total]
+      );
+      const orderId = orderResult.insertId;
+
+      // Перемещаем товары из корзины пользователя в заказ, используя orderId
+      await pool.query(
+        "INSERT INTO order_items (order_id, product_id, quantity) " +
+          "SELECT ?, product_id, quantity FROM cart_items WHERE user_id = ?",
+        [orderId, userId]
+      );
+
+      // Очищаем корзину пользователя после перемещения товаров в заказ
+      await pool.query("DELETE FROM cart_items WHERE user_id = ?", [userId]);
+
+      // Обновляем общую сумму заказов
+      await updateOrdersTotal(userId);
+
+      res
+        .status(201)
+        .json({ message: "Заказ успешно создан", orderId: orderId });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Ошибка сервера при создании заказа.");
+    }
+  });
+
+  // DELETE: Удаление продукта из заказа
+  /**
+   * @swagger
+   * /orders/{orderId}/products/{productId}:
+   *   delete:
+   *     tags: [Orders]
+   *     summary: Удаление товара из заказа
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: orderId
+   *         required: true
+   *         schema:
+   *           type: integer
+   *         description: Идентификатор заказа
+   *       - in: path
+   *         name: productId
+   *         required: true
+   *         schema:
+   *           type: integer
+   *         description: Идентификатор товара
+   *     responses:
+   *       200:
+   *         description: Товар успешно удален из заказа.
+   *       400:
+   *         description: Неверный запрос.
+   *       401:
+   *         description: Пользователь не авторизован.
+   *       404:
+   *         description: Товар или заказ не найдены.
+   *       500:
+   *         description: Ошибка сервера.
+   */
+  app.delete("/orders/:orderId/products/:productId", async (req, res) => {
+    const { orderId, productId } = req.params;
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).send("Токен не предоставлен.");
     }
 
     try {
-      let paymentProcessed = false;
-      let totalOrderCost = 0;
-      let deliveryCharge = 0;
+      const decoded = jwt.verify(token, secretKey);
+      const userId = decoded.id;
 
-      // Получаем общую стоимость заказов пользователя с учётом стоимости доставки
-      const [orders] = await pool.query(
+      // Начинаем транзакцию
+      const connection = await pool.getConnection();
+      await connection.beginTransaction();
+
+      // Проверка наличия заказа у пользователя
+      const [order] = await connection.query(
+        "SELECT * FROM orders WHERE order_id = ? AND user_id = ?",
+        [orderId, userId]
+      );
+
+      if (order.length === 0) {
+        await connection.rollback();
+        connection.release();
+        return res
+          .status(404)
+          .send("Заказ не найден или у вас нет к нему доступа.");
+      }
+
+      // Получаем количество удаляемого товара
+      const [[{ quantity }]] = await connection.query(
+        "SELECT quantity FROM order_items WHERE order_id = ? AND product_id = ?",
+        [orderId, productId]
+      );
+
+      // Удаление продукта из order_items
+      await connection.query(
+        "DELETE FROM order_items WHERE order_id = ? AND product_id = ?",
+        [orderId, productId]
+      );
+
+      // Возвращаем товар в корзину пользователя
+      await connection.query(
         `
+      INSERT INTO cart_items (user_id, product_id, quantity)
+      VALUES (?, ?, ?)
+      ON DUPLICATE KEY UPDATE quantity = quantity + ?`,
+        [userId, productId, quantity, quantity]
+      );
+
+      // Проверяем, остались ли еще товары в заказе
+      const [itemsLeft] = await connection.query(
+        "SELECT COUNT(*) AS count FROM order_items WHERE order_id = ?",
+        [orderId]
+      );
+
+      if (itemsLeft[0].count === 0) {
+        // Удаляем заказ, если в нем не осталось товаров
+        await connection.query("DELETE FROM orders WHERE order_id = ?", [
+          orderId,
+        ]);
+      }
+
+      // Фиксируем транзакцию
+      await connection.commit();
+      connection.release();
+      await updateOrderTotal(orderId);
+      await updateOrdersTotal(userId); // Обновляем общую сумму заказов
+      res.send("Продукт успешно возвращен в корзину и удален из заказа.");
+    } catch (error) {
+      // Откатываем транзакцию в случае ошибки
+      await connection.rollback();
+      connection.release();
+      console.error(error);
+      if (error.name === "JsonWebTokenError") {
+        res.status(401).send("Недействительный токен.");
+      } else {
+        res.status(500).send("Ошибка сервера.");
+      }
+    }
+  });
+
+  // PATCH: Изменение количества продуктов в заказе
+  /**
+   * @swagger
+   * /orders/{orderId}/products/{productId}:
+   *   patch:
+   *     tags: [Orders]
+   *     summary: Изменение количества товара в заказе
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: orderId
+   *         required: true
+   *         schema:
+   *           type: integer
+   *         description: Идентификатор заказа
+   *       - in: path
+   *         name: productId
+   *         required: true
+   *         schema:
+   *           type: integer
+   *         description: Идентификатор товара
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               quantity:
+   *                 type: integer
+   *                 description: Новое количество товара
+   *     responses:
+   *       200:
+   *         description: Количество товара в заказе успешно обновлено.
+   *       400:
+   *         description: Неверный запрос.
+   *       401:
+   *         description: Пользователь не авторизован.
+   *       404:
+   *         description: Товар или заказ не найдены.
+   *       500:
+   *         description: Ошибка сервера.
+   */
+  // PATCH: Изменение количества продуктов в заказе
+  app.patch("/orders/:orderId/products/:productId", async (req, res) => {
+    const { orderId, productId } = req.params;
+    const { quantity } = req.body;
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).send("Токен не предоставлен.");
+    }
+
+    try {
+      const decoded = jwt.verify(token, secretKey);
+      const userId = decoded.id;
+
+      // Проверка наличия заказа у пользователя
+      const [order] = await pool.query(
+        "SELECT * FROM orders WHERE order_id = ? AND user_id = ?",
+        [orderId, userId]
+      );
+
+      if (order.length === 0) {
+        return res
+          .status(404)
+          .send("Заказ не найден или у вас нет к нему доступа.");
+      }
+
+      // Обновление количества в order_items
+      await pool.query(
+        "UPDATE order_items SET quantity = ? WHERE order_id = ? AND product_id = ?",
+        [quantity, orderId, productId]
+      );
+      await updateOrderTotal(orderId);
+      await updateOrdersTotal(userId);
+      res.send("Количество товара обновлено в заказе");
+    } catch (error) {
+      console.error(error);
+      if (error.name === "JsonWebTokenError") {
+        res.status(401).send("Недействительный токен.");
+      } else {
+        res.status(500).send("Ошибка сервера");
+      }
+    }
+  });
+
+  //Оплата
+  /**
+   * @swagger
+   * /pay:
+   *   post:
+   *     tags:
+   *       - Payment
+   *     summary: Оплата заказов пользователя
+   *     description: Процесс оплаты заказов с использованием карты или PayPal. Валидация входных данных осуществляется в зависимости от выбранного метода оплаты.
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             required:
+   *               - card_type
+   *             properties:
+   *               card_type:
+   *                 type: string
+   *                 enum: [VISA, MasterCard, Paypal]
+   *                 description: Тип карты для оплаты. Для PayPal выберите 'Paypal'.
+   *               card_code:
+   *                 type: string
+   *                 description: Код карты, требуется если тип оплаты VISA или MasterCard.
+   *               expiry_month:
+   *                 type: integer
+   *                 description: Месяц истечения срока карты, требуется если тип оплаты VISA или MasterCard.
+   *               expiry_year:
+   *                 type: integer
+   *                 description: Год истечения срока карты, требуется если тип оплаты VISA или MasterCard.
+   *               cvv:
+   *                 type: string
+   *                 description: CVV код карты, требуется если тип оплаты VISA или MasterCard.
+   *               email:
+   *                 type: string
+   *                 format: email
+   *                 description: Email для отправки счета, требуется для всех типов оплаты.
+   *               email_paypal:
+   *                 type: string
+   *                 format: email
+   *                 description: Email аккаунта PayPal, требуется если тип оплаты 'Paypal'.
+   *     responses:
+   *       200:
+   *         description: Платеж успешно проведен и заказы оплачены.
+   *       400:
+   *         description: Ошибка в данных карты или недостаточно средств/Данный тип карты или платежной системы не поддерживается.
+   *       401:
+   *         description: Пользователь не авторизован.
+   *       500:
+   *         description: Ошибка сервера при обработке платежа.
+   */
+
+  function cardValidationMiddleware(req, res, next) {
+    // Запускаем все валидации
+    cardValidation.forEach((validation) => validation.run(req));
+
+    // Проверяем результат валидации
+    const result = validationResult(req);
+    if (result.isEmpty()) {
+      next();
+    } else {
+      res.status(400).json({ errors: result.array() });
+    }
+  }
+
+  function paypalValidationMiddleware(req, res, next) {
+    // Запускаем все валидации
+    paypalValidation.forEach((validation) => validation.run(req));
+
+    // Проверяем результат валидации
+    const result = validationResult(req);
+    if (result.isEmpty()) {
+      next();
+    } else {
+      res.status(400).json({ errors: result.array() });
+    }
+  }
+
+  app.post(
+    "/pay",
+    // Выбираем нужные валидации в зависимости от типа оплаты
+    (req, res, next) => {
+      const { card_type } = req.body;
+      // Определяем, какую валидацию использовать на основе типа карты
+      const validationMiddleware =
+        card_type === "Paypal"
+          ? paypalValidationMiddleware
+          : cardValidationMiddleware;
+      // Выполняем выбранную валидацию
+      validationMiddleware(req, res, next);
+    },
+    async (req, res) => {
+      const {
+        card_type,
+        card_code,
+        expiry_month,
+        expiry_year,
+        cvv,
+        email,
+        email_paypal,
+      } = req.body;
+
+      let decoded;
+      try {
+        const authToken = req.headers.authorization?.split(" ")[1];
+        if (!authToken) {
+          return res.status(401).send("Требуется авторизация.");
+        }
+        decoded = jwt.verify(authToken, secretKey);
+      } catch (error) {
+        return res.status(401).send("Неверный токен авторизации.");
+      }
+
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+      }
+
+      try {
+        let paymentProcessed = false;
+        let totalOrderCost = 0;
+        let deliveryCharge = 0;
+
+        // Получаем общую стоимость заказов пользователя с учётом стоимости доставки
+        const [orders] = await pool.query(
+          `
       SELECT o.order_id, o.total, p.freeShipping
       FROM orders o
       JOIN order_items oi ON o.order_id = oi.order_id
       JOIN products p ON oi.product_id = p.product_id
       WHERE o.user_id = ? AND o.status = 'unpaid'`,
-        [decoded.id]
-      );
+          [decoded.id]
+        );
 
-      if (orders.length > 0) {
-        // Рассчитываем общую стоимость и проверяем наличие платной доставки
-        orders.forEach((order) => {
-          totalOrderCost += parseFloat(order.total);
-          if (!order.freeShipping) {
-            deliveryCharge = 5; // Добавляем стоимость доставки, если есть хотя бы один товар с платной доставкой
+        if (orders.length > 0) {
+          // Рассчитываем общую стоимость и проверяем наличие платной доставки
+          orders.forEach((order) => {
+            totalOrderCost += parseFloat(order.total);
+            if (!order.freeShipping) {
+              deliveryCharge = 5; // Добавляем стоимость доставки, если есть хотя бы один товар с платной доставкой
+            }
+          });
+        }
+
+        totalOrderCost += deliveryCharge; // Добавляем стоимость доставки к общей сумме
+
+        // Обработка платежа по карте
+        if (["VISA", "MasterCard"].includes(card_type)) {
+          const [cards] = await pool.query(
+            "SELECT * FROM card_info WHERE card_code = ? AND expiry_month = ? AND expiry_year = ? AND cvv = ?",
+            [card_code, expiry_month, expiry_year, cvv]
+          );
+
+          if (cards.length === 0) {
+            return res.status(400).send("Данные карты неверны.");
+          } else if (cards[0].status !== "valid") {
+            return res.status(400).send("Карта недействительна.");
+          } else if (cards[0].balance < totalOrderCost) {
+            return res.status(400).send("Недостаточно средств на карте.");
           }
+
+          // Списание средств с карты
+          await pool.query(
+            "UPDATE card_info SET balance = balance - ? WHERE card_id = ?",
+            [totalOrderCost, cards[0].card_id]
+          );
+          paymentProcessed = true;
+        }
+
+        // Обработка платежа через PayPal
+        else if (card_type === "Paypal") {
+          const [paypalAccounts] = await pool.query(
+            "SELECT * FROM paypal_info WHERE email = ?",
+            [email_paypal]
+          );
+
+          if (
+            paypalAccounts.length === 0 ||
+            paypalAccounts[0].balance < totalOrderCost
+          ) {
+            return res
+              .status(400)
+              .send("Учетная запись PayPal неверна или недостаточно средств");
+          }
+
+          // Списание средств с PayPal
+          await pool.query(
+            "UPDATE paypal_info SET balance = balance - ? WHERE paypal_id = ?",
+            [totalOrderCost, paypalAccounts[0].paypal_id]
+          );
+          paymentProcessed = true;
+        } else {
+          return res
+            .status(400)
+            .send("Данный тип карты или платежной системы не поддерживается");
+        }
+
+        // Если платеж прошел успешно, обновляем статус заказов
+        if (paymentProcessed) {
+          // Обновляем статус заказов на "оплачено" для данного пользователя
+          await pool.query(
+            'UPDATE orders SET status = "paid" WHERE user_id = ? AND status = "unpaid"',
+            [decoded.id]
+          );
+
+          // Удаляем купленные товары из order_items для оплаченных заказов данного пользователя
+          await pool.query(
+            `DELETE FROM order_items WHERE order_id IN (
+                SELECT order_id FROM orders WHERE user_id = ? AND status = "paid"
+            )`,
+            [decoded.id]
+          );
+
+          res.send(
+            "Платеж успешно проведен, заказы оплачены, и товары удалены из заказов."
+          );
+        } else {
+          res.status(400).send("Платеж не был обработан");
+        }
+      } catch (error) {
+        console.error(error);
+        res.status(500).send("Ошибка сервера при обработке платежа");
+      }
+    }
+  );
+
+  // Общая сумма за все заказы
+  /**
+   * @swagger
+   * /update-orders-total:
+   *   post:
+   *     tags:
+   *       - Orders
+   *     summary: Обновление общей суммы заказов пользователя
+   *     description: Вызов этого метода приведет к пересчету и обновлению общей суммы всех неоплаченных заказов пользователя.
+   *     security:
+   *       - bearerAuth: []
+   *     responses:
+   *       200:
+   *         description: Общая сумма заказов успешно обновлена. Возвращает общую сумму заказов.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                   example: Общая сумма заказов обновлена
+   *                 ordersTotal:
+   *                   type: number
+   *                   example: 123.45
+   *       401:
+   *         description: Пользователь не авторизован или токен недействителен.
+   *       500:
+   *         description: Внутренняя ошибка сервера.
+   */
+
+  app.post("/update-orders-total", async (req, res) => {
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ message: "Токен не предоставлен" });
+    }
+
+    try {
+      const decoded = jwt.verify(token, secretKey);
+      const userId = decoded.id;
+
+      if (!userId) {
+        return res.status(401).json({
+          message: "Ошибка при декодировании токена: отсутствует userId",
         });
       }
 
-      totalOrderCost += deliveryCharge; // Добавляем стоимость доставки к общей сумме
-
-      // Обработка платежа по карте
-      if (["VISA", "MasterCard"].includes(card_type)) {
-        const [cards] = await pool.query(
-          "SELECT * FROM card_info WHERE card_code = ? AND expiry_month = ? AND expiry_year = ? AND cvv = ?",
-          [card_code, expiry_month, expiry_year, cvv]
-        );
-
-        if (cards.length === 0) {
-          return res.status(400).send("Данные карты неверны.");
-        } else if (cards[0].status !== "valid") {
-          return res.status(400).send("Карта недействительна.");
-        } else if (cards[0].balance < totalOrderCost) {
-          return res.status(400).send("Недостаточно средств на карте.");
-        }
-
-        // Списание средств с карты
-        await pool.query(
-          "UPDATE card_info SET balance = balance - ? WHERE card_id = ?",
-          [totalOrderCost, cards[0].card_id]
-        );
-        paymentProcessed = true;
-      }
-
-      // Обработка платежа через PayPal
-      else if (card_type === "Paypal") {
-        const [paypalAccounts] = await pool.query(
-          "SELECT * FROM paypal_info WHERE email = ?",
-          [email_paypal]
-        );
-
-        if (
-          paypalAccounts.length === 0 ||
-          paypalAccounts[0].balance < totalOrderCost
-        ) {
-          return res
-            .status(400)
-            .send("Учетная запись PayPal неверна или недостаточно средств");
-        }
-
-        // Списание средств с PayPal
-        await pool.query(
-          "UPDATE paypal_info SET balance = balance - ? WHERE paypal_id = ?",
-          [totalOrderCost, paypalAccounts[0].paypal_id]
-        );
-        paymentProcessed = true;
-      } else {
-        return res
-          .status(400)
-          .send("Данный тип карты или платежной системы не поддерживается");
-      }
-
-      // Если платеж прошел успешно, обновляем статус заказов
-      if (paymentProcessed) {
-        // Обновляем статус заказов на "оплачено" для данного пользователя
-        await pool.query(
-          'UPDATE orders SET status = "paid" WHERE user_id = ? AND status = "unpaid"',
-          [decoded.id]
-        );
-
-        // Удаляем купленные товары из order_items для оплаченных заказов данного пользователя
-        await pool.query(
-          `DELETE FROM order_items WHERE order_id IN (
-                SELECT order_id FROM orders WHERE user_id = ? AND status = "paid"
-            )`,
-          [decoded.id]
-        );
-
-        res.send(
-          "Платеж успешно проведен, заказы оплачены, и товары удалены из заказов."
-        );
-      } else {
-        res.status(400).send("Платеж не был обработан");
-      }
+      // Обновляем общую сумму заказов пользователя и получаем итоговую сумму
+      const totalSumWithDelivery = await updateOrdersTotal(userId);
+      // Отправляем обновленную итоговую сумму в ответе
+      res.json({
+        message: "Общая сумма заказов обновлена",
+        totalSumWithDelivery, // Отправляем итоговую сумму с учетом доставки, если применимо
+      });
     } catch (error) {
-      console.error(error);
-      res.status(500).send("Ошибка сервера при обработке платежа");
+      if (error.name === "JsonWebTokenError") {
+        res.status(401).json({ message: "Недействительный токен" });
+      } else {
+        console.error(
+          "Ошибка сервера при обновлении общей суммы заказов:",
+          error
+        );
+        res.status(500).json({ message: "Ошибка сервера" });
+      }
+    }
+  });
+
+  async function updateOrdersTotal(userId) {
+    try {
+      // Получаем общую сумму всех заказов пользователя
+      const [ordersTotalResult] = await pool.query(
+        `SELECT o.order_id, SUM(o.total) AS ordersTotal
+      FROM orders o
+      WHERE o.user_id = ? AND o.status = 'unpaid'
+      GROUP BY o.order_id`,
+        [userId]
+      );
+
+      let totalSum = 0;
+      let deliveryChargeAdded = false;
+
+      for (let row of ordersTotalResult) {
+        let orderTotal = parseFloat(row.ordersTotal) || 0;
+        let orderId = row.order_id;
+
+        // Проверяем, есть ли платная доставка в каком-либо заказе
+        const [deliveryChargeResult] = await pool.query(
+          `SELECT EXISTS (
+          SELECT 1
+          FROM order_items oi
+          JOIN products p ON oi.product_id = p.product_id
+          WHERE oi.order_id = ? AND p.freeShipping = 0
+        ) AS chargeRequired`,
+          [orderId]
+        );
+
+        if (deliveryChargeResult[0].chargeRequired) {
+          deliveryChargeAdded = true;
+        }
+
+        // Суммируем суммы всех заказов
+        totalSum += orderTotal;
+      }
+
+      // Добавляем 5 долларов за доставку, если необходимо
+      if (deliveryChargeAdded) {
+        totalSum += 5;
+      }
+      // Обновляем или создаем запись в orders_total
+      await pool.query(
+        `INSERT INTO orders_total (user_id, total) VALUES (?, ?)
+       ON DUPLICATE KEY UPDATE total = VALUES(total)`,
+        [userId, totalSum] // Исправлено здесь: замена total на totalSum
+      );
+      return totalSum; // Возвращаем общую сумму с учётом доставки
+    } catch (error) {
+      console.error("Ошибка при обновлении общей суммы заказов:", error);
+      throw error;
     }
   }
-);
+});
 
 app.listen(3000, () => {
   console.log("Сервер запущен на http://localhost:3000");
