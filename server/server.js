@@ -137,6 +137,10 @@ app.get("/payment", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/html/payment.html"));
 });
 
+app.get("/history", (req, res) => {
+  res.sendFile(path.join(__dirname, "../public/html/history.html"));
+});
+
 let cart = [];
 
 /**

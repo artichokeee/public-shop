@@ -244,30 +244,6 @@ document.addEventListener("DOMContentLoaded", function () {
     .getElementById("checkout-button")
     .addEventListener("click", handleCheckout);
 
-  // Функция для отображения всплывающего сообщения
-  function showNotification(message) {
-    const notificationElement = document.createElement("div");
-    notificationElement.classList.add("notification");
-    notificationElement.textContent = message;
-    notificationElement.style.backgroundColor = "#ff6347"; // Красный цвет фона
-    notificationElement.style.color = "#fff"; // Белый цвет текста
-    notificationElement.style.padding = "10px"; // Поля внутри уведомления
-    notificationElement.style.borderRadius = "5px"; // Скругленные углы
-    notificationElement.style.position = "fixed"; // Фиксированное положение
-    notificationElement.style.top = "20px"; // Отступ сверху
-    notificationElement.style.left = "50%"; // Положение по центру
-    notificationElement.style.transform = "translateX(-50%)"; // Центрирование по горизонтали
-    notificationElement.style.zIndex = "1000"; // Значение z-index, чтобы уведомление было поверх других элементов
-    notificationElement.style.boxShadow = "0px 4px 6px rgba(0, 0, 0, 0.1)"; // Тень
-
-    document.body.appendChild(notificationElement);
-
-    // Удаляем уведомление через 5 секунд
-    setTimeout(() => {
-      notificationElement.remove();
-    }, 2000);
-  }
-
   updateCartDisplay();
   updateCartCount();
 });

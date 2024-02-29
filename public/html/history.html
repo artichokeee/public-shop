@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Контакты</title>
+    <title>История заказов</title>
     <link rel="stylesheet" href="../css/styles.css" />
   </head>
   <body>
@@ -25,16 +24,25 @@
         <button id="logout-button" style="display: none">Выйти</button>
       </nav>
     </header>
-    <div class="container">
-      <div class="contact-info">
-        <h1>Контакты</h1>
-        <p><strong>Телефон:</strong> +7 (XXX) XXX-XX-XX</p>
-        <p><strong>Email:</strong> info@example.com</p>
-        <p>
-          <strong>Адрес:</strong> ул. Примерная, д. 123, г. Примерово, Россия
-        </p>
-        <p><strong>График работы:</strong> Пн-Пт с 9:00 до 18:00</p>
-      </div>
+
+    <div class="orders-history">
+      <h1>История заказов</h1>
+      <table id="orders-table">
+        <thead>
+          <tr>
+            <th>Номер заказа</th>
+            <th>Товар</th>
+            <th>Название продукта</th>
+            <th>Количество</th>
+            <th>Общая стоимость</th>
+            <th>Дата заказа</th>
+            <th>Дата доставки</th>
+          </tr>
+        </thead>
+        <tbody id="orders-table-body">
+          <!-- Здесь будут строки таблицы, добавляемые через JS -->
+        </tbody>
+      </table>
     </div>
 
     <footer>
@@ -44,8 +52,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="../js/general.js"></script>
-    <script src="../js/login.js"></script>
+    <script src="../js/authCheck.js"></script>
     <script src="../js/cart-counter.js"></script>
+    <script src="../js/login.js"></script>
+    <script src="../js/ordersHistory.js"></script>
     <script src="../js/app.js"></script>
   </body>
 </html>
