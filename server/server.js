@@ -1893,6 +1893,22 @@ app.post("/orders", async (req, res) => {
 
       const totalOrderCost = ordersTotal.total;
 
+      // Получаем текущую дату и время
+      const paymentDate = new Date();
+      // Рассчитываем дату доставки, добавляя 5 дней к текущей дате
+      const deliveryDate = new Date(paymentDate);
+      deliveryDate.setDate(deliveryDate.getDate() + 5);
+
+      // Форматируем даты для MySQL
+      const paymentDateFormatted = paymentDate
+        .toISOString()
+        .slice(0, 19)
+        .replace("T", " ");
+      const deliveryDateFormatted = deliveryDate
+        .toISOString()
+        .slice(0, 19)
+        .replace("T", " ");
+
       try {
         if (card_type === "VISA" || card_type === "MasterCard") {
           const [cards] = await pool.query(
@@ -1920,7 +1936,11 @@ app.post("/orders", async (req, res) => {
           );
 
           if (paypalAccounts.length === 0) {
-            return res.status(400).send("Учетная запись PayPal неверна.");
+            return res.status(400).send("Учетная запись PayPal не существует.");
+          } else if (paypalAccounts[0].status === "invalid") {
+            return res.status(400).send("Учетная запись PayPal не существует.");
+          } else if (paypalAccounts[0].status === "blocked") {
+            return res.status(400).send("Учетная запись PayPal заблокирована.");
           } else if (paypalAccounts[0].balance < totalOrderCost) {
             return res
               .status(400)
@@ -1939,30 +1959,38 @@ app.post("/orders", async (req, res) => {
         }
 
         if (paymentProcessed) {
-          await pool.query(
-            "UPDATE orders SET status = 'paid' WHERE user_id = ? AND status = 'unpaid'",
+          // Получаем ID заказов до изменения их статуса
+          const [unpaidOrders] = await pool.query(
+            "SELECT order_id FROM orders WHERE user_id = ? AND status = 'unpaid'",
             [decoded.id]
           );
 
-          const [paidOrders] = await pool.query(
-            "SELECT order_id FROM orders WHERE user_id = ? AND status = 'paid'",
-            [decoded.id]
-          );
+          const orderIds = unpaidOrders.map((order) => order.order_id);
 
-          const orderIds = paidOrders.map((order) => order.order_id);
-
+          // Обновляем статус заказов и добавляем даты платежа и доставки
           if (orderIds.length > 0) {
-            await pool.query("DELETE FROM order_items WHERE order_id IN (?)", [
-              orderIds,
-            ]);
+            await pool.query(
+              `UPDATE orders 
+              SET status = 'paid', payment_date = ?, delivery_date = ?
+              WHERE order_id IN (?)`,
+              [paymentDateFormatted, deliveryDateFormatted, orderIds]
+            );
           }
 
+          // Удаляем товары из order_items для оплаченных заказов
+          await pool.query("DELETE FROM order_items WHERE order_id IN (?)", [
+            orderIds,
+          ]);
+
+          // Обнуляем общую сумму в orders_total после успешной оплаты
           await pool.query(
             "UPDATE orders_total SET total = 0 WHERE user_id = ?",
             [decoded.id]
           );
 
-          res.send("Платеж успешно проведен, заказы оплачены.");
+          res.send(
+            "Платеж успешно проведен, заказы оплачены и даты обновлены."
+          );
         } else {
           res.status(400).send("Платеж не был обработан.");
         }
