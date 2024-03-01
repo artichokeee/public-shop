@@ -428,17 +428,23 @@ button[type="submit"]:hover {
   #order-summary p {
     font-size: 1.2em;
   }
+
+  .order-history-image {
+    width: auto; /* или установите фиксированную ширину, если нужно */
+    height: 50px; /* рекомендуемая высота */
+    object-fit: contain; /* чтобы изображение сохраняло пропорции */
+  }
   
   #total-price {
     font-weight: bold;
   }
 
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  
-  @keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
-  }
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}

@@ -1844,6 +1844,7 @@ app.post("/orders", async (req, res) => {
       res.status(400).json({ errors: result.array() });
     }
   }
+
   app.post(
     "/pay",
     (req, res, next) => {
@@ -2147,6 +2148,44 @@ app.post("/orders", async (req, res) => {
       console.error("Ошибка при обновлении общей суммы заказов:", error);
       throw error;
     }
+  }
+});
+
+// Получение данных об оплаченных заказах
+
+app.get("/api/orders-history", async (req, res) => {
+  // Получение токена и его проверка
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) {
+    return res.status(401).json({ message: "Токен не предоставлен" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, secretKey);
+    const userId = decoded.id;
+    if (!userId) {
+      return res.status(401).json({
+        message: "Ошибка при декодировании токена: отсутствует userId",
+      });
+    }
+
+    // Запрос к базе данных для получения истории заказов
+    const query = `
+      SELECT o.order_id, o.payment_date, o.delivery_date, o.total AS totalPrice,
+             p.imageUrl AS productImage, p.name AS productName,
+             op.quantity
+      FROM orders o
+      JOIN order_items_paid op ON o.order_id = op.order_id
+      JOIN products p ON op.product_id = p.product_id
+      WHERE o.user_id = ?
+      ORDER BY o.payment_date DESC
+    `;
+
+    const [ordersHistory] = await pool.query(query, [userId]);
+    res.json(ordersHistory);
+  } catch (error) {
+    console.error("Ошибка при получении истории заказов: ", error);
+    res.status(500).json({ message: "Ошибка сервера" });
   }
 });
 
