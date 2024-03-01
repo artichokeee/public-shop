@@ -356,115 +356,108 @@ h1 {
   text-align: center;
 }
 
+.payment-form {
+  margin: 20px; /* Добавляем отступы со всех сторон для формы оплаты */
+  background-color: #fff; /* Устанавливаем белый фон для формы */
+  padding: 20px; /* Добавляем внутренние отступы для формы */
+  border-radius: 5px; /* Скругляем углы формы */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Добавляем тень для формы */
+}
+
 .payment-form input[type="text"],
 .payment-form input[type="number"],
 .payment-form select,
 .payment-form input[type="email"] {
-width: 200px; /* Фиксируем ширину полей */
-padding: 8px;
-margin-bottom: 10px;
-border: 1px solid #ccc;
-border-radius: 4px;
+  width: 100%; /* Устанавливаем ширину полей на 100% */
+  padding: 10px; /* Добавляем паддинг для полей */
+  margin: 5px 0; /* Добавляем верхний и нижний отступы между полями */
+  border: 1px solid #ccc; /* Устанавливаем границу для полей */
+  border-radius: 4px; /* Скругляем углы полей */
+}
+
+.payment-form .error-message {
+  width: 100%; /* Устанавливаем ширину сообщения об ошибке равной ширине инпутов */
+  margin-top: 5px; /* Добавляем отступ сверху для сообщения об ошибке */
+  font-size: 0.9em; /* Уменьшаем размер шрифта для сообщения об ошибке */
+  color: #f44336; /* Устанавливаем красный цвет текста для сообщения об ошибке */
+  text-align: left; /* Выравниваем текст сообщения об ошибке по левому краю */
+}
+
+.payment-form button[type="submit"] {
+  margin-top: 20px; /* Добавляем отступ сверху для кнопки */
+  width: auto; /* Возвращаем ширину кнопки к автоматической */
+  padding: 10px 20px; /* Устанавливаем паддинг для кнопки */
+}
+
+/* Дополнительные стили для выравнивания элементов внутри .payment-form */
+.payment-form > div, .payment-method {
+  margin-bottom: 10px; /* Добавляем отступ снизу между блоками в форме */
 }
 
 .payment-methods input[type="radio"] {
-margin-right: 10px;
+  transform: scale(0.8); /* Уменьшаем радиокнопки */
+  margin-right: 5px; /* Добавляем отступ справа от радиокнопки */
 }
 
 .payment-methods label {
-display: inline-flex;
-align-items: center;
-margin-right: 15px; /* Добавляем отступ справа между методами оплаты */
-}
-
-/* Стили для полей ввода даты */
-.expiry-date input {
-width: 95px; /* Устанавливаем фиксированную ширину для полей ММ и ГГ */
-display: inline-block;
-}
-
-/* Стили для кнопок и элементов формы */
-button[type="submit"],
-.payment-methods label {
-width: auto; /* Устанавливаем автоматическую ширину для кнопок */
-padding: 10px 15px; /* Устанавливаем паддинг для кнопок */
-background-color: #4CAF50;
-color: white;
-border: none;
-border-radius: 4px;
-cursor: pointer;
-text-align: center;
-}
-
-button[type="submit"]:hover {
-background-color: #45a049;
-}
-
-/* Дополнительные стили для выравнивания и отступов */
-.payment-form {
-display: flex;
-flex-direction: column;
-align-items: flex-start; /* Выравниваем элементы формы к началу контейнера */
-}
-
-.payment-form > div {
-margin-bottom: 10px; /* Добавляем отступ снизу между группами полей */
-}
-
-#card-details, #paypal-email, #receipt-email, .expiry-date, #shipping-fee, .payment-methods {
-width: 100%; /* Задаем ширину контейнерам, чтобы они занимали всю доступную ширину формы */
-}
-
-.payment-methods {
-margin-bottom: 20px; /* Добавляем отступ снизу для методов оплаты */
-}
-
-.payment-logo {
-width: 100px; /* Фиксированная ширина логотипов */
-height: auto; /* Высота подстраивается автоматически для сохранения пропорций */
-}
-
-#order-items-list {
-  margin-bottom: 20px;
-}
-
-#order-items-list h2 {
-  margin-bottom: 10px;
-}
-
-#order-items-list .order-item {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-bottom: 10px;
-  display: flex;
-  justify-content: space-between;
+  display: inline-flex;
   align-items: center;
-}
-
-#order-items-list .order-item p {
-  margin: 0;
-  flex-grow: 1;
-}
-
-#order-items-list .order-item input[type='number'] {
-  width: 50px;
-  margin-right: 10px;
-}
-
-#order-items-list .order-item button {
-  background-color: #ff6347;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
+  margin-right: 15px; /* Добавляем отступ справа между методами оплаты */
   cursor: pointer;
 }
 
-#order-items-list .order-item button:hover {
-  background-color: #e53e3e;
+.payment-logo {
+  width: 80px; /* Уменьшаем размер логотипов методов оплаты */
+  height: auto; /* Автоматический подбор высоты для сохранения пропорций */
+  margin-left: 5px; /* Добавляем отступ слева от логотипа */
 }
 
+#order-items-list .order-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+#order-items-list .order-item p {
+  margin: 0 15px 0 0; /* Добавляем отступ справа для текста */
+  flex-grow: 1;
+}
+
+#order-items-list .order-item img {
+  width: 50px; /* Уточняем или корректируем размеры изображений, если необходимо */
+  height: auto;
+  margin-right: 15px; /* Отступ справа от изображения */
+}
+
+/* Стиль для кнопки "Удалить" в заказах */
+.order-item button {
+  padding: 5px 10px; /* Паддинг для кнопки, аналогично кнопке в корзине */
+  background-color: #f44336; /* Цвет фона кнопки "Удалить", такой же как в корзине */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.order-item button:hover {
+  background-color: #d32f2f; /* Цвет при наведении, такой же как в корзине */
+}
+
+/* Стиль для элемента изменения количества товаров в заказах */
+.order-item input[type='number'] {
+  width: 60px; /* Ширина поля ввода, аналогично корзине */
+  padding: 5px; /* Паддинг для поля ввода */
+  text-align: center; /* Выравнивание текста по центру */
+  margin-right: 10px; /* Отступ справа, для отделения от других элементов */
+  border: 1px solid #ccc; /* Граница поля ввода */
+  border-radius: 4px; /* Скругление углов поля ввода */
+}
 /* Стили для блока суммы заказа */
 #order-summary {
   padding: 10px;
@@ -498,13 +491,4 @@ to { opacity: 1; }
 @keyframes fadeOut {
 from { opacity: 1; }
 to { opacity: 0; }
-}
-
-/* Добавляем стили для подсветки ошибочных полей */
-input.error {
-border-color: red;
-}
-
-.error-message {
-color: red;
 }

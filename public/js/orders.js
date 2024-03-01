@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function displayOrders(orders) {
     const ordersContainer = document.getElementById("order-items-list");
-    ordersContainer.innerHTML = ""; // Очищаем контейнер заказов перед отображением новых данных
+    ordersContainer.innerHTML = ""; // Очищаем контейнер заказов
 
     orders.forEach((order) => {
       const orderElement = document.createElement("div");
@@ -96,14 +96,16 @@ document.addEventListener("DOMContentLoaded", function () {
       let orderContent = `<h3>Заказ #${order.order_id}, Общая стоимость: ${order.total} USD</h3><ul>`;
 
       order.items.forEach((item) => {
-        // Проверяем статус бесплатной доставки для каждого товара
-        const shippingStatus = item.freeShipping ? "" : " (Платная доставка)";
         orderContent += `
-                <li>
-                    <img src="${item.imageUrl}" alt="${item.name}" style="width: 50px; height: auto;">
-                    ${item.name} - ${item.quantity} x ${item.price} USD${shippingStatus}
-                    <button onclick="deleteProductFromOrder(${order.order_id}, ${item.product_id})">Удалить</button>
-                    <button onclick="changeProductQuantityInOrder(${order.order_id}, ${item.product_id}, prompt('Новое количество:', ${item.quantity}))">Изменить количество</button>
+                <li style="display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <img src="${item.imageUrl}" alt="${item.name}" style="width: 50px; height: auto;">
+                        <span style="flex: 1;">${item.name} - ${item.quantity} x ${item.price} USD</span>
+                    </div>
+                    <div style="display: flex; align-items: center; width: 70%;">
+                        <input class="quantity-input" type="number" value="${item.quantity}" onchange="changeProductQuantityInOrder(${order.order_id}, ${item.product_id}, this.value)" style="width: 10%; text-align: center;">
+                        <button class="delete-button" onclick="deleteProductFromOrder(${order.order_id}, ${item.product_id})" style="width: 150%; margin-left: 10px; padding: 5px 10px; background-color: #f44336; color: white; border-radius: 4px; cursor: pointer;">Удалить</button>
+                    </div>
                 </li>`;
       });
 
