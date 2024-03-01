@@ -2152,6 +2152,53 @@ app.post("/orders", async (req, res) => {
 });
 
 // Получение данных об оплаченных заказах
+/**
+ * @swagger
+ * /api/orders-history:
+ *   get:
+ *     tags:
+ *       - Orders
+ *     summary: Получение данных об оплаченных заказах
+ *     description: Получает данные об оплаченных заказах для авторизованного пользователя.
+ *     responses:
+ *       200:
+ *         description: Успешный запрос. Возвращает список оплаченных заказов.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   order_id:
+ *                     type: integer
+ *                     description: Уникальный идентификатор заказа.
+ *                   payment_date:
+ *                     type: string
+ *                     format: date-time
+ *                     description: Дата и время оплаты заказа.
+ *                   delivery_date:
+ *                     type: string
+ *                     format: date-time
+ *                     description: Дата и время доставки заказа.
+ *                   totalPrice:
+ *                     type: number
+ *                     format: float
+ *                     description: Общая стоимость заказа.
+ *                   productImage:
+ *                     type: string
+ *                     description: URL изображения товара.
+ *                   productName:
+ *                     type: string
+ *                     description: Название товара.
+ *                   quantity:
+ *                     type: integer
+ *                     description: Количество товаров в заказе.
+ *       401:
+ *         description: Ошибка аутентификации. Токен не предоставлен.
+ *       500:
+ *         description: Внутренняя ошибка сервера. Не удалось получить данные об оплаченных заказах.
+ */
 
 app.get("/api/orders-history", async (req, res) => {
   // Получение токена и его проверка
