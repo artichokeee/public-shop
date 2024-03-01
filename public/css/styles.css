@@ -448,3 +448,12 @@ button[type="submit"]:hover {
   from { opacity: 1; }
   to { opacity: 0; }
 }
+
+/* Добавляем стили для подсветки ошибочных полей */
+input.error {
+  border-color: red;
+}
+
+.error-message {
+  color: red;
+}

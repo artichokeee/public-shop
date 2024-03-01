@@ -63,8 +63,14 @@
             placeholder="Номер карты"
             maxlength="16"
           />
+          <div class="error-message"></div>
+          <!-- Добавляем сообщение об ошибке для номера карты -->
           <input type="text" id="card-name" placeholder="Имя" />
+          <div class="error-message"></div>
+          <!-- Добавляем сообщение об ошибке для имени -->
           <input type="text" id="card-surname" placeholder="Фамилия" />
+          <div class="error-message"></div>
+          <!-- Добавляем сообщение об ошибке для фамилии -->
           <div class="expiry-date">
             <input
               type="text"
@@ -72,14 +78,20 @@
               placeholder="ММ"
               maxlength="2"
             />
+            <div class="error-message"></div>
+            <!-- Добавляем сообщение об ошибке для месяца -->
             <input
               type="text"
               id="card-expiry-year"
               placeholder="ГГ"
               maxlength="2"
             />
+            <div class="error-message"></div>
+            <!-- Добавляем сообщение об ошибке для года -->
           </div>
           <input type="text" id="card-cvv" placeholder="CVV" maxlength="3" />
+          <div class="error-message"></div>
+          <!-- Добавляем сообщение об ошибке для CVV -->
         </div>
         <div id="paypal-email" style="display: none">
           <input
@@ -87,14 +99,22 @@
             id="paypal-email-input"
             placeholder="Email для PayPal"
           />
+          <div class="error-message"></div>
+          <!-- Добавляем сообщение об ошибке для email PayPal -->
         </div>
         <input
           type="email"
           id="receipt-email"
           placeholder="Email для отправки чека"
         />
-        <button id="checkout-button" type="button">Оформить заказ</button>
+        <div class="error-message"></div>
+        <!-- Добавляем сообщение об ошибке для email отправки чека -->
+        <button id="checkout-button" type="submit">Оформить заказ</button>
       </form>
+      <!-- Отображение сообщений об ошибках -->
+      <div id="error-messages">
+        <p class="error-message" style="display: none"></p>
+      </div>
     </div>
 
     <footer>
