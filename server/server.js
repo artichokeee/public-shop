@@ -1924,7 +1924,10 @@ app.post("/orders", async (req, res) => {
             return res.status(400).send("Данные карты неверны.");
           } else if (cards[0].status !== "valid") {
             return res.status(400).send("Карта недействительна.");
-          } else if (cards[0].balance < totalOrderCost) {
+          }
+
+          const balance = parseFloat(cards[0].balance);
+          if (balance < totalOrderCost) {
             return res.status(400).send("Недостаточно средств на карте.");
           }
 
@@ -1945,7 +1948,11 @@ app.post("/orders", async (req, res) => {
             return res.status(400).send("Учетная запись PayPal не существует.");
           } else if (paypalAccounts[0].status === "blocked") {
             return res.status(400).send("Учетная запись PayPal заблокирована.");
-          } else if (paypalAccounts[0].balance < totalOrderCost) {
+          }
+
+          const balance = parseFloat(paypalAccounts[0].balance);
+
+          if (balance < totalOrderCost) {
             return res
               .status(400)
               .send("Недостаточно средств на счете PayPal.");
@@ -1970,6 +1977,21 @@ app.post("/orders", async (req, res) => {
           );
 
           const orderIds = unpaidOrders.map((order) => order.order_id);
+
+          // Сохраняем информацию об оплаченных товарах в order_items_paid
+          for (const orderId of orderIds) {
+            const [orderItems] = await pool.query(
+              "SELECT product_id, quantity FROM order_items WHERE order_id = ?",
+              [orderId]
+            );
+
+            for (const item of orderItems) {
+              await pool.query(
+                "INSERT INTO order_items_paid (user_id, order_id, product_id, quantity) VALUES (?, ?, ?, ?)",
+                [decoded.id, orderId, item.product_id, item.quantity]
+              );
+            }
+          }
 
           // Обновляем статус заказов и добавляем даты платежа и доставки
           if (orderIds.length > 0) {
