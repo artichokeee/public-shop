@@ -38,6 +38,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  // Инициализация: запрос информации о заказах при загрузке страницы
+  fetchUserOrders();
+
   function displayNoOrdersMessage() {
     const ordersContainer = document.getElementById("order-items-list");
     ordersContainer.innerHTML = "<p>Заказы не найдены.</p>";
@@ -114,9 +117,6 @@ document.addEventListener("DOMContentLoaded", function () {
       ordersContainer.appendChild(orderElement);
     });
   }
-
-  // Инициализация: запрос информации о заказах при загрузке страницы
-  fetchUserOrders();
 
   // Доступ к функциям из глобальной области видимости
   window.fetchUserOrders = fetchUserOrders;

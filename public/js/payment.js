@@ -18,18 +18,14 @@ document.addEventListener("DOMContentLoaded", function () {
   const paypalEmailInput = document.getElementById("paypal-email-input");
   const receiptEmailInput = document.getElementById("receipt-email");
 
-  console.log("All elements fetched successfully.");
-
   function hideErrorMessages() {
     errorMessages.forEach((element) => (element.style.display = "none"));
-    console.log("Error messages hidden.");
   }
 
   function clearErrorHighlighting() {
     document
       .querySelectorAll(".error")
       .forEach((element) => element.classList.remove("error"));
-    console.log("Error highlighting cleared.");
   }
 
   function validateEmail(email) {
@@ -44,7 +40,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (errorElement && errorElement.classList.contains("error-message")) {
       errorElement.textContent = message;
       errorElement.style.display = "block";
-      console.log(`Error displayed: ${message}`);
     }
   }
 
@@ -136,7 +131,6 @@ document.addEventListener("DOMContentLoaded", function () {
         this.value === "Paypal" ? "none" : "block";
       paypalEmailSection.style.display =
         this.value === "Paypal" ? "block" : "none";
-      updateTotalAmount(); // Обновляем общую стоимость при изменении метода оплаты
 
       // При изменении метода оплаты скрываем или показываем соответствующие поля валидации
       if (this.value === "Paypal") {
@@ -163,13 +157,9 @@ document.addEventListener("DOMContentLoaded", function () {
   checkoutButton.addEventListener("click", function (event) {
     event.preventDefault(); // Предотвращаем отправку формы по умолчанию
 
-    console.log("Checkout button clicked.");
-
     // Проверяем валидацию формы
     if (validatePaymentForm()) {
       try {
-        console.log("Form validation passed. Proceeding to send request.");
-
         const authToken = localStorage.getItem("authToken");
         const formData = new FormData(paymentForm);
         const xhr = new XMLHttpRequest();
@@ -201,13 +191,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
         xhr.onreadystatechange = function () {
           if (xhr.readyState === XMLHttpRequest.DONE) {
-            console.log(`Response status: ${xhr.status}`);
             if (xhr.status === 200) {
               // Если запрос прошел успешно, перенаправляем пользователя на страницу успешной оплаты
               window.location.href = "/history";
             } else {
               // Если возникла ошибка, выводим сообщение об ошибке
-              alert(xhr.responseText);
+              showNotification(xhr.responseText);
             }
           }
         };
@@ -215,23 +204,18 @@ document.addEventListener("DOMContentLoaded", function () {
       } catch (error) {
         console.error("Ошибка при отправке данных на сервер:", error);
         // Выводим сообщение об ошибке
-        alert("Произошла ошибка. Попробуйте еще раз.");
+        showNotification("Произошла ошибка. Попробуйте еще раз.");
       }
-    } else {
-      console.log("Form validation failed. Aborting request.");
     }
   });
 
   // Обновление общей стоимости заказа
   async function updateTotalAmount() {
     try {
-      console.log("Updating total amount...");
-
       const orders = await window.fetchUserOrders();
 
       if (!orders || orders.length === 0) {
         totalAmountElement.textContent = "0 USD";
-        console.log("Total amount updated: 0 USD");
         return;
       }
 
@@ -258,14 +242,12 @@ document.addEventListener("DOMContentLoaded", function () {
       totalAmountElement.textContent =
         `${totalAmount.toFixed(2)} USD` +
         (hasPaidShipping ? "  с учетом доставки" : "");
-      console.log(`Total amount updated: ${totalAmount.toFixed(2)} USD`);
     } catch (error) {
       console.error("Ошибка при обновлении общей стоимости:", error);
       totalAmountElement.textContent = "Ошибка при расчете";
     }
   }
 
-  // Инициализация
-  updateTotalAmount(); // Обновляем общую стоимость при загрузке страницы
+  updateTotalAmount();
   window.updateTotalAmount = updateTotalAmount;
 });

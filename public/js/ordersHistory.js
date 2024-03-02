@@ -15,14 +15,9 @@ function setupPaginationHandlers() {
   });
 
   document.getElementById("next-page").addEventListener("click", () => {
-    // Тут будет определение общего количества страниц, основанное на данных с сервера
-    fetchOrdersHistory().then((totalOrders) => {
-      const totalPages = Math.ceil(totalOrders / ordersPerPage);
-      if (currentPage < totalPages) {
-        currentPage++;
-        fetchOrdersHistory();
-      }
-    });
+    // Увеличиваем currentPage на 1 и отправляем запрос только для следующей страницы
+    currentPage++;
+    fetchOrdersHistory();
   });
 }
 
@@ -42,8 +37,7 @@ async function fetchOrdersHistory() {
     );
 
     if (!response.data || response.data.length === 0) {
-      console.log("История заказов пуста");
-      return;
+      return 0;
     }
 
     const orders = groupOrders(response.data);

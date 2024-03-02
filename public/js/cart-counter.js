@@ -1,18 +1,17 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const cartCountElement = document.getElementById("cart-count");
+
   updateCartCount(); // Инициализация при загрузке страницы
 
   window.addEventListener("cartUpdated", () => {
     updateCartCount(); // Обновление при событии
   });
 
-  const cartCountElement = document.getElementById("cart-count");
-
   function updateCartCount() {
     const authToken = localStorage.getItem("authToken");
 
     if (!authToken) {
-      console.log("Пользователь не авторизован");
-      cartCountElement.textContent = `(0)`;
+      hideCartCount(); // Скрыть счетчик корзины
       return;
     }
 
@@ -24,18 +23,27 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .then((response) => {
         const { count } = response.data;
-        cartCountElement.textContent = `(${count})`;
+        cartCountElement.textContent = `(${count})`; // Обновляем счетчик корзины
+        showCartCount(); // Показываем счетчик корзины
       })
       .catch((error) => {
         console.error(
           "Ошибка при получении количества товаров в корзине:",
           error
         );
-        cartCountElement.textContent = `(Ошибка)`;
+        hideCartCount(); // Скрыть счетчик корзины в случае ошибки
       });
   }
 
-  // Начальное обновление счетчика при загрузке страницы
-  updateCartCount();
+  function showCartCount() {
+    // Показываем счетчик корзины
+    cartCountElement.style.opacity = "1";
+  }
+
+  function hideCartCount() {
+    // Скрываем счетчик корзины
+    cartCountElement.style.opacity = "0";
+  }
+
   window.updateCartCount = updateCartCount;
 });

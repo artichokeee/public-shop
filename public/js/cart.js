@@ -69,7 +69,6 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   window.addToCart = (productId) => {
-    console.log("Добавление в корзину товара с ID:", productId);
     const quantityInput = document.querySelector(`#quantity-${productId}`);
     const quantity = quantityInput ? parseInt(quantityInput.value) : 1; // Получаем количество товара из поля ввода
     const authToken = localStorage.getItem("authToken");
@@ -228,7 +227,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       )
       .then((response) => {
-        console.log(response.data);
         // Здесь можно добавить дальнейшие действия, например, переход на страницу подтверждения заказа
         window.location.href = "/payment"; // Пример перехода на страницу подтверждения
       })
