@@ -7,13 +7,6 @@ document.addEventListener("DOMContentLoaded", function () {
   // Загрузка корзины при загрузке страницы
   loadCart();
 
-  document.addEventListener("click", function (event) {
-    if (event.target.matches(".add-to-cart-button")) {
-      const productId = event.target.getAttribute("data-product-id");
-      window.addToCart(productId);
-    }
-  });
-
   function loadCart() {
     const authToken = localStorage.getItem("authToken");
 
@@ -37,67 +30,6 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   }
 
-  window.updateProductQuantityInCart = (cartItemId, newQuantity) => {
-    const authToken = localStorage.getItem("authToken");
-
-    if (!authToken) {
-      showNotification(
-        "Пожалуйста, войдите в систему, чтобы изменить количество товара в корзине"
-      );
-      return;
-    }
-
-    axios
-      .patch(
-        `http://localhost:3000/cart/${cartItemId}`,
-        { quantity: newQuantity },
-        { headers: { Authorization: `Bearer ${authToken}` } }
-      )
-      .then(() => {
-        showNotification("Количество товара в корзине обновлено");
-        loadCart(); // Перезагружаем содержимое корзины
-        const event = new CustomEvent("cartUpdated");
-        window.dispatchEvent(event);
-      })
-      .catch((error) => {
-        console.error(
-          "Ошибка при изменении количества товара в корзине:",
-          error
-        );
-        showNotification("Ошибка при изменении количества товара в корзине");
-      });
-  };
-
-  window.addToCart = (productId) => {
-    const quantityInput = document.querySelector(`#quantity-${productId}`);
-    const quantity = quantityInput ? parseInt(quantityInput.value) : 1; // Получаем количество товара из поля ввода
-    const authToken = localStorage.getItem("authToken");
-
-    if (!authToken) {
-      showNotification(
-        "Пожалуйста, войдите в систему, чтобы добавить товар в корзину"
-      );
-      return;
-    }
-
-    axios
-      .post(
-        "http://localhost:3000/cart",
-        { productId, quantity },
-        { headers: { Authorization: `Bearer ${authToken}` } }
-      )
-      .then(() => {
-        showNotification("Товар добавлен в корзину");
-        loadCart(); // Перезагружаем содержимое корзины
-        const event = new CustomEvent("cartUpdated");
-        window.dispatchEvent(event);
-      })
-      .catch((error) => {
-        console.error("Ошибка при добавлении товара в корзину:", error);
-        showNotification("Ошибка при добавлении товара в корзину");
-      });
-  };
-
   function updateCartDisplay() {
     cartElement.innerHTML = ""; // Очищаем содержимое элемента корзины
     cartElements = {}; // Очищаем ссылки на элементы корзины
@@ -109,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
       cartItemElement.innerHTML = `
         <img src="${item.imageUrl}" alt="${item.name}" style="width: 100px; height: auto;">
         <p>${item.name}: <input type="number" value="${item.quantity}" min="1" id="quantity-${item.cart_item_id}" class="quantity-input"> шт. (Цена за шт.: ${item.price} руб.)</p>
-        <button onclick="window.removeFromCart(${item.cart_item_id})">Удалить</button>
+        <button onclick="removeFromCart(${item.cart_item_id})">Удалить</button>
       `;
 
       cartElement.appendChild(cartItemElement);
@@ -120,7 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .getElementById(`quantity-${item.cart_item_id}`)
         .addEventListener("change", (e) => {
           const newQuantity = parseInt(e.target.value);
-          window.updateProductQuantityInCart(item.cart_item_id, newQuantity);
+          updateProductQuantityInCart(item.cart_item_id, newQuantity);
         });
     });
 
@@ -140,6 +72,35 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     cartTotalElement.innerText = `Общая сумма: ${total} руб.`;
   }
+
+  window.updateProductQuantityInCart = (cartItemId, newQuantity) => {
+    const authToken = localStorage.getItem("authToken");
+
+    if (!authToken) {
+      showNotification(
+        "Пожалуйста, войдите в систему, чтобы изменить количество товара в корзине"
+      );
+      return;
+    }
+
+    axios
+      .patch(
+        `http://localhost:3000/cart/${cartItemId}`,
+        { quantity: newQuantity },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+      )
+      .then(() => {
+        loadCart(); // Перезагружаем содержимое корзины
+        const event = new CustomEvent("cartUpdated");
+        window.dispatchEvent(event);
+      })
+      .catch((error) => {
+        console.error(
+          "Ошибка при изменении количества товара в корзине:",
+          error
+        );
+      });
+  };
 
   window.removeFromCart = (cartItemId) => {
     const authToken = localStorage.getItem("authToken");
@@ -166,48 +127,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
           updateCartCount(); // Обновите счетчик корзины
           updateCartTotal(); // Обновите общую сумму корзины
-
-          showNotification("Товар удалён из корзины");
         }
       })
       .catch((error) => {
         console.error("Ошибка при удалении товара из корзины:", error);
-        showNotification("Ошибка при удалении товара из корзины");
-      });
-  };
-
-  updateCartTotal();
-
-  window.changeQuantity = (productId, quantity) => {
-    const authToken = localStorage.getItem("authToken");
-
-    if (!authToken) {
-      showNotification(
-        "Пожалуйста, войдите в систему, чтобы изменить количество товара в корзине"
-      );
-      return;
-    }
-
-    axios
-      .put(
-        `http://localhost:3000/cart/${productId}`,
-        { quantity },
-        { headers: { Authorization: `Bearer ${authToken}` } }
-      )
-      .then(() => {
-        const cartItem = cart.find((item) => item.product_id === productId);
-        if (cartItem) {
-          cartItem.quantity = parseInt(quantity);
-          updateCartDisplay();
-          updateCartCount();
-        }
-      })
-      .catch((error) => {
-        console.error(
-          "Ошибка при изменении количества товара в корзине:",
-          error
-        );
-        showNotification("Ошибка при изменении количества товара в корзине");
       });
   };
 
@@ -242,6 +165,6 @@ document.addEventListener("DOMContentLoaded", function () {
     .getElementById("checkout-button")
     .addEventListener("click", handleCheckout);
 
-  updateCartDisplay();
+  updateCartTotal();
   updateCartCount();
 });

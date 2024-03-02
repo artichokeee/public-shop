@@ -17,6 +17,13 @@ document.addEventListener("DOMContentLoaded", function () {
   const productList = document.getElementById("product-list");
   const paginationElement = document.getElementById("pagination");
 
+  productList.addEventListener("click", function (event) {
+    if (event.target.classList.contains("add-to-cart-button")) {
+      const productId = event.target.getAttribute("data-product-id");
+      addToCart(productId);
+    }
+  });
+
   sortOrderSelect.addEventListener("change", function () {
     sortAndDisplayProducts();
   });
@@ -24,9 +31,9 @@ document.addEventListener("DOMContentLoaded", function () {
   fetch("http://localhost:3000/products")
     .then((response) => response.json())
     .then((data) => {
-      products = data.sort((a, b) => a.name.localeCompare(b.name)); // Сортировка полученных данных
+      products = data.sort((a, b) => a.name.localeCompare(b.name));
       filteredProducts = [...products];
-      displayProducts(filteredProducts, 1); // Отображение отсортированных продуктов
+      displayProducts(filteredProducts, 1);
     })
     .catch((error) =>
       console.error("Ошибка при получении данных с сервера:", error)
@@ -74,10 +81,39 @@ document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll(".add-to-cart-button").forEach((button) => {
     button.addEventListener("click", () => {
       const productId = button.getAttribute("data-product-id");
-      const quantity = 1; // или получить количество из интерфейса, если необходимо
-      window.addToCart(productId, quantity);
+      addToCart(productId);
     });
   });
+
+  function addToCart(productId) {
+    const quantityInput = document.querySelector(`#quantity-${productId}`);
+    const quantity = quantityInput ? parseInt(quantityInput.value) : 1;
+    const authToken = localStorage.getItem("authToken");
+
+    if (!authToken) {
+      showNotification(
+        "Пожалуйста, войдите в систему, чтобы добавить товар в корзину"
+      );
+      return;
+    }
+
+    axios
+      .post(
+        "http://localhost:3000/cart",
+        { productId, quantity },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+      )
+      .then(() => {
+        showNotification("Товар добавлен в корзину");
+        loadCart();
+        const event = new CustomEvent("cartUpdated");
+        window.dispatchEvent(event);
+      })
+      .catch((error) => {
+        console.error("Ошибка при добавлении товара в корзину:", error);
+        showNotification("Ошибка при добавлении товара в корзину");
+      });
+  }
 
   function displayPaginationButtons(totalProducts, currentPage) {
     paginationElement.innerHTML = "";
@@ -90,7 +126,7 @@ document.addEventListener("DOMContentLoaded", function () {
         displayProducts(filteredProducts, i);
       };
       if (i === currentPage) {
-        button.classList.add("active"); // Подсветка активной страницы
+        button.classList.add("active");
       }
       paginationElement.appendChild(button);
     }
@@ -116,7 +152,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function sortAndDisplayProducts() {
     filteredProducts = sortProducts(filteredProducts, sortOrderSelect.value);
-    displayProducts(filteredProducts, 1); // Возможно, вам нужно будет обновить текущую страницу, если используется пагинация
+    displayProducts(filteredProducts, 1);
   }
 
   sortAndDisplayProducts();
@@ -149,9 +185,7 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
-        // Обновляем filteredProducts с учетом результатов фильтрации
         filteredProducts = [...data];
-        // Вызываем функцию сортировки и отображения продуктов
         sortAndDisplayProducts();
       })
       .catch((error) =>

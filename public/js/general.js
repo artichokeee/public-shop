@@ -35,3 +35,27 @@ function showNotification(message, isSuccess = true) {
 }
 
 window.showNotification = showNotification;
+
+function loadCart() {
+  const authToken = localStorage.getItem("authToken");
+
+  if (!authToken) {
+    return;
+  }
+
+  axios
+    .get("http://localhost:3000/getCart", {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    })
+    .then((response) => {
+      cart = response.data;
+      updateCartCount();
+    })
+    .catch((error) => {
+      console.error("Ошибка при загрузке корзины:", error);
+    });
+}
+
+window.loadCart = loadCart;
