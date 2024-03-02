@@ -67,14 +67,26 @@ const swaggerOptions = {
     servers: [
       {
         url: "http://localhost:3000",
+        description: "Development server",
       },
+      // Добавляем еще серверы, если они доступны в других средах (например, production)
     ],
+    externalDocs: {
+      description: "Скачать JSON-спецификацию Swagger",
+      url: "http://localhost:3000/openapi.json",
+    },
   },
   apis: ["server.js"], // указывает на местонахождение документации Swagger в вашем коде
 };
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+// Маршрут для предоставления JSON-версии спецификации Swagger
+app.get("/openapi.json", (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.send(swaggerDocs);
+});
 
 const cardValidation = [
   body("card_type").isIn(["VISA", "MasterCard"]),

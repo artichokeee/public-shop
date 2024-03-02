@@ -11,13 +11,13 @@
         <a href="/">Каталог</a>
         <a href="/about">О компании</a>
         <a href="/contacts">Контакты</a>
-        <a href="/cart">
+        <a href="/cart" class="auth-dependent">
           <span class="cart-icon">🛒</span>
           Корзина
         </a>
-        <span id="cart-count">(0)</span>
-        <a href="/payment">Оплата</a>
-        <a href="/history">История заказов</a>
+        <span id="cart-count" class="auth-dependent">(0)</span>
+        <a href="/payment" class="auth-dependent">Оплата</a>
+        <a href="/history" class="auth-dependent">История заказов</a>
         <button id="login-button" onclick="window.location.href='/login'">
           Регистрация / Войти
         </button>
@@ -75,6 +75,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="../js/general.js"></script>
+    <script src="../js/authCheck.js"></script>
     <script src="../js/cart-counter.js"></script>
     <script src="../js/login.js"></script>
     <script src="../js/app.js"></script>

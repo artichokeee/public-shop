@@ -133,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
           updateCartCount(); // Обновляем счетчик корзины
           updateCartTotal(); // Обновляем общую сумму корзины
 
-          showNotification("Товар успешно удален из корзины."); // Показываем уведомление об успешном удалении
+          showNotification("Товар успешно удален из корзины.", false); // Показываем уведомление об успешном удалении
         }
       })
       .catch((error) => {

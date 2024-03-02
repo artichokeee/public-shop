@@ -58,7 +58,10 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!response.ok) {
         throw new Error("Ошибка при удалении продукта из заказа.");
       }
-      showNotification("Продукт удален из заказа и перемещен в корзину.");
+      showNotification(
+        "Продукт удален из заказа и перемещен в корзину.",
+        false
+      );
       fetchUserOrders(); // Повторный запрос информации о заказах после удаления продукта
       updateTotalAmount();
       updateCartCount();
