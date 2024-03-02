@@ -51,7 +51,12 @@ document.addEventListener("DOMContentLoaded", function () {
       document
         .getElementById(`quantity-${item.cart_item_id}`)
         .addEventListener("change", (e) => {
-          const newQuantity = parseInt(e.target.value);
+          const input = e.target;
+          let newQuantity = parseInt(input.value);
+          if (newQuantity < 1 || isNaN(newQuantity)) {
+            newQuantity = 1; // Корректируем значение, если оно меньше 1 или не число
+            input.value = newQuantity; // Обновляем значение в поле ввода
+          }
           updateProductQuantityInCart(item.cart_item_id, newQuantity);
         });
     });
@@ -107,7 +112,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!authToken) {
       showNotification(
-        "Пожалуйста, войдите в систему, чтобы удалить товар из корзины"
+        "Пожалуйста, войдите в систему, чтобы удалить товар из корзины."
       );
       return;
     }
@@ -125,12 +130,15 @@ document.addEventListener("DOMContentLoaded", function () {
           // Обновляем массив cart
           cart = cart.filter((item) => item.cart_item_id !== cartItemId);
 
-          updateCartCount(); // Обновите счетчик корзины
-          updateCartTotal(); // Обновите общую сумму корзины
+          updateCartCount(); // Обновляем счетчик корзины
+          updateCartTotal(); // Обновляем общую сумму корзины
+
+          showNotification("Товар успешно удален из корзины."); // Показываем уведомление об успешном удалении
         }
       })
       .catch((error) => {
         console.error("Ошибка при удалении товара из корзины:", error);
+        showNotification("Не удалось удалить товар из корзины."); // Показываем уведомление об ошибке
       });
   };
 

@@ -100,16 +100,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
       order.items.forEach((item) => {
         orderContent += `
-                <li style="display: flex; align-items: center; justify-content: space-between;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <img src="${item.imageUrl}" alt="${item.name}" style="width: 50px; height: auto;">
-                        <span style="flex: 1;">${item.name} - ${item.quantity} x ${item.price} USD</span>
-                    </div>
-                    <div style="display: flex; align-items: center; width: 70%;">
-                        <input class="quantity-input" type="number" value="${item.quantity}" onchange="changeProductQuantityInOrder(${order.order_id}, ${item.product_id}, this.value)" style="width: 10%; text-align: center;">
-                        <button class="delete-button" onclick="deleteProductFromOrder(${order.order_id}, ${item.product_id})" style="width: 150%; margin-left: 10px; padding: 5px 10px; background-color: #f44336; color: white; border-radius: 4px; cursor: pointer;">Удалить</button>
-                    </div>
-                </li>`;
+          <li style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <img src="${item.imageUrl}" alt="${item.name}" style="width: 50px; height: auto;">
+              <span style="flex: 1;">${item.name} - ${item.quantity} x ${item.price} USD</span>
+            </div>
+            <div style="display: flex; align-items: center; width: 70%;">
+              <input class="quantity-input" 
+                     type="number" 
+                     value="${item.quantity}" 
+                     min="1" 
+                     onchange="changeProductQuantityInOrder(${order.order_id}, ${item.product_id}, Math.max(1, this.value))"
+                     oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/^(0+)/, '');"
+                     style="width: 10%; text-align: center;">
+              <button class="delete-button" 
+                      onclick="deleteProductFromOrder(${order.order_id}, ${item.product_id})" 
+                      style="width: 150%; margin-left: 10px; padding: 5px 10px; background-color: #f44336; color: white; border-radius: 4px; cursor: pointer;">Удалить</button>
+            </div>
+          </li>`;
       });
 
       orderContent += "</ul>";

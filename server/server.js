@@ -800,40 +800,37 @@ app.patch("/products/id/:productId", async (req, res) => {
   }
 });
 
-// Добавление товара в корзину
 /**
  * @swagger
  * /cart:
  *   post:
- *     tags: [Cart]
- *     summary: Добавляет товар в корзину пользователя
  *     security:
  *       - bearerAuth: []
+ *     tags:
+ *       - Cart
+ *     summary: Добавляет товар в корзину пользователя
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - productId
- *               - quantity
  *             properties:
  *               productId:
  *                 type: integer
- *                 description: Идентификатор продукта для добавления в корзину
+ *                 description: Идентификатор добавляемого товара
  *               quantity:
  *                 type: integer
- *                 description: Количество добавляемых товаров
+ *                 description: Количество добавляемого товара
  *     responses:
  *       200:
- *         description: Товар добавлен в корзину
+ *         description: Товар успешно добавлен в корзину
  *       400:
  *         description: Неверный запрос
- *       404:
- *         description: Пользователь не найден
+ *       401:
+ *         description: Пользователь не авторизован
  *       500:
- *         description: Ошибка сервера при добавлении товара в корзину
+ *         description: Ошибка сервера
  */
 
 app.post("/cart", async (req, res) => {
@@ -893,51 +890,18 @@ app.post("/cart", async (req, res) => {
 
 /**
  * @swagger
- * /cart:
+ * /getCart:
  *   get:
- *     tags:
- *       - Cart
- *     summary: Получение содержимого корзины пользователя
- *     description: Возвращает содержимое корзины пользователя. Требует авторизации.
  *     security:
  *       - bearerAuth: []
+ *     tags:
+ *       - Cart
+ *     summary: Возвращает содержимое корзины пользователя
  *     responses:
  *       200:
- *         description: Успешный ответ с данными корзины
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   cart_item_id:
- *                     type: integer
- *                     description: Идентификатор элемента корзины
- *                   quantity:
- *                     type: integer
- *                     description: Количество товара в корзине
- *                   product:
- *                     type: object
- *                     properties:
- *                       id:
- *                         type: integer
- *                       name:
- *                         type: string
- *                       description:
- *                         type: string
- *                       price:
- *                         type: number
- *                       imageUrl:
- *                         type: string
- *                       category:
- *                         type: string
- *                       manufacturer:
- *                         type: string
- *                       freeShipping:
- *                         type: boolean
+ *         description: Содержимое корзины успешно получено
  *       401:
- *         description: Неавторизованный доступ или проблемы с токеном
+ *         description: Пользователь не авторизован
  *       500:
  *         description: Ошибка сервера
  */
@@ -1066,27 +1030,31 @@ app.patch("/cart/:cartItemId", async (req, res) => {
  * @swagger
  * /cart/{cartItemId}:
  *   delete:
- *     tags: [Cart]
- *     summary: Удаляет товар из корзины пользователя
  *     security:
  *       - bearerAuth: []
+ *     tags:
+ *       - Cart
+ *     summary: Удаляет товар из корзины пользователя
  *     parameters:
  *       - in: path
  *         name: cartItemId
  *         required: true
  *         schema:
  *           type: integer
- *         description: Идентификатор элемента корзины для удаления
+ *         description: Идентификатор удаляемого элемента корзины
  *     responses:
  *       200:
- *         description: Товар удален из корзины
+ *         description: Товар успешно удален из корзины
  *       400:
- *         description: Неверный формат ID товара в корзине
+ *         description: Неверный запрос
+ *       401:
+ *         description: Пользователь не авторизован
  *       404:
- *         description: Товар не найден в корзине или у пользователя нет прав на его удаление
+ *         description: Товар в корзине не найден
  *       500:
- *         description: Ошибка сервера при удалении товара из корзины
+ *         description: Ошибка сервера
  */
+
 app.delete("/cart/:cartItemId", async (req, res) => {
   const cartItemId = parseInt(req.params.cartItemId);
   const token = req.headers.authorization?.split(" ")[1];

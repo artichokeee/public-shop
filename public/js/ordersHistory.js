@@ -1,30 +1,36 @@
 let currentPage = 1;
 const ordersPerPage = 10;
+let isLoading = false; // Флаг загрузки
 
 document.addEventListener("DOMContentLoaded", () => {
-  fetchOrdersHistory();
   setupPaginationHandlers();
+  fetchOrdersHistory();
 });
 
 function setupPaginationHandlers() {
   document.getElementById("prev-page").addEventListener("click", () => {
-    if (currentPage > 1) {
+    if (currentPage > 1 && !isLoading) {
       currentPage--;
       fetchOrdersHistory();
     }
   });
 
   document.getElementById("next-page").addEventListener("click", () => {
-    // Увеличиваем currentPage на 1 и отправляем запрос только для следующей страницы
-    currentPage++;
-    fetchOrdersHistory();
+    if (!isLoading) {
+      currentPage++;
+      fetchOrdersHistory();
+    }
   });
 }
 
 async function fetchOrdersHistory() {
+  if (isLoading) return;
+  isLoading = true;
+
   const token = localStorage.getItem("authToken");
   if (!token) {
     console.error("Токен не найден, пользователь не авторизован");
+    isLoading = false;
     return;
   }
 
@@ -36,11 +42,12 @@ async function fetchOrdersHistory() {
       }
     );
 
-    if (!response.data || response.data.length === 0) {
-      return 0;
-    }
+    const orders = response.data ? groupOrders(response.data) : [];
+    const totalPages = Math.ceil(orders.length / ordersPerPage);
 
-    const orders = groupOrders(response.data);
+    // Устанавливаем currentPage в пределы возможного диапазона
+    currentPage = Math.max(1, Math.min(currentPage, totalPages));
+
     displayGroupedOrders(
       orders.slice(
         (currentPage - 1) * ordersPerPage,
@@ -48,12 +55,10 @@ async function fetchOrdersHistory() {
       )
     );
     updatePagination(orders.length);
-
-    // Возвращаем общее количество заказов для пагинации
-    return orders.length;
   } catch (error) {
     console.error("Ошибка при получении истории заказов:", error);
-    return 0; // В случае ошибки возвращаем 0
+  } finally {
+    isLoading = false;
   }
 }
 
@@ -62,6 +67,11 @@ function updatePagination(totalOrders) {
   document.getElementById(
     "current-page"
   ).textContent = `Страница ${currentPage} из ${totalPages}`;
+  // Отображение или скрытие кнопок пагинации в зависимости от текущей страницы и общего количества страниц
+  document.getElementById("prev-page").style.visibility =
+    currentPage > 1 ? "visible" : "hidden";
+  document.getElementById("next-page").style.visibility =
+    currentPage < totalPages ? "visible" : "hidden";
 }
 
 function groupOrders(orders) {
