@@ -36,9 +36,11 @@ const swaggerJsdoc = require("swagger-jsdoc");
 const dbConfig = require("../config/dbConfig");
 const jwt = require("jsonwebtoken");
 const PORT = process.env.PORT || 3000;
+const path = require("path");
 
 // Читаем содержимое файла с секретным ключом
-const secretKeyData = fs.readFileSync("./config.json");
+const configPath = path.join(__dirname, "config.json");
+const secretKeyData = fs.readFileSync(configPath);
 
 // Преобразуем содержимое файла в объект JavaScript
 const secretKeyObj = JSON.parse(secretKeyData);
@@ -119,7 +121,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.json());
 
-const path = require("path");
 app.use(express.static(path.join(__dirname, "../public")));
 
 app.get("/", (req, res) => {
