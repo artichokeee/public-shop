@@ -17,13 +17,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const productList = document.getElementById("product-list");
   const paginationElement = document.getElementById("pagination");
 
-  productList.addEventListener("click", function (event) {
-    if (event.target.classList.contains("add-to-cart-button")) {
-      const productId = event.target.getAttribute("data-product-id");
-      addToCart(productId);
-    }
-  });
-
   sortOrderSelect.addEventListener("change", function () {
     sortAndDisplayProducts();
   });
@@ -39,12 +32,6 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error("Ошибка при получении данных с сервера:", error)
     );
 
-  if (sortOrderSelect) {
-    sortOrderSelect.addEventListener("change", function () {
-      sortAndDisplayProducts();
-    });
-  }
-
   function displayProducts(productsToDisplay, page) {
     const startIndex = (page - 1) * productsPerPage;
     const endIndex = startIndex + productsPerPage;
@@ -53,46 +40,45 @@ document.addEventListener("DOMContentLoaded", function () {
     productList.innerHTML = productsToShow
       .map(
         (product) => `
-      <div>
-        <img src="${product.imageUrl}" alt="${
+        <div>
+          <img src="${product.imageUrl}" alt="${
           product.name
         }" style="width:100px;height:100px;">
-        <h2>${product.name}</h2>
-        <p>${product.description}</p>
-        <p>Цена: ${product.price} USD</p>
-        <p>Категория: ${product.category}</p>
-        <p>Производитель: ${product.manufacturer}</p>
-        <p>Бесплатная доставка: ${product.freeShipping ? "Да" : "Нет"}</p>
-        <input type="number" id="quantity-${
-          product.product_id
-        }" min="1" value="1" style="width: 50px;">
-        <button class="add-to-cart-button" data-product-id="${
-          product.product_id
-        }">Добавить в корзину</button>
-      </div>
-    `
+          <h2>${product.name}</h2>
+          <p>${product.description}</p>
+          <p>Цена: ${product.price} USD</p>
+          <p>Категория: ${product.category}</p>
+          <p>Производитель: ${product.manufacturer}</p>
+          <p>Бесплатная доставка: ${product.freeShipping ? "Да" : "Нет"}</p>
+          <input type="number" id="quantity-${
+            product.product_id
+          }" min="1" value="1" style="width: 50px;">
+          <button class="add-to-cart-button" data-product-id="${
+            product.product_id
+          }">Добавить в корзину</button>
+        </div>
+      `
       )
       .join("");
 
-    // Переназначение обработчиков событий на кнопки после их добавления в DOM
-    setTimeout(() => {
-      productList.querySelectorAll(".add-to-cart-button").forEach((button) => {
-        button.addEventListener("click", function () {
-          const productId = this.getAttribute("data-product-id");
-          const quantityInput = document.querySelector(
-            `#quantity-${productId}`
-          );
-          let quantity = parseInt(quantityInput.value, 10);
-          quantity = !isNaN(quantity) && quantity > 0 ? quantity : 1; // Запрет на ввод 0 или отрицательных чисел
-          addToCart(productId, quantity);
-        });
+    // Привязываем обработчики событий к кнопкам после того, как они добавлены в DOM
+    productsToShow.forEach((product) => {
+      const button = document.querySelector(
+        `button[data-product-id="${product.product_id}"]`
+      );
+      const quantityInput = document.getElementById(
+        `quantity-${product.product_id}`
+      );
+      button.addEventListener("click", function () {
+        let quantity = parseInt(quantityInput.value, 10);
+        quantity = !isNaN(quantity) && quantity > 0 ? quantity : 1;
+        addToCart(product.product_id, quantity);
       });
-    }, 0);
+    });
 
     displayPaginationButtons(productsToDisplay.length, page);
   }
 
-  // Обновлённая функция addToCart для приёма quantity как параметра
   function addToCart(productId, quantity) {
     const authToken = localStorage.getItem("authToken");
     if (!authToken) {
@@ -111,7 +97,12 @@ document.addEventListener("DOMContentLoaded", function () {
       .post(
         "http://localhost:3000/cart",
         { productId, quantity },
-        { headers: { Authorization: `Bearer ${authToken}` } }
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
       )
       .then(() => {
         showNotification("Товар добавлен в корзину");

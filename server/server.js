@@ -846,6 +846,7 @@ app.patch("/products/id/:productId", async (req, res) => {
  */
 
 app.post("/cart", async (req, res) => {
+  console.log(req.body);
   const { productId, quantity } = req.body;
   const token = req.headers.authorization?.split(" ")[1];
 
@@ -864,30 +865,48 @@ app.post("/cart", async (req, res) => {
     }
 
     // Проверяем, существует ли уже товар в корзине для данного пользователя
-    const [existingCartItem] = await pool.query(
+    const [rows] = await pool.query(
       "SELECT * FROM cart_items WHERE user_id = ? AND product_id = ?",
       [userId, productId]
     );
 
-    if (existingCartItem.length > 0) {
+    if (rows.length > 0) {
       // Если товар уже присутствует в корзине, обновляем количество товара
-      const updatedQuantity = existingCartItem[0].quantity + quantity;
-      await pool.query(
-        "UPDATE cart_items SET quantity = ? WHERE user_id = ? AND product_id = ?",
-        [updatedQuantity, userId, productId]
-      );
+      // Важно преобразовать значения в числа и проверить на NaN
+      const existingQuantity = parseInt(rows[0].quantity, 10);
+      const addedQuantity = parseInt(quantity, 10);
 
-      res.status(200).send(`Количество товара в корзине обновлено`);
+      if (!isNaN(existingQuantity) && !isNaN(addedQuantity)) {
+        const updatedQuantity = existingQuantity + addedQuantity;
+        await pool.query(
+          "UPDATE cart_items SET quantity = ? WHERE user_id = ? AND product_id = ?",
+          [updatedQuantity, userId, productId]
+        );
+
+        res.status(200).send(`Количество товара в корзине обновлено`);
+      } else {
+        // Если одно из значений не является числом, отправляем ошибку
+        console.error(
+          "Ошибка: невозможно обновить количество, так как одно из значений не является числом."
+        );
+        res.status(400).send("Неверные данные: количество не является числом.");
+      }
     } else {
       // Если товар еще не присутствует в корзине, добавляем новую запись
-      await pool.query(
-        "INSERT INTO cart_items (user_id, product_id, quantity) VALUES (?, ?, ?)",
-        [userId, productId, quantity]
-      );
+      // Также проверяем, что переданное количество является числом
+      if (!isNaN(parseInt(quantity, 10))) {
+        await pool.query(
+          "INSERT INTO cart_items (user_id, product_id, quantity) VALUES (?, ?, ?)",
+          [userId, productId, parseInt(quantity, 10)]
+        );
 
-      res
-        .status(200)
-        .send(`Товар добавлен в корзину пользователя с ID: ${userId}`);
+        res
+          .status(200)
+          .send(`Товар добавлен в корзину пользователя с ID: ${userId}`);
+      } else {
+        console.error("Ошибка: количество не является числом.");
+        res.status(400).send("Неверные данные: количество не является числом.");
+      }
     }
   } catch (err) {
     console.error("Ошибка при добавлении товара в корзину: ", err);
