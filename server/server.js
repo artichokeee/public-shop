@@ -35,7 +35,6 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require("swagger-jsdoc");
 const dbConfig = require("../config/dbConfig");
 const jwt = require("jsonwebtoken");
-const PORT = process.env.PORT || 3000;
 const path = require("path");
 
 // Читаем содержимое файла с секретным ключом
