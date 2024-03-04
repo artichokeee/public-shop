@@ -132,5 +132,3 @@ dist
 archive/
 
 .DS_Store
-
-config.json
