@@ -2,6 +2,8 @@ let currentPage = 1;
 const ordersPerPage = 10;
 let isLoading = false; // Флаг загрузки
 
+fetchBaseUrl();
+
 document.addEventListener("DOMContentLoaded", () => {
   setupPaginationHandlers();
   fetchOrdersHistory();

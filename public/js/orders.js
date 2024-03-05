@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+  fetchBaseUrl();
   async function fetchUserOrders() {
     try {
       const authToken = localStorage.getItem("authToken");

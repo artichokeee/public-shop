@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+  fetchBaseUrl();
   const authToken = localStorage.getItem("authToken");
 
   // Перехватываем клик по всем ссылкам, которые требуют авторизации

@@ -93,6 +93,10 @@ app.get("/openapi.json", (req, res) => {
   res.send(swaggerDocs);
 });
 
+app.get("/config", (req, res) => {
+  res.json({ baseUrl });
+});
+
 const cardValidation = [
   body("card_type").isIn(["VISA", "MasterCard"]),
   body("card_code").isLength({ min: 16, max: 16 }).isNumeric(),

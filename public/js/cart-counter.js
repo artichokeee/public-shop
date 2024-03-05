@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+  fetchBaseUrl();
   const cartCountElement = document.getElementById("cart-count");
 
   updateCartCount(); // Инициализация при загрузке страницы
