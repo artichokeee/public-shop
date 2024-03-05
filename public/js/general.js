@@ -63,7 +63,7 @@ window.loadCart = loadCart;
 function fetchBaseUrl() {
   return fetch("/config")
     .then((response) => response.json())
-    .then((data) => data.baseUrl)
+    .then((data) => data.baseUrl.baseUrl)
     .catch((error) => {
       console.error("Ошибка:", error);
       return null;
