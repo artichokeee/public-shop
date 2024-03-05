@@ -4,7 +4,7 @@
   "description": "Web-shop",
   "main": "server/server.js",
   "scripts": {
-    "restart": "pm2 restart app",
+    "restart": "pm2 start server/server.js --name app || pm2 restart app",
     "start": "pm2 start server/server.js --name app"
   },
   "keywords": [],
