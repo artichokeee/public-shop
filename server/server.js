@@ -25,6 +25,7 @@ async function updateOrderTotal(orderId) {
 }
 
 const express = require("express");
+const dbConfig = require("../config/dbConfig");
 const { body, validationResult } = require("express-validator");
 const mysql = require("mysql2/promise");
 const bodyParser = require("body-parser");
@@ -33,7 +34,6 @@ const fs = require("fs");
 const app = express();
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require("swagger-jsdoc");
-const dbConfig = require("../config/dbConfig");
 const jwt = require("jsonwebtoken");
 const path = require("path");
 
@@ -46,6 +46,8 @@ const secretKeyObj = JSON.parse(secretKeyData);
 
 // Используем значение секретного ключа из объекта
 const secretKey = secretKeyObj.secretKey;
+
+console.log("Конфигурация базы данных:", dbConfig);
 
 const pool = mysql.createPool({
   ...dbConfig,
