@@ -1,8 +1,8 @@
 const dbConfig = {
-  host: "127.0.0.1",
+  host: "185.251.91.112",
   port: "3306",
-  user: "root",
-  password: "root1234@",
+  user: "admin",
+  password: "admin1234",
   database: "web_shop",
 };
 
