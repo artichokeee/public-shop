@@ -36,7 +36,8 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require("swagger-jsdoc");
 const jwt = require("jsonwebtoken");
 const path = require("path");
-const baseUrl = require("../config/baseUrl.json");
+const baseUrlData = require("../config/baseUrl.json");
+const baseUrl = baseUrlData.baseUrl;
 
 // Читаем содержимое файла с секретным ключом
 const configPath = path.join(__dirname, "config.json");
@@ -53,6 +54,10 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
+});
+
+app.get("/config", (req, res) => {
+  res.json({ baseUrl });
 });
 
 const swaggerOptions = {
@@ -89,10 +94,6 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.get("/openapi.json", (req, res) => {
   res.setHeader("Content-Type", "application/json");
   res.send(swaggerDocs);
-});
-
-app.get("/config", (req, res) => {
-  res.json({ baseUrl });
 });
 
 const cardValidation = [
