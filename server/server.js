@@ -36,8 +36,7 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require("swagger-jsdoc");
 const jwt = require("jsonwebtoken");
 const path = require("path");
-const baseUrlData = require("../config/baseUrl.json");
-const baseUrl = baseUrlData.baseUrl;
+const baseUrl = process.env.BASE_URL;
 
 // Читаем содержимое файла с секретным ключом
 const configPath = path.join(__dirname, "config.json");
@@ -54,10 +53,6 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-});
-
-app.get("/config", (req, res) => {
-  res.json({ baseUrl });
 });
 
 const swaggerOptions = {

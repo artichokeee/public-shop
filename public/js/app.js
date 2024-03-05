@@ -1,6 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-  fetchBaseUrl();
-
   document
     .getElementById("apply-filters")
     .addEventListener("click", applyFilters);

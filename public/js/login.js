@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  fetchBaseUrl();
   // Элементы формы и кнопки
   const loginForm = document.getElementById("login-form");
   const registerForm = document.getElementById("register-form");

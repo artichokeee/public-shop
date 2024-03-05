@@ -59,15 +59,3 @@ function loadCart() {
 }
 
 window.loadCart = loadCart;
-
-function fetchBaseUrl() {
-  return fetch("/config")
-    .then((response) => response.json())
-    .then((data) => data.baseUrl)
-    .catch((error) => {
-      console.error("Ошибка:", error);
-      return null;
-    });
-}
-
-window.fetchBaseUrl = fetchBaseUrl;

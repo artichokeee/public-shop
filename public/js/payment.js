@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-  fetchBaseUrl();
   const paymentForm = document.getElementById("payment-form");
   const paymentMethodInputs = document.querySelectorAll(
     'input[name="paymentMethod"]'
