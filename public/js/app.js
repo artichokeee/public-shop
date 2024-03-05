@@ -165,7 +165,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const selectedManufacturer = document.getElementById("manufacturer").value;
     const freeShipping = document.getElementById("free-shipping").checked;
 
-    let url = new URL(baseUrl + "/products/products/filter");
+    let url = new URL(baseUrl + "/products/filter");
 
     if (selectedCategory) {
       url.searchParams.append("category", selectedCategory);
