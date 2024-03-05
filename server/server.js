@@ -84,6 +84,7 @@ const swaggerOptions = {
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use(cacheHeaders({ maxAge: 3600 }));
 
 // Маршрут для предоставления JSON-версии спецификации Swagger
 app.get("/openapi.json", (req, res) => {
