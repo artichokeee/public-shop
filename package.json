@@ -4,7 +4,7 @@
   "description": "Web-shop",
   "main": "server/server.js",
   "scripts": {
-    "start": "node server/server.js"
+    "start": "pm2 start server/server.js"
   },
   "keywords": [],
   "author": "",
