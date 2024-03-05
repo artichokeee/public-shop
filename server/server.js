@@ -68,14 +68,14 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: "http://localhost:3000",
+        url: "http://0.0.0.0:3000",
         description: "Development server",
       },
       // Добавляем еще серверы, если они доступны в других средах (например, production)
     ],
     externalDocs: {
       description: "Скачать JSON-спецификацию Swagger",
-      url: "http://localhost:3000/openapi.json",
+      url: "http://0.0.0.0:3000/openapi.json",
     },
   },
   apis: ["server.js"], // указывает на местонахождение документации Swagger в вашем коде
@@ -2235,5 +2235,5 @@ app.get("/api/orders-history", async (req, res) => {
 });
 
 app.listen(3000, () => {
-  console.log("Сервер запущен на http://localhost:3000");
+  console.log("Сервер запущен на http://0.0.0.0:3000");
 });

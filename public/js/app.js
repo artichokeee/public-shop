@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
     sortAndDisplayProducts();
   });
 
-  fetch("http://localhost:3000/products")
+  fetch("http://0.0.0.0:3000/products")
     .then((response) => response.json())
     .then((data) => {
       products = data.sort((a, b) => a.name.localeCompare(b.name));
@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     axios
       .post(
-        "http://localhost:3000/cart",
+        "http://0.0.0.0:3000/cart",
         { productId, quantity },
         {
           headers: {
@@ -165,7 +165,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const selectedManufacturer = document.getElementById("manufacturer").value;
     const freeShipping = document.getElementById("free-shipping").checked;
 
-    let url = new URL(`http://localhost:3000/products/filter`);
+    let url = new URL(`http://0.0.0.0:3000/products/filter`);
 
     if (selectedCategory) {
       url.searchParams.append("category", selectedCategory);
@@ -201,7 +201,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("manufacturer").value = "";
     document.getElementById("free-shipping").checked = false;
 
-    fetch("http://localhost:3000/products")
+    fetch("http://0.0.0.0:3000/products")
       .then((response) => response.json())
       .then((data) => {
         products = data.sort((a, b) => a.name.localeCompare(b.name));

@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     axios
-      .get("http://localhost:3000/getCart", {
+      .get("http://0.0.0.0:3000/getCart", {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     axios
       .patch(
-        `http://localhost:3000/cart/${cartItemId}`,
+        `http://0.0.0.0:3000/cart/${cartItemId}`,
         { quantity: newQuantity },
         { headers: { Authorization: `Bearer ${authToken}` } }
       )
@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     axios
-      .delete(`http://localhost:3000/cart/${cartItemId}`, {
+      .delete(`http://0.0.0.0:3000/cart/${cartItemId}`, {
         headers: { Authorization: `Bearer ${authToken}` },
       })
       .then(() => {
@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     axios
       .post(
-        "http://localhost:3000/orders",
+        "http://0.0.0.0:3000/orders",
         {},
         {
           headers: { Authorization: `Bearer ${authToken}` },

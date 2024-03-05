@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     axios
-      .get("http://localhost:3000/getCartCount", {
+      .get("http://0.0.0.0:3000/getCartCount", {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
