@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
   // Элементы формы и кнопки
-  const baseUrl = require("../../config/baseUrl");
   const loginForm = document.getElementById("login-form");
   const registerForm = document.getElementById("register-form");
   const loginButton = document.getElementById("login-button");

@@ -1,6 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const baseUrl = require("../../config/baseUrl");
-
   document
     .getElementById("apply-filters")
     .addEventListener("click", applyFilters);

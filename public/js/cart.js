@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const baseUrl = require("../../config/baseUrl");
   const cartElement = document.getElementById("cart");
   const cartTotalElement = document.getElementById("cart-total");
   let cart = [];
