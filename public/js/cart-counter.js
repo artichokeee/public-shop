@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const baseUrl = require("../../config/baseUrl");
   const cartCountElement = document.getElementById("cart-count");
 
   updateCartCount(); // Инициализация при загрузке страницы
@@ -16,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     axios
-      .get("http://0.0.0.0:3000/getCartCount", {
+      .get(baseUrl + "/getCartCount", {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },

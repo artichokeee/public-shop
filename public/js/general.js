@@ -44,7 +44,7 @@ function loadCart() {
   }
 
   axios
-    .get("http://0.0.0.0:3000/getCart", {
+    .get(baseUrl + "/getCart", {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },

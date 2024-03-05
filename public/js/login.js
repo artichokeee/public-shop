@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   // Элементы формы и кнопки
+  const baseUrl = require("../../config/baseUrl");
   const loginForm = document.getElementById("login-form");
   const registerForm = document.getElementById("register-form");
   const loginButton = document.getElementById("login-button");
@@ -62,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
       const username = document.getElementById("login-username").value;
       const password = document.getElementById("login-password").value;
-      sendAuthRequest("http://0.0.0.0:3000/login", username, password);
+      sendAuthRequest(baseUrl + "/login", username, password);
     });
   }
 
@@ -72,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
       const username = document.getElementById("register-username").value;
       const password = document.getElementById("register-password").value;
-      sendAuthRequest("http://0.0.0.0:3000/register", username, password);
+      sendAuthRequest(baseUrl + "/register", username, password);
     });
   }
 

@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+  const baseUrl = require("../../config/baseUrl");
   const cartElement = document.getElementById("cart");
   const cartTotalElement = document.getElementById("cart-total");
   let cart = [];
@@ -15,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     axios
-      .get("http://0.0.0.0:3000/getCart", {
+      .get(baseUrl + "/getCart", {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -90,7 +91,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     axios
       .patch(
-        `http://0.0.0.0:3000/cart/${cartItemId}`,
+        `${baseUrl}/cart/${cartItemId}`,
         { quantity: newQuantity },
         { headers: { Authorization: `Bearer ${authToken}` } }
       )
@@ -118,7 +119,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     axios
-      .delete(`http://0.0.0.0:3000/cart/${cartItemId}`, {
+      .delete(`${baseUrl}/cart/${cartItemId}`, {
         headers: { Authorization: `Bearer ${authToken}` },
       })
       .then(() => {
@@ -151,7 +152,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     axios
       .post(
-        "http://0.0.0.0:3000/orders",
+        baseUrl + "/orders",
         {},
         {
           headers: { Authorization: `Bearer ${authToken}` },
