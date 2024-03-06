@@ -2235,6 +2235,6 @@ app.get("/api/orders-history", async (req, res) => {
   }
 });
 
-app.listen(3000, () => {
+app.listen(3000, "0.0.0.0", () => {
   console.log(`Сервер запущен на ${baseUrl}:3000`);
 });
