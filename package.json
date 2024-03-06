@@ -4,7 +4,7 @@
   "description": "Web-shop",
   "main": "server/server.js",
   "scripts": {
-    "start": "forever start -a --uid \"app\" -e err.log -o out.log server.js --BASE_URL=${BASE_URL}",
+    "start": "forever start -a --uid \"app\" -e err.log -o out.log server/server.js --BASE_URL=${BASE_URL}",
     "stop": "forever stop app",
     "restart": "forever restart app"
   },
