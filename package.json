@@ -4,8 +4,9 @@
   "description": "Web-shop",
   "main": "server/server.js",
   "scripts": {
-    "restart": "pm2 start server/server.js --name app || pm2 restart app",
-    "start": "pm2 start server/server.js --name app"
+    "start": "forever start -a --uid \"app\" -e err.log -o out.log server.js --BASE_URL=${BASE_URL}",
+    "stop": "forever stop app",
+    "restart": "forever restart app"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +24,7 @@
   },
   "devDependencies": {
     "webpack": "^5.90.3",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^5.1.4",
+    "forever": "^3.0.4"
   }
 }
