@@ -36,7 +36,7 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require("swagger-jsdoc");
 const jwt = require("jsonwebtoken");
 const path = require("path");
-const baseUrl = process.env.BASE_URL;
+const baseUrl = process.env.BASE_URL || "http://localhost";
 
 // Читаем содержимое файла с секретным ключом
 const configPath = path.join(__dirname, "config.json");
