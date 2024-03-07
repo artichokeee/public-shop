@@ -4,5 +4,16 @@ services:
     build: .
     ports:
       - "3000:3000"
+    depends_on:
+      - mysql
+  mysql:
+    image: mysql:8.0.36
     environment:
-      BASE_URL: "http://localhost"
+      MYSQL_DATABASE: "mydatabase" # Имя БД, которое будет создано
+      MYSQL_USER: "user" # Имя пользователя БД
+      MYSQL_PASSWORD: "password" # Пароль пользователя БД
+      MYSQL_ROOT_PASSWORD: "rootpassword" # Пароль пользователя root БД
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./initdb:/docker-entrypoint-initdb.d # Монтируем директорию с дампом

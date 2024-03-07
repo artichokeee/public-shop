@@ -20,7 +20,7 @@ EXPOSE 3000
 ENV BASE_URL=http://localhost
 
 # Изменяем конфигурацию БД перед запуском
-RUN sh -c "find . -name 'dbConfig.js' -type f -exec sed -i 's#host: \"185.251.91.112\"#host: \"${BASE_URL}\"#g' {} +"
+RUN sed -i "s#host: \"185.251.91.112\"#host: \"mysql\"#g" ./config/dbConfig.js
 
 # Изменяем файлы HTML перед запуском
 RUN sh -c "find . -name '*.html' -type f -exec sed -i 's#window.baseUrl = \"\";#window.baseUrl = \"${BASE_URL}\";#g' {} +"
