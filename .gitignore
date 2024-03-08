@@ -136,3 +136,5 @@ archive/
 .env.*
 
 data/*
+
+allure-*/
