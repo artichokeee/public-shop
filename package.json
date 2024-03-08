@@ -23,8 +23,10 @@
     "toastify-js": "^1.12.0"
   },
   "devDependencies": {
+    "cypress": "^13.6.6",
+    "forever": "^3.0.4",
+    "jest": "^29.7.0",
     "webpack": "^5.90.3",
-    "webpack-cli": "^5.1.4",
-    "forever": "^3.0.4"
+    "webpack-cli": "^5.1.4"
   }
 }
