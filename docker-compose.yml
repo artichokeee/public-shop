@@ -9,7 +9,7 @@ services:
   mysql:
     image: mysql:8.0.36
     environment:
-      MYSQL_DATABASE: "mydatabase" # Имя БД, которое будет создано
+      MYSQL_DATABASE: "web-shop" # Имя БД, которое будет создано
       MYSQL_USER: "user" # Имя пользователя БД
       MYSQL_PASSWORD: "password" # Пароль пользователя БД
       MYSQL_ROOT_PASSWORD: "rootpassword" # Пароль пользователя root БД
