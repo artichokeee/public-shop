@@ -159,6 +159,7 @@ document.addEventListener("DOMContentLoaded", function () {
   sortAndDisplayProducts();
 
   function applyFilters() {
+    let baseUrl = window.baseUrl || "http://127.0.0.1:3000";
     const minPrice = document.getElementById("min-price").value;
     const maxPrice = document.getElementById("max-price").value;
     const selectedCategory = document.getElementById("category").value;
