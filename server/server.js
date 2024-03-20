@@ -86,7 +86,7 @@ const swaggerOptions = {
       url: baseUrl + "/openapi.json",
     },
   },
-  apis: ["server/server.js"], // указывает на местонахождение документации Swagger в вашем коде
+  apis: ["server.js"], // указывает на местонахождение документации Swagger в вашем коде
 };
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
