@@ -72,7 +72,14 @@ const swaggerOptions = {
         url: baseUrl,
         description: "Development server",
       },
-      // Добавляем еще серверы, если они доступны в других средах (например, production)
+      {
+        url: "https://demoshopping.ru", // Production server
+        description: "Production server",
+      },
+      {
+        url: "https://qa.demoshopping.ru", // QA server
+        description: "QA server",
+      },
     ],
     externalDocs: {
       description: "Скачать JSON-спецификацию Swagger",
