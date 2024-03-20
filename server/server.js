@@ -69,7 +69,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: baseUrl,
+        url: "http://localhost",
         description: "Development server",
       },
       {
@@ -83,10 +83,10 @@ const swaggerOptions = {
     ],
     externalDocs: {
       description: "Скачать JSON-спецификацию Swagger",
-      url: baseUrl + "openapi.json",
+      url: baseUrl + "/openapi.json",
     },
   },
-  apis: ["server.js"], // указывает на местонахождение документации Swagger в вашем коде
+  apis: ["server/server.js"], // указывает на местонахождение документации Swagger в вашем коде
 };
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
