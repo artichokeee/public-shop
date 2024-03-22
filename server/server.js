@@ -678,7 +678,10 @@ app.get("/products/FindByShipping", async (req, res) => {
  *         description: Товар успешно удалён
  *       404:
  *         description: Товар с таким ID не найден
+ *       403:
+ *         description: Удаление этого товара запрещено
  */
+
 app.delete("/products/id/:productId", async (req, res) => {
   const productId = parseInt(req.params.productId);
   if (isNaN(productId)) {
