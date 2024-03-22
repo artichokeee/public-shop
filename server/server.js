@@ -685,6 +685,11 @@ app.delete("/products/id/:productId", async (req, res) => {
     return res.status(400).send("Неверный формат ID");
   }
 
+  // Запрет на удаление для ID от 1 до 50
+  if (productId >= 1 && productId <= 50) {
+    return res.status(403).send("Удаление этого товара запрещено");
+  }
+
   try {
     const [result] = await pool.query("DELETE FROM products WHERE id = ?", [
       productId,
