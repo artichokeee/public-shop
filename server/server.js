@@ -747,6 +747,10 @@ app.put("/products/id/:productId", async (req, res) => {
     return res.status(400).send(validationMessage);
   }
 
+  if (productId >= 1 && productId <= 50) {
+    return res.status(403).send("Обновление этого товара запрещено");
+  }
+
   try {
     const [result] = await pool.query("UPDATE products SET ? WHERE id = ?", [
       productData,
@@ -812,6 +816,10 @@ app.patch("/products/id/:productId", async (req, res) => {
 
   if (isNaN(productId)) {
     return res.status(400).send("Неверный формат ID");
+  }
+
+  if (productId >= 1 && productId <= 50) {
+    return res.status(403).send("Обновление этого товара запрещено");
   }
 
   try {
