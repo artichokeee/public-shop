@@ -493,9 +493,10 @@ app.get("/products/id/:productId", async (req, res) => {
   }
 
   try {
-    const [rows] = await pool.query("SELECT * FROM products WHERE id = ?", [
-      productId,
-    ]);
+    const [rows] = await pool.query(
+      "SELECT * FROM products WHERE product_id = ?",
+      [productId]
+    );
     const product = rows[0];
     if (!product) {
       return res.status(404).send("Товар с таким ID не найден");
@@ -694,9 +695,10 @@ app.delete("/products/id/:productId", async (req, res) => {
   }
 
   try {
-    const [result] = await pool.query("DELETE FROM products WHERE id = ?", [
-      productId,
-    ]);
+    const [result] = await pool.query(
+      "DELETE FROM products WHERE product_id = ?",
+      [productId]
+    );
     if (result.affectedRows === 0) {
       return res.status(404).send("Товар с таким ID не найден");
     }
@@ -752,10 +754,10 @@ app.put("/products/id/:productId", async (req, res) => {
   }
 
   try {
-    const [result] = await pool.query("UPDATE products SET ? WHERE id = ?", [
-      productData,
-      productId,
-    ]);
+    const [result] = await pool.query(
+      "UPDATE products SET ? WHERE product_id = ?",
+      [productData, productId]
+    );
     if (result.affectedRows === 0) {
       return res.status(404).send("Товар с таким ID не найден");
     }
@@ -823,10 +825,10 @@ app.patch("/products/id/:productId", async (req, res) => {
   }
 
   try {
-    const [result] = await pool.query("UPDATE products SET ? WHERE id = ?", [
-      productUpdates,
-      productId,
-    ]);
+    const [result] = await pool.query(
+      "UPDATE products SET ? WHERE product_id = ?",
+      [productUpdates, productId]
+    );
     if (result.affectedRows === 0) {
       return res.status(404).send("Товар с таким ID не найден");
     }
