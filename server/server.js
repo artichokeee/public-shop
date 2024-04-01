@@ -204,6 +204,11 @@ let cart = [];
  *         freeShipping:
  *           type: boolean
  *           description: Доступность бесплатной доставки
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
  */
 
 // Маршрут для получения списка продуктов
