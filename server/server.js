@@ -766,7 +766,7 @@ app.put("/products/id/:productId", async (req, res) => {
     if (result.affectedRows === 0) {
       return res.status(404).send("Товар с таким ID не найден");
     }
-    res.send("Товар обновлён");
+    res.send(`Товар с ID ${productId} полностью обновлён`);
   } catch (error) {
     console.error("Ошибка при обновлении продукта:", error);
     res.status(500).send("Ошибка сервера при обновлении продукта");
@@ -837,7 +837,7 @@ app.patch("/products/id/:productId", async (req, res) => {
     if (result.affectedRows === 0) {
       return res.status(404).send("Товар с таким ID не найден");
     }
-    res.send("Товар частично обновлён");
+    res.send(`Товар с ID ${productId} частично обновлён`);
   } catch (error) {
     console.error("Ошибка при частичном обновлении продукта:", error);
     res.status(500).send("Ошибка сервера при частичном обновлении продукта");
