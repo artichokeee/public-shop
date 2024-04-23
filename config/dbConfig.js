@@ -1,9 +1,9 @@
 const dbConfig = {
-  host: "185.251.91.112",
+  host: "url сервера бд",
   port: "3306",
-  user: "admin",
-  password: "admin1234",
-  database: "web_shop",
+  user: "имя пользователя",
+  password: "пароль",
+  database: "название бд",
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
