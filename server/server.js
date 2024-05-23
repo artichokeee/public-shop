@@ -466,14 +466,6 @@ function isValidProduct(product) {
  *               - manufacturer
  *               - imageUrl
  *               - freeShipping
- *           example:
- *             name: "Example Product"
- *             description: "This is an example product."
- *             price: 100.0
- *             category: "Electronics"
- *             manufacturer: "Example Manufacturer"
- *             imageUrl: "http://example.com/image.jpg"
- *             freeShipping: true
  *     responses:
  *       200:
  *         description: Продукт успешно добавлен
