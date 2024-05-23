@@ -442,7 +442,38 @@ function isValidProduct(product) {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Product'
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               category:
+ *                 type: string
+ *               manufacturer:
+ *                 type: string
+ *               imageUrl:
+ *                 type: string
+ *               freeShipping:
+ *                 type: boolean
+ *             required:
+ *               - name
+ *               - description
+ *               - price
+ *               - category
+ *               - manufacturer
+ *               - imageUrl
+ *               - freeShipping
+ *           example:
+ *             name: "Example Product"
+ *             description: "This is an example product."
+ *             price: 100.0
+ *             category: "Electronics"
+ *             manufacturer: "Example Manufacturer"
+ *             imageUrl: "http://example.com/image.jpg"
+ *             freeShipping: true
  *     responses:
  *       200:
  *         description: Продукт успешно добавлен
@@ -1007,7 +1038,7 @@ app.get("/getCart", async (req, res) => {
 
 /**
  * @swagger
- * /cart/{cartItemId}/quantity:
+ * /cart/{cartItemId}:
  *   patch:
  *     tags: [Cart]
  *     summary: Обновляет количество товара в корзине пользователя
