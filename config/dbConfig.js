@@ -3,7 +3,7 @@ const dbConfig = {
   port: "3306",
   user: "имя пользователя",
   password: "пароль",
-  database: "название бд",
+  database: "название",
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
